@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1088645974627",
+    "project_id": "cbnu-dom",
+    "storage_bucket": "cbnu-dom.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088645974627:android:81f2e84437a4b7335ec656",
+        "android_client_info": {
+          "package_name": "com.example.untitled"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARdNbxTZ3wFcew6Ptyy07mRSfAjKcsxV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
