@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/bottom_navigation_tab.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -99,7 +100,7 @@ class _AnswerChecklistPageState extends State<AnswerChecklistPage> {
                                   });
                                 } else {
                                   print(answers);
-                                  //Navigator.push(context, MaterialPageRoute(builder: (context) => TabView(navigatedIndex: 1)));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNavigationTab(navigatedIndex: 1)));
                                 }
                               },
                               child: Text('다음 ${_currentPage + 1}/$_totalPages', style: mediumWhite14),

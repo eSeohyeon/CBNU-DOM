@@ -63,7 +63,7 @@ class _FreePostTabState extends State<FreePostTab> {
           ),
           Positioned(
               left: 139.w,
-              bottom: 60.h,
+              bottom: 80.h,
               child: ElevatedButton.icon(
                 onPressed: () { print('write button clicked'); },
                 icon: Icon(Icons.add, color: black, size: 20),

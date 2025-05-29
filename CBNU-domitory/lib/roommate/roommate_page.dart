@@ -5,6 +5,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'package:untitled/models/user.dart';
 import 'package:untitled/models/checklist_map.dart';
+import 'package:untitled/roommate/checklist_page.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:untitled/roommate/roommate_detail_modal.dart';
@@ -66,7 +67,7 @@ class _RoommatePageState extends State<RoommatePage> {
                       Text('추천 룸메이트가\n마음에 들지 않는다면?', style: boldBlack16, textAlign: TextAlign.center),
                       SizedBox(height: 10.h),
                       SizedBox(
-                        width: 140.w,
+                        width: 150.w,
                         child: ElevatedButton(
                           child: Text('직접 검색하기', style: mediumBlack14.copyWith(color: grey_button)),
                           style: ElevatedButton.styleFrom(
@@ -81,7 +82,7 @@ class _RoommatePageState extends State<RoommatePage> {
                       ),
                       SizedBox(height: 4.h),
                       SizedBox(
-                        width: 140.w,
+                        width: 150.w,
                         child: ElevatedButton(
                           child: Text('체크리스트 수정하기', style: mediumBlack14),
                           style: ElevatedButton.styleFrom(
@@ -92,7 +93,7 @@ class _RoommatePageState extends State<RoommatePage> {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0))
                           ),
                           onPressed: () {
-                            //Navigator.push(context, MaterialPageRoute(builder: (context) => AnswerChecklistPage()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => AnswerChecklistPage()));
                           },
                         ),
                       )

@@ -106,6 +106,14 @@ final mediumWhite14 = TextStyle(
     fontWeight: FontWeight.w500
 );
 
+final mediumWhite16 = TextStyle(
+    fontSize: 16.sp,
+    color: white,
+//height: 1.5,
+    fontFamily: 'pretendard-medium',
+    fontWeight: FontWeight.w500
+);
+
 final btnBlackRound30 = TextButton.styleFrom( // black, round30
     backgroundColor: black,
     shape: RoundedRectangleBorder(

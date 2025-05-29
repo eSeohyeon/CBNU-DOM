@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'auth_gate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:untitled/start/start_page.dart';
+
 void main() async {
   // Flutter 엔진과 위젯 바인딩 초기화 보장
   WidgetsFlutterBinding.ensureInitialized();
