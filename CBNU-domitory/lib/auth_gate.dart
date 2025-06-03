@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'home_page.dart';
-import 'login_or_register_page.dart';
+
+import 'bottom_navigation_tab.dart';
+import 'package:untitled/start/start_page.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -20,12 +21,12 @@ class AuthGate extends StatelessWidget {
           // 사용자가 로그인한 경우
           if (snapshot.hasData) {
             // HomePage 표시
-            return HomePage();
+            return BottomNavigationTab(navigatedIndex: 0);
           }
           // 사용자가 로그인하지 않은 경우
           else {
             // LoginPage 또는 RegisterPage를 선택하는 페이지 표시
-            return const LoginOrRegisterPage();
+            return StartPage();
           }
         },
       ),
