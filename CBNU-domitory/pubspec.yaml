@@ -36,6 +36,10 @@ dependencies:
   carousel_slider: ^5.0.0
   modal_bottom_sheet: ^3.0.0
   group_button: ^5.3.4
+  fluttertoast: ^8.2.12
+  intl: ^0.20.2
+  url_launcher: ^6.3.2
+
 
 
 dev_dependencies:

@@ -10,6 +10,7 @@ import 'package:untitled/models/notice.dart';
 import 'package:untitled/home/menu_detail_page.dart';
 import 'package:untitled/home/notice_detail_page.dart';
 import 'package:untitled/home/notice_list_page.dart';
+import 'package:untitled/home/dorm_score_ranking.dart';
 
 enum MealType { breakfast, lunch, dinner }
 
@@ -66,10 +67,10 @@ class _HomePageState extends State<HomePage> {
   // 테스트용
   final Notice _notice1 = Notice(title: '[양성재, 양진재] 조경 작업 안내 (시비,전정 및 수목 병충해 방제 작업 등)', writer: '운영사(주)체스넛1', date: '2025/05/09', link: 'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20039&mod=view&no=454178657&listCnt=20');
   final Notice _notice2 = Notice(title: '[양성재] 지선관 LED 전등 교체 공사 안내 (일정 변경)', writer: '운영사(주)체스넛1', date: '2025/05/07', link: 'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20039&mod=view&no=454178656&listCnt=20');
-  final Post _post1 = Post(title: '취업 꿀팁', writer: '서울사이버대학', date: '05/09', time: '03:34', contents: '서울사이버대학에 다니고 나의 성공시대 시작됐다.', likeCount: 222);
-  final Post _post2 = Post(title: '사람들이지쳤잖아힘들잖아그만해야하잖아이러면안되는거잖아그만해야하잖아맞잖아지쳤잖아힘들잖아괴롭잖아숨막히잖아정신나갈거같잖아피로하잖아겁에질렸잖아몽롱하잖아고문당하는거같잖아불안하잖아죽을거같잖아고통스럽잖아미칠거같잖아숨이막히잖아', writer: '부족한사람', date: '05/07', time: '12:34', contents: '사람들이지쳤잖아힘들잖아그만해야하잖아이러면안되는거잖아그만해야하잖아맞잖아지쳤잖아힘들잖아괴롭잖아숨막히잖아정신나갈거같잖아피로하잖아겁에질렸잖아몽롱하잖아고문당하는거같잖아불안하잖아죽을거같잖아고통스럽잖아미칠거같잖아숨이막히잖아폐가아프잖아그만해야하잖아정신나갈거같잖아루나틱하잖아토할거같잖아구역질이나올거같잖아속이뒤트는거같잖아비틀어질거같잖아휘청거릴거샅잖아어지럽잖아배사아프잖아위가꼬이는거같잖아장이꼬이는거같잖아온몸에쥐난거같잖아심장이아프잖아다들지쳤잖아사람들이지쳤잖아힘들잖아그만해야하잖아이러면안되는거잖아그만해야하잖아맞잖아지쳤잖아힘들잖아괴롭잖아숨막히잖아정신나갈거', likeCount: 55);
-  final GroupBuyPost _groupBuyPost1 = GroupBuyPost(basePost: Post(title: '싱싱한 국내산 흙당근 제주구좌당근 2kg', writer: '멋진농부', date: '2025/05/11', time: '20:59', contents: '당근 같이 먹을 사람~', likeCount: 2), itemUrl: 'https://item.gmarket.co.kr/Item?goodscode=3293466711&buyboxtype=ad', itemImagePath: 'assets/img_item.png', itemPrice: 11130, maxParticipants: 4, currentParticipants: 3);
-  final GroupBuyPost _groupBuyPost2 = GroupBuyPost(basePost: Post(title: '싱싱한 국내산 흙당근 제주구좌당근 2kg', writer: '멋진농부', date: '2025/05/11', time: '20:59', contents: '당근 같이 먹을 사람~', likeCount: 2), itemUrl: 'https://item.gmarket.co.kr/Item?goodscode=3293466711&buyboxtype=ad', itemImagePath: 'assets/img_item.png', itemPrice: 22040, maxParticipants: 8, currentParticipants: 7);
+  final Post _post1 = Post(postId: 00001, title: '취업 꿀팁', writer: '서울사이버대학', date: '05/09', time: '03:34', contents: '서울사이버대학에 다니고 나의 성공시대 시작됐다.');
+  final Post _post2 = Post(postId: 00002, title: '사람들이지쳤잖아힘들잖아그만해야하잖아이러면안되는거잖아그만해야하잖아맞잖아지쳤잖아힘들잖아괴롭잖아숨막히잖아정신나갈거같잖아피로하잖아겁에질렸잖아몽롱하잖아고문당하는거같잖아불안하잖아죽을거같잖아고통스럽잖아미칠거같잖아숨이막히잖아', writer: '부족한사람', date: '05/07', time: '12:34', contents: '사람들이지쳤잖아힘들잖아그만해야하잖아이러면안되는거잖아그만해야하잖아맞잖아지쳤잖아힘들잖아괴롭잖아숨막히잖아정신나갈거같잖아피로하잖아겁에질렸잖아몽롱하잖아고문당하는거같잖아불안하잖아죽을거같잖아고통스럽잖아미칠거같잖아숨이막히잖아폐가아프잖아그만해야하잖아정신나갈거같잖아루나틱하잖아토할거같잖아구역질이나올거같잖아속이뒤트는거같잖아비틀어질거같잖아휘청거릴거샅잖아어지럽잖아배사아프잖아위가꼬이는거같잖아장이꼬이는거같잖아온몸에쥐난거같잖아심장이아프잖아다들지쳤잖아사람들이지쳤잖아힘들잖아그만해야하잖아이러면안되는거잖아그만해야하잖아맞잖아지쳤잖아힘들잖아괴롭잖아숨막히잖아정신나갈거');
+  final GroupBuyPost _groupBuyPost1 = GroupBuyPost(basePost: Post(postId: 10001,title: '싱싱한 국내산 흙당근 제주구좌당근 2kg', writer: '멋진농부', date: '2025/05/11', time: '20:59', contents: '당근 같이 먹을 사람~'), itemUrl: 'https://item.gmarket.co.kr/Item?goodscode=3293466711&buyboxtype=ad', itemImagePath: 'assets/img_item.png', itemPrice: 11130, maxParticipants: 4, currentParticipants: 3);
+  final GroupBuyPost _groupBuyPost2 = GroupBuyPost(basePost: Post(postId: 10002, title: '싱싱한 국내산 흙당근 제주구좌당근 2kg', writer: '멋진농부', date: '2025/05/11', time: '20:59', contents: '당근 같이 먹을 사람~'), itemUrl: 'https://item.gmarket.co.kr/Item?goodscode=3293466711&buyboxtype=ad', itemImagePath: 'assets/img_item.png', itemPrice: 22040, maxParticipants: 8, currentParticipants: 7);
 
   @override
   Widget build(BuildContext context) {
@@ -104,8 +105,9 @@ class _HomePageState extends State<HomePage> {
                 ),
                 titleSpacing: 0,
                 title: Text(_selectedDorm, style: boldBlack18),
-                actions: [ // 임시로 로그아웃 버튼
-                  IconButton(icon: Icon(Icons.account_circle_rounded, color: black, size: 32), onPressed: signOut)
+                actions: [
+                  //IconButton(icon: Icon(Icons.account_circle_rounded, color: black, size: 32), onPressed: signOut)
+                  IconButton(icon: Icon(Icons.account_circle_rounded, color: black, size: 32), onPressed: () { Navigator.push(context, MaterialPageRoute(builder: (context) => DormScoreRanking())); })
                 ],
                 actionsPadding: EdgeInsets.only(right: 8),
               ),
@@ -438,7 +440,6 @@ class _BestPostCardState extends State<BestPostCard> {
                       Spacer(),
                       Icon(Icons.thumb_up_outlined, color: Colors.red, size: 18),
                       SizedBox(width: 4.w),
-                      Text(widget.bestPost.likeCount.toString(), style: mediumGrey13.copyWith(color: Colors.red))
                     ]
                 )
               ]

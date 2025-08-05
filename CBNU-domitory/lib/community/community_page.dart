@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/community/free_create_page.dart';
+import 'package:untitled/community/group_buy_create_page.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,7 +21,7 @@ class _CommunityPageState extends State<CommunityPage> with TickerProviderStateM
 
   void initState(){
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
   }
 
   void dispose(){
@@ -38,7 +40,7 @@ class _CommunityPageState extends State<CommunityPage> with TickerProviderStateM
               child: TabBar(
                   controller: _tabController,
                   tabAlignment: TabAlignment.start,
-                  labelStyle: boldBlack18,
+                  labelStyle: boldBlack16,
                   unselectedLabelColor: grey,
                   indicatorColor: black,
                   isScrollable: true,
@@ -53,10 +55,18 @@ class _CommunityPageState extends State<CommunityPage> with TickerProviderStateM
               ),
             ),
             leading: SizedBox.shrink(),
-            leadingWidth: 4.w,
+            leadingWidth: 0,
             actions: [
-              IconButton(icon: Icon(Icons.search, color: black, size: 24), onPressed: () { print("Search Button is Cliked!"); },)
-            ]
+              IconButton(icon: Icon(Icons.edit, color: black, size: 24), onPressed: () {
+                if(_tabController.index==0){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => CreateFreePost()));
+                } else {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => GroupBuyCreatePage()));
+                }
+              },),
+              IconButton(icon: Icon(Icons.search, color: black, size: 24), onPressed: () { print("Search Button is Cliked!"); },),
+            ],
+          actionsPadding: EdgeInsets.only(right: 4.w),
         ),
         body: TabBarView(
             controller: _tabController,

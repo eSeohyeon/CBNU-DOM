@@ -10,6 +10,7 @@ const grey_button_greyBG = Color(0xFFD8D8D8);
 const grey_seperating_line = Color(0xFFDADADA);
 
 const black = Color(0xFF303030);
+const black40 = Color(0x66303030);
 const black_semi = Color(0xFF505050);
 
 const grey_button = Color(0xFFE6E6E6);

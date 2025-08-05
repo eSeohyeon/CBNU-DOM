@@ -10,7 +10,7 @@ Widget checklistGroupButton(bool selected, String value) {
       decoration: BoxDecoration(
           color: selected ? black : white,
           borderRadius: BorderRadius.circular(10.0),
-          border: Border.all(color: black, width: 1.0)
+          border: Border.all(color: selected ? black : grey_outline_inputtext, width: 1.0)
       ),
       child: Text(value, style: selected ? mediumWhite14 : mediumBlack14)
   );
