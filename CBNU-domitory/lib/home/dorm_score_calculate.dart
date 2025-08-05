@@ -115,76 +115,85 @@ class _DormScoreCalculateState extends State<DormScoreCalculate> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("${_calculatedDormScore}", style: boldBlack28.copyWith(fontSize: 48.sp)),
-                Text('점', style: boldBlack20.copyWith(fontSize: 32.sp))
-              ]
-            ),
-            SizedBox(height: 12.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                    children: [
-                      Text('학점', style: mediumGrey14),
-                      Text("${_gpaScore}", style: mediumBlack18)
-                    ]
+            SizedBox(height: 16.h),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0)),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("${_calculatedDormScore}", style: boldBlack28.copyWith(fontSize: 48.sp)),
+                        Text('점', style: boldBlack20.copyWith(fontSize: 32.sp))
+                      ]
+                    ),
+                    SizedBox(height: 12.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                            children: [
+                              Text('학점', style: mediumGrey14),
+                              Text("${_gpaScore.toStringAsFixed(1)}", style: mediumBlack18)
+                            ]
+                        ),
+                        SizedBox(width: 28.w),
+                        Column(
+                            children: [
+                              Text('이수학기', style: mediumGrey14),
+                              Text("${_semesterScore}", style: mediumBlack18)
+                            ]
+                        ),
+                        SizedBox(width: 28.w),
+                        Column(
+                            children: [
+                              Text('입주경력', style: mediumGrey14),
+                              Text("${_residenceScore}", style: mediumBlack18)
+                            ]
+                        ),
+                        SizedBox(width: 28.w),
+                        Column(
+                            children: [
+                              Text('상벌점', style: mediumGrey14),
+                              Text("${_penaltyScore}", style: mediumBlack18)
+                            ]
+                        ),
+                        SizedBox(width: 28.w),
+                      ]
+                    ),
+                  ],
                 ),
-                SizedBox(width: 28.w),
-                Column(
-                    children: [
-                      Text('이수학기', style: mediumGrey14),
-                      Text("${_semesterScore}", style: mediumBlack18)
-                    ]
-                ),
-                SizedBox(width: 28.w),
-                Column(
-                    children: [
-                      Text('입주경력', style: mediumGrey14),
-                      Text("${_residenceScore}", style: mediumBlack18)
-                    ]
-                ),
-                SizedBox(width: 28.w),
-                Column(
-                    children: [
-                      Text('상벌점', style: mediumGrey14),
-                      Text("${_penaltyScore}", style: mediumBlack18)
-                    ]
-                ),
-                SizedBox(width: 28.w),
-              ]
-            ),
-            SizedBox(height: 28.h),
-            Container(
-                width: double.infinity,
-                height: 1.h,
-                color: grey_seperating_line
+              ),
             ),
             SizedBox(height: 32.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('직전학기 학점', style: mediumBlack16),
-                  SizedBox(height: 10.h),
-                  SizedBox(width: 100.w, child: CustomTextField(controller: _lastGpaController, name: '예)3.5', inputType: TextInputType.visiblePassword, maxLines: 1, maxLength:4)),
-                  SizedBox(height: 20.h),
-                  Text('이수학기', style: mediumBlack16),
-                  SizedBox(height: 10.h),
-                  SizedBox(width: 120.w, child: CustomTextField(controller: _completedSemesterController, name: '예)3', inputType: TextInputType.visiblePassword, maxLines: 1, maxLength:1, suffix: '학기')),
-                  SizedBox(height: 20.h),
-                  Text('입주경력', style: mediumBlack16),
-                  SizedBox(height: 10.h),
-                  SizedBox(width: 130.w, child: CustomTextField(controller: _residenceController, name: '예)4', inputType: TextInputType.visiblePassword, maxLines: 1, maxLength:2, suffix: '개월')),
-                  SizedBox(height: 20.h),
-                  Text('상벌점', style: mediumBlack16),
-                  SizedBox(height: 10.h),
-                  SizedBox(width: 180.w, child: CustomTextField(controller: _penaltyController, name: '누적 상벌점의 총합을 입력하세요.', inputType: TextInputType.visiblePassword, maxLines: 1, maxLength:2)),
-                ]
-              )
+            SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('직전학기 학점', style: mediumBlack16),
+                    SizedBox(height: 10.h),
+                    SizedBox(width: 100.w, child: CustomTextField(controller: _lastGpaController, name: '예)3.5', inputType: TextInputType.visiblePassword, maxLines: 1, maxLength:4)),
+                    SizedBox(height: 20.h),
+                    Text('이수학기', style: mediumBlack16),
+                    SizedBox(height: 10.h),
+                    SizedBox(width: 120.w, child: CustomTextField(controller: _completedSemesterController, name: '예)3', inputType: TextInputType.visiblePassword, maxLines: 1, maxLength:1, suffix: '학기')),
+                    SizedBox(height: 20.h),
+                    Text('입주경력', style: mediumBlack16),
+                    SizedBox(height: 10.h),
+                    SizedBox(width: 130.w, child: CustomTextField(controller: _residenceController, name: '예)4', inputType: TextInputType.visiblePassword, maxLines: 1, maxLength:2, suffix: '개월')),
+                    SizedBox(height: 20.h),
+                    Text('상벌점', style: mediumBlack16),
+                    SizedBox(height: 10.h),
+                    SizedBox(width: 200.w, child: CustomTextField(controller: _penaltyController, name: '누적 상벌점의 총합을 입력하세요.', inputType: TextInputType.visiblePassword, maxLines: 1, maxLength:2)),
+                  ]
+                )
+              ),
             )
           ]
         ),
