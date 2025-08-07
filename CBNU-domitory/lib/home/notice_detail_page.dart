@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:untitled/themes/colors.dart';
+import 'package:untitled/themes/styles.dart';
 
 
 class NoticeDetailPage extends StatefulWidget {
@@ -61,13 +64,51 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_title)),
+      backgroundColor: white,
+      appBar: AppBar(
+        backgroundColor: white,
+        surfaceTintColor: white,
+        leading: IconButton(
+          icon: const Icon(Icons.close_rounded, color: black, size: 24),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        )
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: HtmlWidget(_content!, textStyle: const TextStyle(fontSize: 14))
-      ),
+          : SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(_title, style: mediumBlack16),
+                      SizedBox(height: 8.h),
+                      Text('$_writer | $_date', style: mediumGrey14)
+                    ],
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                Container(
+                    width: double.infinity,
+                    height: 1.h,
+                    color: grey_seperating_line
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 16.h, bottom: 24.h),
+                      child: HtmlWidget(_content!, textStyle: const TextStyle(fontSize: 14)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
     );
   }
 }

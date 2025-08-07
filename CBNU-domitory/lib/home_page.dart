@@ -1,13 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/models/post.dart';
 import 'package:untitled/models/notice.dart';
-import 'package:untitled/models/weather.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
