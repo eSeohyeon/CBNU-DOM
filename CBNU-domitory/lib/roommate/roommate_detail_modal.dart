@@ -7,7 +7,6 @@ import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 
 
-
 class RoommateDetailModal extends StatefulWidget {
   User user;
   RoommateDetailModal({super.key, required this.user});

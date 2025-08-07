@@ -207,7 +207,7 @@ class _DormScoreCalculateState extends State<DormScoreCalculate> {
                 child: ElevatedButton(
                   onPressed: () {
                     // 저장 로직
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DormScoreRanking()));
+                    Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: black, padding: EdgeInsets.only(top: 6.h, bottom: 6.h), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)), elevation: 2,),
                   child: Text('저장하기', style: mediumWhite16),

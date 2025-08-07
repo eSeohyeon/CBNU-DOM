@@ -1,61 +1,50 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/models/post.dart';
 import 'package:untitled/models/notice.dart';
+import 'package:untitled/models/weather.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'package:html/parser.dart' as parser;
+import 'package:untitled/home/weather_service.dart';
+import 'package:shimmer/shimmer.dart';
 
 import 'package:untitled/home/menu_detail_page.dart';
 import 'package:untitled/home/notice_detail_page.dart';
 import 'package:untitled/home/notice_list_page.dart';
 import 'package:untitled/home/dorm_score_ranking.dart';
 
-enum MealType { breakfast, lunch, dinner }
 
-class MealTime {
-  final String start;
-  final String end;
-  MealTime({required this.start, required this.end});
-}
-
-final Map<MealType, String> mealNames = {
-  MealType.breakfast: '아침',
-  MealType.lunch: '점심',
-  MealType.dinner: '저녁',
-};
-
-final Map<MealType, MealTime> weekdayTimes = {
-  MealType.breakfast: MealTime(start: '07:20', end: '09:00'),
-  MealType.lunch: MealTime(start: '11:30', end: '13:30'),
-  MealType.dinner: MealTime(start: '17:30', end: '19:10'),
-};
-
-final Map<MealType, MealTime> weekendTimes = {
-  MealType.breakfast: MealTime(start: '08:00', end: '09:00'),
-  MealType.lunch: MealTime(start: '12:00', end: '13:00'),
-  MealType.dinner: MealTime(start: '17:30', end: '19:00'),
-};
-
-bool isWeekend(){
-  final now = DateTime.now();
-  return now.weekday == DateTime.saturday || now.weekday == DateTime.sunday;
-}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _showRoomMateAlert = true;
-  bool _showGroupBuyAlert = true;
   String _selectedDorm = '본관';
+  String _currentDate = '';
   final List<String> dorms = ['본관', '양성재', '양진재'];
+  final List<String> circleButtons = ['챗봇', '세탁카드', '환산점수', '공구쪽지', '룸메쪽지'];
+  final List<Image> circleButtonImages = [
+    Image.asset('assets/chatbot.png'),
+    Image.asset('assets/washer.png'),
+    Image.asset('assets/ranking.png'),
+    Image.asset('assets/shopping_bags.png'),
+    Image.asset('assets/two_speech_bubles.png'),
+  ];
+  List<String> _todayMenu = [];
+  WeatherData? _currentWeather;
+  bool _isMealLoading = false;
+  bool _isWeatherLoading = false;
 
   final User? user = FirebaseAuth.instance.currentUser;
 
@@ -63,6 +52,78 @@ class _HomePageState extends State<HomePage> {
     await FirebaseAuth.instance.signOut();
     // 로그아웃 성공 시 AuthGate가 자동으로 LoginPage로 이동시킴
   }
+
+  String getCurrentDate() {
+    final now = DateTime.now();
+    final formatter = DateFormat('yyyy-MM-dd');
+    return formatter.format(now);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _currentDate = getCurrentDate();
+    fetchTodayMenu();
+    fetchWeatherData();
+  }
+
+  Future<void> fetchWeatherData() async {
+    setState(() {
+      _isWeatherLoading = true;
+    });
+    if(_selectedDorm == '본관'){
+      _currentWeather = await WeatherService.fetchWeather(68, 107);
+    } else {
+      _currentWeather = await WeatherService.fetchWeather(68, 106);
+    }
+
+     setState(() {
+       _isWeatherLoading = false;
+     });
+  }
+
+  Future<void> fetchTodayMenu() async {
+    setState(() {
+      _isMealLoading = true;
+    });
+    String url = '';
+    if(_selectedDorm == '본관'){
+      url = 'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20041&cur_day=$_currentDate&type=1';
+    } else if (_selectedDorm == '양성재') {
+      url = 'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20041&cur_day=$_currentDate&type=2';
+    } else if (_selectedDorm == '양진재') {
+      url = 'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20041&cur_day=$_currentDate&type=3';
+    }
+
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode != 200) {
+      throw Exception('식단 데이터 불러오기 실패'); // 이런 거 뜨면 새로고침할 수 있게 해야함 (버튼이나 스크롤)
+    }
+    final document = parser.parse(response.body);
+    final tbody = document.querySelector('#contentBody > table.contTable_c.m_table_c.margin_t_30 > tbody');
+    if (tbody == null) {
+      throw Exception('식단 데이터 없음');
+    }
+    final rows = tbody.querySelectorAll('tr');
+    _todayMenu.clear();
+
+    for (var row in rows) {
+      final rowId = row.id;
+      if (rowId != _currentDate) continue;
+
+      final cells = row.querySelectorAll('td');
+      if (cells.length < 4) continue;
+
+      _todayMenu.add(cells[1].innerHtml.replaceAll('<br>', '\n').trim());
+      _todayMenu.add(cells[2].innerHtml.replaceAll('<br>', '\n').trim());
+      _todayMenu.add(cells[3].innerHtml.replaceAll('<br>', '\n').trim());
+    }
+
+    setState(() {
+      _isMealLoading = false;
+    });
+  }
+
 
   // 테스트용
   final Notice _notice1 = Notice(title: '[양성재, 양진재] 조경 작업 안내 (시비,전정 및 수목 병충해 방제 작업 등)', writer: '운영사(주)체스넛1', date: '2025/05/09', link: 'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20039&mod=view&no=454178657&listCnt=20');
@@ -74,263 +135,267 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-
     return SafeArea(
       top: false,
-      child: Stack(
-          children: [
-            Scaffold(
-              backgroundColor: background,
-              appBar: AppBar(
-                backgroundColor: background,
-                surfaceTintColor: background,
-                leading: PopupMenuButton<String>(
-                  icon: Icon(Icons.keyboard_arrow_down_rounded, color: black, size: 24),
-                  onSelected: (String dorm) {
-                    setState(() {
-                      _selectedDorm = dorm;
-                    });
-                  },
-                  itemBuilder: (BuildContext context){
-                    return dorms.map((String dorm) {
-                      return PopupMenuItem<String>(
-                          value: dorm,
-                          child: Text(dorm, style: mediumBlack16)
-                      );
-                    }).toList();
-                  },
-                  offset: Offset(0, 56),
-                ),
-                titleSpacing: 0,
-                title: Text(_selectedDorm, style: boldBlack18),
-                actions: [
-                  //IconButton(icon: Icon(Icons.account_circle_rounded, color: black, size: 32), onPressed: signOut)
-                  IconButton(icon: Icon(Icons.account_circle_rounded, color: black, size: 32), onPressed: () { Navigator.push(context, MaterialPageRoute(builder: (context) => DormScoreRanking())); })
-                ],
-                actionsPadding: EdgeInsets.only(right: 8),
-              ),
-              body: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 10.w, right: 10.w, top: 2.h),
-                  child: Column( // 본문 내용
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if(_showRoomMateAlert)
-                        Card( // 대화 중인 룸메 카드 알림
-                            color: white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0)
-                            ),
-                            elevation: 0,
-                            child: Padding(
-                              padding: EdgeInsets.only(left:4.w),
-                              child: Row(
-                                children: [
-                                  Image.asset('assets/roommate_cardAlert.png'),
-                                  SizedBox(width: 4.w),
-                                  Expanded(child: Text('지금 대화 중인 룸메가 있어요!', style: mediumBlack16)),
-                                  IconButton(icon: Icon(Icons.close, color: grey_outline_inputtext, size: 20),  onPressed: () { setState(() {
-                                    _showRoomMateAlert = false;
-                                  });})
-                                ],
-                              ),
-                            )
-                        ),
-                      if(_showGroupBuyAlert)
-                        Card( // 참여 중인 공동구매 있음 카드 알림
-                            color: white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0)
-                            ),
-                            elevation: 0,
-                            child: Padding(
-                              padding: EdgeInsets.only(left:10.w),
-                              child: Row(
-                                children: [
-                                  Image.asset('assets/groupBuy_cardAlert.png'),
-                                  SizedBox(width: 8.w),
-                                  Expanded(child: Text('지금 참여 중인 공동구매가 있어요!', style: mediumBlack16)),
-                                  IconButton(icon: Icon(Icons.close, color: grey_outline_inputtext, size: 20),  onPressed: () {
-                                    _showGroupBuyAlert = false;
-                                  })
-                                ],
-                              ),
-                            )
-                        ),
-                      Card( // 세탁 카드 잔액 확인 카드
-                          color: white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0), side: BorderSide(color: grey_seperating_line, width: 1.0)
-                          ),
-                          elevation: 0,
-                          child: InkWell(
-                            splashColor: Colors.white70,
-                            borderRadius: BorderRadius.circular(10.0),
-                            onTap: () { print('LaundryCard tapped@'); },
-                            child: Padding(
-                                padding: EdgeInsets.only(left: 16.w, right: 14.w, top: 14.h, bottom: 14.h),
-                                child: Row(
-                                    children: [
-                                      Expanded(child: Text('세탁카드 잔액 확인', style: mediumBlack16)),
-                                      Icon(Icons.chevron_right_rounded, color: black, size: 24)
-                                    ]
-                                )
-                            ),
-                          )
-                      ),
-                      SizedBox(height: 42.h),
-                      Column( // 식단 메뉴 타이틀
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                SizedBox(width: 12.w),
-                                Expanded(child: Text('오늘의 식단', style: boldBlack18)),
-                                InkWell(child: Text('더 보기 >', style: mediumGrey14), onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => MealDetailPage())
-                                  );
-                                }),
-                                SizedBox(width: 10.w)
-                              ],
-                            ),
-                            SizedBox(height: 6.h),
-                            MealCard(selectedDormType: _selectedDorm) // 식단 메뉴 카드
-                          ]
-                      ),
-                      SizedBox(height: 42.h),
-                      Column( // 최신공지사항 타이틀
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                                children: [
-                                  SizedBox(width: 12.w),
-                                  Expanded(child: Text('공지사항', style: boldBlack18)),
-                                  InkWell(child: Text('더 보기 >', style: mediumGrey14), onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => NoticeListPage())
-                                    );
-                                  }),
-                                  SizedBox(width: 10.w)
-                                ]
-                            ),
-                            SizedBox(height: 6.h),
-                            NoticeCard(notice1: _notice1, notice2: _notice2) // 공지사항 카드
-                          ]
-                      ),
-                      SizedBox(height: 42.h),
-                      Column( // 실시간 인기글 타이틀
-                          mainAxisAlignment: MainAxisAlignment.center,
+      child: Scaffold(
+        backgroundColor: background,
+        appBar: AppBar(
+          backgroundColor: background,
+          surfaceTintColor: background,
+          leading: PopupMenuButton<String>(
+            icon: Icon(Icons.keyboard_arrow_down_rounded, color: black, size: 24),
+            onSelected: (String dorm) {
+              setState(() {
+                _selectedDorm = dorm;
+                fetchTodayMenu();
+                fetchWeatherData();
+              });
+            },
+            itemBuilder: (BuildContext context){
+              return dorms.map((String dorm) {
+                return PopupMenuItem<String>(
+                    value: dorm,
+                    child: Text(dorm, style: mediumBlack16)
+                );
+              }).toList();
+            },
+            offset: Offset(0, 56),
+          ),
+          titleSpacing: 0,
+          title: Text(_selectedDorm, style: boldBlack18),
+          actions: [
+            IconButton(icon: Icon(Icons.account_circle_rounded, color: black, size: 32), onPressed: signOut)
+          ],
+          actionsPadding: EdgeInsets.only(right: 8),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+            child: Column( // 본문 내용
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 10.h),
+                _isWeatherLoading ?
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.w),
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.grey.shade300,
+                        highlightColor: Colors.grey.shade100,
+                        child: Container(
+                          width: double.infinity,
+                          height: 90.h,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.grey.shade300),
+                        ))
+                    ) :
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.w),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: EdgeInsets.only(left: 12.w),
-                              child: Align(alignment: AlignmentDirectional.centerStart, child: Text('실시간 인기 글', style: boldBlack18)),
+                            Text(_currentWeather!.description, style: boldBlack16),
+                            Text('${_currentWeather!.temperature.toStringAsFixed(0)}°C', style: boldBlack24),
+                            Text('체감온도 ${_currentWeather!.feelsLike.toStringAsFixed(0)}°C', style: mediumGrey14),
+                          ]
+                        )
+                      ),
+                    ),
+                SizedBox(height: 16.h),
+                SingleChildScrollView( // CircleButtons
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: List.generate(circleButtons.length, (index) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.w),
+                        child: Column(
+                          children: [
+                            InkWell(
+                              borderRadius: BorderRadius.circular(30.0),
+                              onTap: () {
+                                if(index == 0){
+                                  print('chatbot');
+                                } else if(index==1){
+                                  print('세탁카드');
+                                } else if(index==2){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => DormScoreRanking()));
+                                } else if(index==3){
+                                  print('공구쪽지');
+                                } else if(index==4){
+                                  print('룸메쪽지');
+                                } 
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Container(
+                                  width: 42.w,
+                                  height: 42.h,
+                                  padding: EdgeInsets.all(12.0),
+                                  decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(25.0)),
+                                  child: circleButtonImages[index]
+                                ),
+                              )
                             ),
-                            SizedBox(height: 6.h),
-                            Column(
-                                children: [
-                                  BestPostCard(bestPost: _post1),
-                                  SizedBox(height: 2.h),
-                                  BestPostCard(bestPost: _post2)
-                                ]
-                            )
+                            SizedBox(height: 4.h),
+                            Text(circleButtons[index], style: mediumBlack14)
+                          ]
+                        )
+                      );
+                    })
+                  )
+                ),
+                SizedBox(height: 48.h),
+                Column( // 식단 메뉴 타이틀
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        children: [
+                          SizedBox(width: 12.w),
+                          Expanded(child: Text('오늘의 식단', style: boldBlack18)),
+                          InkWell(child: Text('더 보기 >', style: mediumGrey14), onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => MealDetailPage())
+                            );
+                          }),
+                          SizedBox(width: 10.w)
+                        ],
+                      ),
+                      SizedBox(height: 10.h),
+                      _isMealLoading ?
+                      Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10.w),
+                          child: Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Container(
+                                width: double.infinity,
+                                height: 300.h,
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.grey.shade300),
+                              ))
+                      )
+                      : CarouselSlider.builder(
+                          itemCount: _todayMenu.length,
+                          itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => MealCard(timeIndex: itemIndex, menu: _todayMenu[itemIndex]),
+                          options: CarouselOptions(
+                              viewportFraction: 0.88,
+                              height: 300.h,
+                              initialPage: 1,
+                              enableInfiniteScroll: true,
+                              autoPlay: false,
+                              enlargeCenterPage: true,
+                              scrollDirection: Axis.horizontal,
+                              enlargeFactor: 0.15
+                          )
+                      ), // 식단 메뉴 카드
+                    ]
+                ),
+                SizedBox(height: 42.h),
+                Column( // 최신공지사항 타이틀
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                          children: [
+                            SizedBox(width: 12.w),
+                            Expanded(child: Text('공지사항', style: boldBlack18)),
+                            InkWell(child: Text('더 보기 >', style: mediumGrey14), onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => NoticeListPage())
+                              );
+                            }),
+                            SizedBox(width: 10.w)
                           ]
                       ),
-                      SizedBox(height: 42.h),
+                      SizedBox(height: 6.h),
+                      NoticeCard(notice1: _notice1, notice2: _notice2) // 공지사항 카드
+                    ]
+                ),
+                SizedBox(height: 42.h),
+                Column( // 실시간 인기글 타이틀
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 12.w),
+                        child: Align(alignment: AlignmentDirectional.centerStart, child: Text('실시간 인기 글', style: boldBlack18)),
+                      ),
+                      SizedBox(height: 6.h),
                       Column(
                           children: [
-                            Padding(
-                              padding: EdgeInsets.only(left: 12.w),
-                              child: Align(alignment: AlignmentDirectional.centerStart, child: Text('너만 오면 되는 공동구매', style: boldBlack18)),
-                            ),
-                            SizedBox(height: 6.h),
-                            GroupBuyPostCard(groupBuyPost: _groupBuyPost1),
+                            BestPostCard(bestPost: _post1),
                             SizedBox(height: 2.h),
-                            GroupBuyPostCard(groupBuyPost: _groupBuyPost2)
+                            BestPostCard(bestPost: _post2)
                           ]
-                      ),
-                      SizedBox(height: 150.h)
-                    ],
-                  ),
+                      )
+                    ]
                 ),
-              ),
+                SizedBox(height: 42.h),
+                Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 12.w),
+                        child: Align(alignment: AlignmentDirectional.centerStart, child: Text('너만 오면 되는 공동구매', style: boldBlack18)),
+                      ),
+                      SizedBox(height: 6.h),
+                      GroupBuyPostCard(groupBuyPost: _groupBuyPost1),
+                      SizedBox(height: 2.h),
+                      GroupBuyPostCard(groupBuyPost: _groupBuyPost2)
+                    ]
+                ),
+                SizedBox(height: 150.h)
+              ],
             ),
-            Positioned(
-                left: 145.w,
-                bottom: 60.h,
-                child: ElevatedButton.icon(
-                  onPressed: () { print('chatbot button clicked'); },
-                  icon: Image.asset('assets/chatbot.png'),
-                  label: Text('챗봇', style: mediumBlack16),
-                  style: ElevatedButton.styleFrom(overlayColor: grey_8, backgroundColor: white, side: BorderSide(color: grey_seperating_line, width: 1.0), padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 9.h), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)), elevation: 2, ),
-                )
-            )
-          ]
+          ),
+        ),
       ),
     );
   }
 }
 
 
-
-
-
-class MealCard extends StatefulWidget {
-  final String selectedDormType;
-  const MealCard({super.key, required this.selectedDormType});
-
-  @override
-  State<MealCard> createState() => _MealCardState();
-}
-
-class _MealCardState extends State<MealCard> {
-  MealType _selectedMeal = MealType.breakfast;
-
-  void _switchMeal(bool isNext){
-    setState(() {
-      final nextIndex = (_selectedMeal.index + (isNext ? 1:-1)) % 3;
-      _selectedMeal = MealType.values[nextIndex < 0 ? 2:nextIndex];
-    });
-  }
+class MealCard extends StatelessWidget {
+  final String menu;
+  final int timeIndex;
+  const MealCard({super.key, required this.timeIndex, required this.menu});
 
   @override
   Widget build(BuildContext context) {
-    final mealTimes = isWeekend()? weekendTimes:weekdayTimes;
-    final time = mealTimes[_selectedMeal]!;
+    List<String> timeLabels = ['아침', '점심', '저녁'];
+    List<String> weekdayTime = ['07:20 ~ 09:00', '11:30 ~ 13:30', '17:30 ~ 19:10'];
+    List<String> weekendTime = ['08:00 ~ 09:00', '12:00 ~ 13:00', '17:30 ~ 19:00'];
 
-    String menus = '${widget.selectedDormType}\n${mealNames[_selectedMeal]}\n흰밥/우유(두유)/김치\n감자양파국\n부추계란찜\n치커리사과오렌지소스무침\n구운김\n에너지: 1111kcal\n단백질: 60g';
+    bool isWeekend(){
+      final now = DateTime.now();
+      return now.weekday == DateTime.saturday || now.weekday == DateTime.sunday;
+    }
 
-    return Card(
-        color: white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0), side: BorderSide(color: grey_seperating_line, width: 1.0)),
-        elevation: 0,
+    String mealLabel = timeLabels[timeIndex];
+    String mealTime = isWeekend() ? weekendTime[timeIndex] : weekdayTime[timeIndex];
+
+    return Container(
+        decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0), border: Border.all(color: grey_seperating_line, width: 1.0)),
+        width: double.infinity,
         child: Padding(
-            padding: EdgeInsets.only(top:2.h, bottom: 18.h),
-            child: Column(
-                children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(icon: Icon(Icons.chevron_left_rounded, color: black, size: 24), onPressed: () => _switchMeal(false)),
-                        Text(mealNames[_selectedMeal]!, style: mediumBlack18),
-                        IconButton(icon: Icon(Icons.chevron_right_rounded, color: black, size: 24), onPressed: () => _switchMeal(true))
-                      ]
-                  ),
-                  Text('${time.start} ~ ${time.end}', style: mediumGrey14.copyWith(height: -0.4)),
-                  SizedBox(height: 28.h),
-                  Text(menus, style: mediumBlack16.copyWith(height: 1.6), textAlign: TextAlign.center)
-                ]
-            )
+          padding: EdgeInsets.only(top:14.h, bottom: 12.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(mealLabel, style: boldBlack16),
+              Text(mealTime, style: mediumGrey14),
+              SizedBox(height: 20.h),
+              SizedBox(
+                  height: 195.h,
+                  child: SingleChildScrollView(child: Text(menu, style: mediumBlack16, textAlign: TextAlign.center)))
+            ]
+          )
         )
     );
   }
 }
+
 
 class NoticeCard extends StatefulWidget {
   final Notice notice1;

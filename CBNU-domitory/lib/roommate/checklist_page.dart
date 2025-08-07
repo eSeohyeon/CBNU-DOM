@@ -6,6 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/models/checklist_map.dart';
 import 'package:untitled/roommate/checklist_pattern_view.dart';
 import 'package:untitled/roommate/checklist_personality_view.dart';
+import 'package:untitled/roommate/checklist_habit_view.dart';
+import 'package:untitled/roommate/checklist_preference_view.dart';
 //import 'package:untitled/tab_view.dart';
 
 
@@ -33,14 +35,12 @@ class _AnswerChecklistPageState extends State<AnswerChecklistPage> {
     'MBTI_PJ': '',
     '더위': '',
     '추위': '',
-    '잠귀': '',
+    '향 민감도': '',
     '실내통화': '',
     '친구초대': '',
     '벌레': '',
-    '실내취식': '',
     '컴퓨터 게임': '',
     '운동': '',
-    '준비중': '',
   };
   PageController _pageController = PageController();
   int _currentPage = 0;
@@ -65,9 +65,9 @@ class _AnswerChecklistPageState extends State<AnswerChecklistPage> {
                       physics: NeverScrollableScrollPhysics(),
                       children: [
                         ChecklistPatternView(answers: answers),
+                        ChecklistHabitView(answers: answers),
+                        ChecklistPreferenceView(answers: answers),
                         ChecklistPersonalityView(answers: answers),
-                        //ChecklistPreferenceView(answers: answers),
-                        //ChecklistEtcView(answers: answers),
                       ]
                   ),
                 ),

@@ -14,3 +14,4 @@ const black40 = Color(0x66303030);
 const black_semi = Color(0xFF505050);
 
 const grey_button = Color(0xFFE6E6E6);
+const group_button_outline = Color(0xFFD2D2D2);
