@@ -43,8 +43,10 @@ class _HomePageState extends State<HomePage> {
   ];
   List<String> _todayMenu = [];
   WeatherData? _currentWeather;
+  List<Notice> _latestNotices = [];
   bool _isMealLoading = false;
   bool _isWeatherLoading = false;
+  bool _isNoticeLoading = false;
 
   final User? user = FirebaseAuth.instance.currentUser;
 
@@ -63,14 +65,17 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _currentDate = getCurrentDate();
+
     fetchTodayMenu();
     fetchWeatherData();
+    fetchLatestNotice();
   }
 
   Future<void> fetchWeatherData() async {
     setState(() {
       _isWeatherLoading = true;
     });
+
     if(_selectedDorm == '본관'){
       _currentWeather = await WeatherService.fetchWeather(68, 107);
     } else {
@@ -86,6 +91,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _isMealLoading = true;
     });
+
     String url = '';
     if(_selectedDorm == '본관'){
       url = 'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20041&cur_day=$_currentDate&type=1';
@@ -124,10 +130,60 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<void> fetchLatestNotice() async {
+    setState(() {
+      _isNoticeLoading = true;
+    });
+
+    final url = Uri.parse(
+        'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20039&mod=&page=1&scode=00000002&listCnt=20');
+
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        int count = 0;
+        final document = parser.parse(response.body);
+        final rows = document.querySelectorAll('#contentBody > form > div.containerIn > table > tbody > tr');
+
+        _latestNotices.clear();
+
+        for (var row in rows) {
+          final isPinned = row.classes.contains('brd_notice'); // 고정 공지 UI에서 분리해야함.
+          if (isPinned) continue;
+
+          final cells = row.querySelectorAll('td');
+          if (cells.length >= 4) {
+            final titleAnchor = cells[1].querySelector('a');
+            final title = titleAnchor?.text.trim() ?? '';
+            final writer = cells[2].text.trim();
+            final date = cells[3].text.trim();
+            final href = titleAnchor?.attributes['href'] ?? '';
+            final link =
+                'https://dorm.chungbuk.ac.kr/home/$href';
+
+            _latestNotices.add(Notice(
+              title: title,
+              writer: writer,
+              date: date,
+              link: link
+            ));
+
+            count++;
+            if(count>=2) break;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint("Failed to get data: $e");
+    }
+
+    setState(() {
+      _isNoticeLoading = false;
+    });
+  }
+
 
   // 테스트용
-  final Notice _notice1 = Notice(title: '[양성재, 양진재] 조경 작업 안내 (시비,전정 및 수목 병충해 방제 작업 등)', writer: '운영사(주)체스넛1', date: '2025/05/09', link: 'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20039&mod=view&no=454178657&listCnt=20');
-  final Notice _notice2 = Notice(title: '[양성재] 지선관 LED 전등 교체 공사 안내 (일정 변경)', writer: '운영사(주)체스넛1', date: '2025/05/07', link: 'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20039&mod=view&no=454178656&listCnt=20');
   final Post _post1 = Post(postId: 00001, title: '취업 꿀팁', writer: '서울사이버대학', date: '05/09', time: '03:34', contents: '서울사이버대학에 다니고 나의 성공시대 시작됐다.');
   final Post _post2 = Post(postId: 00002, title: '사람들이지쳤잖아힘들잖아그만해야하잖아이러면안되는거잖아그만해야하잖아맞잖아지쳤잖아힘들잖아괴롭잖아숨막히잖아정신나갈거같잖아피로하잖아겁에질렸잖아몽롱하잖아고문당하는거같잖아불안하잖아죽을거같잖아고통스럽잖아미칠거같잖아숨이막히잖아', writer: '부족한사람', date: '05/07', time: '12:34', contents: '사람들이지쳤잖아힘들잖아그만해야하잖아이러면안되는거잖아그만해야하잖아맞잖아지쳤잖아힘들잖아괴롭잖아숨막히잖아정신나갈거같잖아피로하잖아겁에질렸잖아몽롱하잖아고문당하는거같잖아불안하잖아죽을거같잖아고통스럽잖아미칠거같잖아숨이막히잖아폐가아프잖아그만해야하잖아정신나갈거같잖아루나틱하잖아토할거같잖아구역질이나올거같잖아속이뒤트는거같잖아비틀어질거같잖아휘청거릴거샅잖아어지럽잖아배사아프잖아위가꼬이는거같잖아장이꼬이는거같잖아온몸에쥐난거같잖아심장이아프잖아다들지쳤잖아사람들이지쳤잖아힘들잖아그만해야하잖아이러면안되는거잖아그만해야하잖아맞잖아지쳤잖아힘들잖아괴롭잖아숨막히잖아정신나갈거');
   final GroupBuyPost _groupBuyPost1 = GroupBuyPost(basePost: Post(postId: 10001,title: '싱싱한 국내산 흙당근 제주구좌당근 2kg', writer: '멋진농부', date: '2025/05/11', time: '20:59', contents: '당근 같이 먹을 사람~'), itemUrl: 'https://item.gmarket.co.kr/Item?goodscode=3293466711&buyboxtype=ad', itemImagePath: 'assets/img_item.png', itemPrice: 11130, maxParticipants: 4, currentParticipants: 3);
@@ -310,7 +366,16 @@ class _HomePageState extends State<HomePage> {
                           ]
                       ),
                       SizedBox(height: 6.h),
-                      NoticeCard(notice1: _notice1, notice2: _notice2) // 공지사항 카드
+                      _isNoticeLoading?
+                      Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor: Colors.grey.shade100,
+                          child: Container(
+                            width: double.infinity,
+                            height: 150.h,
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.grey.shade300),
+                          ))
+                      : NoticeCard(notice1: _latestNotices[0], notice2: _latestNotices[1])// 공지사항 카드
                     ]
                 ),
                 SizedBox(height: 42.h),
@@ -397,16 +462,11 @@ class MealCard extends StatelessWidget {
 }
 
 
-class NoticeCard extends StatefulWidget {
+class NoticeCard extends StatelessWidget {
   final Notice notice1;
   final Notice notice2;
   const NoticeCard({super.key, required this.notice1, required this.notice2});
 
-  @override
-  State<NoticeCard> createState() => _NoticeCardState();
-}
-
-class _NoticeCardState extends State<NoticeCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -430,33 +490,33 @@ class _NoticeCardState extends State<NoticeCard> {
                       onTap: () {
                         Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => NoticeDetailPage(url: widget.notice1.link, item: widget.notice1))
+                            MaterialPageRoute(builder: (context) => NoticeDetailPage(url: notice1.link, item: notice1))
                         );
                       },
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(widget.notice1.title, style: mediumBlack16, maxLines: 1, overflow: TextOverflow.ellipsis, softWrap: false),
+                            Text(notice1.title, style: mediumBlack16, maxLines: 1, overflow: TextOverflow.ellipsis, softWrap: false),
                             SizedBox(height: 2.h),
-                            Text(widget.notice1.date, style: mediumGrey14)
+                            Text(notice1.date, style: mediumGrey14)
                           ]
                       )
                   ),
-                  SizedBox(height: 10.h),
+                  SizedBox(height: 12.h),
                   InkWell(
                       splashColor: Colors.transparent,
                       onTap: () {
                         Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => NoticeDetailPage(url: widget.notice2.link, item: widget.notice2))
+                            MaterialPageRoute(builder: (context) => NoticeDetailPage(url: notice2.link, item: notice2))
                         );
                       },
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(widget.notice2.title, style: mediumBlack16, maxLines: 1, overflow: TextOverflow.ellipsis, softWrap: false),
+                            Text(notice2.title, style: mediumBlack16, maxLines: 1, overflow: TextOverflow.ellipsis, softWrap: false),
                             SizedBox(height: 2.h),
-                            Text(widget.notice2.date, style: mediumGrey14)
+                            Text(notice2.date, style: mediumGrey14)
                           ]
                       )
                   )
@@ -467,15 +527,9 @@ class _NoticeCardState extends State<NoticeCard> {
   }
 }
 
-class BestPostCard extends StatefulWidget { // 카드 위젯-실시간 인기글
+class BestPostCard extends StatelessWidget { // 카드 위젯-실시간 인기글
   final Post bestPost;
   const BestPostCard({super.key, required this.bestPost});
-
-  @override
-  State<BestPostCard> createState() => _BestPostCardState();
-}
-
-class _BestPostCardState extends State<BestPostCard> {
 
   @override
   Widget build(BuildContext context) {
@@ -491,14 +545,14 @@ class _BestPostCardState extends State<BestPostCard> {
                     children: [
                       Icon(Icons.account_box_rounded, color: Colors.teal, size: 36),
                       SizedBox(width: 4.w),
-                      Expanded(child: Text(widget.bestPost.writer, style: mediumBlack14)),
-                      Text('${widget.bestPost.date} ${widget.bestPost.time}', style: mediumGrey13)
+                      Expanded(child: Text(bestPost.writer, style: mediumBlack14)),
+                      Text('${bestPost.date} ${bestPost.time}', style: mediumGrey13)
                     ]
                 ),
                 SizedBox(height: 16.h),
-                Align(alignment: AlignmentDirectional.centerStart, child: Text(widget.bestPost.title, style: boldBlack16, maxLines: 1, overflow: TextOverflow.ellipsis, softWrap: false)),
+                Align(alignment: AlignmentDirectional.centerStart, child: Text(bestPost.title, style: boldBlack16, maxLines: 1, overflow: TextOverflow.ellipsis, softWrap: false)),
                 SizedBox(height: 4.h),
-                Align(alignment: AlignmentDirectional.centerStart, child: Text(widget.bestPost.contents, style: mediumBlack14, maxLines: 2, overflow: TextOverflow.ellipsis, softWrap: false)),
+                Align(alignment: AlignmentDirectional.centerStart, child: Text(bestPost.contents, style: mediumBlack14, maxLines: 2, overflow: TextOverflow.ellipsis, softWrap: false)),
                 SizedBox(height: 18.h),
                 Row(
                     children: [
@@ -514,15 +568,10 @@ class _BestPostCardState extends State<BestPostCard> {
   }
 }
 
-class GroupBuyPostCard extends StatefulWidget { // 카드 위젯 - 너만 오면 되는 공동구매
+class GroupBuyPostCard extends StatelessWidget { // 카드 위젯 - 너만 오면 되는 공동구매
   final GroupBuyPost groupBuyPost;
   const GroupBuyPostCard({super.key, required this.groupBuyPost});
 
-  @override
-  State<GroupBuyPostCard> createState() => _GroupBuyPostCardState();
-}
-
-class _GroupBuyPostCardState extends State<GroupBuyPostCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -533,21 +582,21 @@ class _GroupBuyPostCardState extends State<GroupBuyPostCard> {
             padding: EdgeInsets.only(left: 12.w, right: 16.w, top: 14.h, bottom: 14.h),
             child: Row(
                 children: [
-                  SizedBox(width: 100.w, height: 100.h, child: Image.asset(widget.groupBuyPost.itemImagePath)),
+                  SizedBox(width: 100.w, height: 100.h, child: Image.asset(groupBuyPost.itemImagePath)),
                   SizedBox(width: 8.w),
                   Expanded(
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.groupBuyPost.basePost.title, style: mediumBlack14, maxLines: 1, overflow: TextOverflow.ellipsis, softWrap: false),
-                          Text('${widget.groupBuyPost.itemPrice}원', style: boldBlack16),
-                          Text('1인당 ${widget.groupBuyPost.itemPrice / widget.groupBuyPost.maxParticipants}원', style: mediumGrey13),
+                          Text(groupBuyPost.basePost.title, style: mediumBlack14, maxLines: 1, overflow: TextOverflow.ellipsis, softWrap: false),
+                          Text('${groupBuyPost.itemPrice}원', style: boldBlack16),
+                          Text('1인당 ${groupBuyPost.itemPrice / groupBuyPost.maxParticipants}원', style: mediumGrey13),
                           SizedBox(height: 20.h),
                           Row(
                               children: [
                                 Icon(Icons.person, color: grey_8, size: 20),
                                 SizedBox(width: 2.w),
-                                Text('${widget.groupBuyPost.currentParticipants}/${widget.groupBuyPost.maxParticipants}', style: mediumGrey13)
+                                Text('${groupBuyPost.currentParticipants}/${groupBuyPost.maxParticipants}', style: mediumGrey13)
                               ]
                           )
                         ]
