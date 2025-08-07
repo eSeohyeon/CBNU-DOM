@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 
-import 'package:untitled/home_page.dart';
+import 'package:untitled/home/home_page.dart';
 import 'package:untitled/roommate/roommate_page.dart';
 import 'package:untitled/community/community_page.dart';
 import 'package:untitled/message/message_page.dart';
