@@ -274,7 +274,7 @@ class _FilterSelectModalState extends State<FilterSelectModal> with TickerProvid
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28.0)),
                         elevation: 0
                     ),
-                    child: Text('필터 적용하기', style: boldWhite15)
+                    child: Text('필터 적용하고 닫기', style: boldWhite15)
                 ),
               ),
             )
