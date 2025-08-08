@@ -5,7 +5,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:untitled/models/user.dart';
 import 'package:untitled/models/checklist_map.dart';
 import 'package:untitled/roommate/checklist_page.dart';
-import 'package:untitled/roommate/filter_options_modal.dart';
+import 'package:untitled/roommate/filter_select_modal.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:untitled/roommate/roommate_detail_modal.dart';
@@ -21,12 +21,32 @@ class FilterSearchPage extends StatefulWidget {
 }
 
 class _FilterSearchPageState extends State<FilterSearchPage> {
-  final List<String> filterOptions = ['기본정보 ▾', '생활패턴 ▾', '생활습관 ▾', '성격 ▾', '성향 ▾', '기타 ▾'];
+  final List<String> filterOptions = ['기본정보', '생활패턴', '생활습관', '성격', '성향', '기타'];
   late GroupButtonController  _filterButtonController;
   Map<String, Set<String>> _selectedFilters = {};
-  late List<GroupCategory> _filterCategories;
 
   List<User> _roommates = [];
+
+  void _updateGroupButtonSelection() {
+    _filterButtonController.unselectAll();
+    for(int i = 0; i< allCategories.length; i++) {
+      String majorCategoryName = allCategories[i].categoryName;
+      for(String key in _selectedFilters.keys) {
+        if(key.startsWith(majorCategoryName)) {
+          _filterButtonController.selectIndex(i);
+          break;
+        }
+      }
+    }
+    print(_selectedFilters);
+  }
+
+  void _clearFilters() {
+    setState(() {
+      _filterButtonController.unselectAll();
+      _selectedFilters.clear();
+    });
+  }
 
   @override
   void initState(){
@@ -34,9 +54,8 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
     _filterButtonController = GroupButtonController(
       selectedIndex: 0,
     );
-    _filterCategories = deepCopyAllCategories();
 
-    for(int i = 0; i<40; i++){
+    for(int i = 0; i<40; i++){ // 테스트용 더미데이터
       _roommates.add(User(
         name: '키위',
         dormitory: '예지관',
@@ -90,20 +109,6 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
     }
   }
 
-  List<GroupCategory> deepCopyAllCategories() {
-    return allCategories.map((cat) {
-      return GroupCategory(
-          cat.categoryName,
-          cat.groups.map((group) {
-            return GroupData(
-                title: group.title,
-                options: List<String>.from(group.options)
-            );
-          }).toList()
-      );
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,24 +136,27 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
                         child: Icon(Icons.refresh_rounded, color: black, size: 20)
                     ),
                     onTap: () {
-                      _filterButtonController.unselectAll();
+                      setState(() {
+                        _clearFilters();
+                      });
                     }
                   ),
                   SizedBox(width: 8.w),
                   Expanded(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: GroupButton(
-                          buttons: filterOptions,
-                          controller : _filterButtonController,
-                          isRadio: false,
-                          onSelected: (val, i, selected){
-                            print('filter modal up!');
-                          },
-                          buttonBuilder: (selected, value, context) {
-                            return checklistGroupButton(selected, value);
-                          },
-                          options: GroupButtonOptions(spacing: 4)
+                      child: IgnorePointer(
+                        ignoring: true,
+                        child: GroupButton(
+                            buttons: filterOptions,
+                            controller : _filterButtonController,
+                            isRadio: false,
+                            onSelected: (val, i, selected) {},
+                            buttonBuilder: (selected, value, context) {
+                              return checklistGroupButton(selected, value);
+                            },
+                            options: GroupButtonOptions(spacing: 4, )
+                        ),
                       ),
                     ),
                   ),
@@ -160,19 +168,19 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
                           child: Icon(Icons.tune_rounded, color: black, size: 20)
                       ),
                       onTap: () async {
-                        await showBarModalBottomSheet(
+                        final result = await showBarModalBottomSheet(
                           context: context,
-                          builder: (BuildContext context) => FilterOptionsModal(
-                            selectedFilters: _selectedFilters,
-                            allCategories: _filterCategories,
-                            onFilterChanged: (filters, categories){
-                              setState(() {
-                                _selectedFilters = filters;
-                                _filterCategories = categories;
-                              });
-                            }
-                          )
+                          builder: (BuildContext context) => FilterSelectModal(selectedFilters: _selectedFilters, onModalReset: _clearFilters),
+                          isDismissible: false,
+                          enableDrag: false
                         );
+
+                        if(result != null && result is Map<String, Set<String>>){
+                          setState(() {
+                            _selectedFilters = result;
+                          });
+                          _updateGroupButtonSelection();
+                        }
                       }
                   ),
                 ]
