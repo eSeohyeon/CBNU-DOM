@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/models/post.dart';
 import 'package:untitled/models/comment.dart';
 import 'dart:math';
+import 'package:untitled/common/bottom_fixed_text_field.dart';
 
 class FreePostDetailPage extends StatefulWidget {
   final Post post;
@@ -142,29 +143,7 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
               child: Row(
                   children: [
                     Expanded(
-                        child: TextField(
-                            controller: _commentController,
-                            maxLines: 1,
-                            maxLength: 100,
-                            style: mediumBlack14,
-                            keyboardType: TextInputType.visiblePassword,
-                            decoration: InputDecoration(
-                                isDense: true,
-                                contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
-                                labelStyle: mediumGrey14,
-                                labelText: '댓글을 입력하세요',
-                                floatingLabelAlignment: FloatingLabelAlignment.start,
-                                floatingLabelBehavior: FloatingLabelBehavior.never,
-                                border: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: grey_outline_inputtext),
-                                  borderRadius: BorderRadius.all(Radius.circular(25)),
-                                ),
-                                focusedBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: grey_8),
-                                  borderRadius: BorderRadius.all(Radius.circular(25)),
-                                ),
-                                counterText: ""
-                            ))
+                        child: BottomFixedTextField(controller: _commentController, name: '댓글을 입력하세요', inputType: TextInputType.visiblePassword)
                     ),
                     SizedBox(width: 4.w),
                     InkWell(

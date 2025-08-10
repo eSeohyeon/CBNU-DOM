@@ -472,7 +472,7 @@ class NoticeCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0), side: BorderSide(color: grey_seperating_line, width: 1.0)),
         elevation: 0,
         child: Padding(
-            padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 16.h, bottom: 16.h),
+            padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

@@ -9,6 +9,7 @@ import 'package:untitled/community/community_groupbuy_tab.dart';
 
 
 
+
 class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});
 
@@ -77,3 +78,4 @@ class _CommunityPageState extends State<CommunityPage> with TickerProviderStateM
     );
   }
 }
+
