@@ -3,6 +3,7 @@ import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/models/post.dart';
+import 'package:untitled/community/group_buy_detail_page.dart';
 
 
 // 공동구매 게시판 탭
@@ -16,7 +17,7 @@ class GroupBuyPostTab extends StatefulWidget {
 class _GroupBuyPostTabState extends State<GroupBuyPostTab> {
   final List<GroupBuyPost> _groupBuyPosts = [];
   final ScrollController _scrollController = ScrollController();
-  final GroupBuyPost _groupBuyPost1 = GroupBuyPost(basePost: Post(title: '싱싱한 국내산 흙당근 제주구좌당근 2kg', writer: '멋진농부', date: '2025/05/11', time: '20:59', contents: '당근 같이 먹을 사람~', likeCount: 2), itemUrl: 'https://item.gmarket.co.kr/Item?goodscode=3293466711&buyboxtype=ad', itemImagePath: 'assets/img_item.png', itemPrice: 11130, maxParticipants: 4, currentParticipants: 3);
+  final GroupBuyPost _groupBuyPost1 = GroupBuyPost(basePost: Post(postId: 456, title: '싱싱한 국내산 흙당근 제주구좌당근 2kg', writer: '멋진농부', date: '2025/05/11', time: '20:59', contents: '당근 같이 먹을 사람~'), itemUrl: 'https://item.gmarket.co.kr/Item?goodscode=3293466711&buyboxtype=ad', itemImagePath: 'assets/img_item.png', itemPrice: 11130, maxParticipants: 4, currentParticipants: 3);
   bool _isLoading = false;
   bool _hasMore = false;
 
@@ -54,21 +55,16 @@ class _GroupBuyPostTabState extends State<GroupBuyPostTab> {
                     padding: EdgeInsets.all(16),
                     child: Center(child: CircularProgressIndicator())) : const SizedBox.shrink();}
               final post = _groupBuyPosts[index];
-              return GroupBuyPostItem(post: post);
+              return InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => GroupBuyPostDetailPage(post: post)));
+                },
+                child: GroupBuyPostItem(post: post),
+              );
             },
             separatorBuilder: (context, index) => Divider(height: 1, color: grey_seperating_line),
           ),
         ),
-          Positioned(
-              left: 139.w,
-              bottom: 80.h,
-              child: ElevatedButton.icon(
-                onPressed: () { print('write button clicked'); },
-                icon: Icon(Icons.add, color: black, size: 20),
-                label: Text('글쓰기', style: mediumBlack16),
-                style: ElevatedButton.styleFrom(overlayColor: grey_8, backgroundColor: white, side: BorderSide(color: grey_seperating_line, width: 1.0), padding: EdgeInsets.only(top: 8.h, bottom: 8.h, left: 11.w, right: 14.w), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)), elevation: 2, ),
-              )
-          )
         ]
     );
   }

@@ -5,6 +5,7 @@ import 'package:html/parser.dart' as parser;
 import 'package:untitled/home/notice_detail_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/models/notice.dart';
+import 'package:untitled/themes/styles.dart';
 
 class NoticeListPage extends StatefulWidget {
   const NoticeListPage({super.key});
@@ -85,8 +86,14 @@ class _NoticeListPageState extends State<NoticeListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("공지사항 리스트")),
-      body: ListView.separated( // 리스트에 구분선 있는 거 쓰고 싶으면 ListView.seperated 이거 쓰면 됨.
+      backgroundColor: white,
+      appBar: AppBar(
+        backgroundColor: white,
+        surfaceTintColor: white,
+        title: Text('공지사항', style: mediumBlack16),
+        titleSpacing: 0,
+      ),
+      body: ListView.separated(
         controller: _scrollController,
         itemCount: _notices.length + 1,
         separatorBuilder: (context, index) => Divider(height: 1, color: grey_seperating_line),
@@ -113,29 +120,6 @@ class _NoticeListPageState extends State<NoticeListPage> {
           );
         },
       ),
-    );
-  }
-}
-
-class NoticeListItem extends StatelessWidget {
-  final Notice notice;
-  const NoticeListItem({super.key, required this.notice});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 12.h, bottom: 12.h),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(''),
-              Row(
-                  children: [
-
-                  ]
-              )
-            ]
-        )
     );
   }
 }

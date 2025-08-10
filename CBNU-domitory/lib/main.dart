@@ -4,6 +4,7 @@ import 'firebase_options.dart'; // flutterfire configure 실행 후 생성됨
 import 'package:firebase_auth/firebase_auth.dart';
 import 'auth_gate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:untitled/bottom_navigation_tab.dart';
 
 import 'package:untitled/start/start_page.dart';
 
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue
           ),
-          home: const AuthGate()
+          home: BottomNavigationTab(navigatedIndex: 0)//const AuthGate()
         );
       }
     );

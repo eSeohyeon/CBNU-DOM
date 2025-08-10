@@ -9,6 +9,10 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final TextCapitalization textCapitalization;
   final TextInputType inputType;
+  final int maxLength;
+  final int maxLines;
+  final String suffix;
+
 
   const CustomTextField({
     super.key,
@@ -17,6 +21,9 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.textCapitalization = TextCapitalization.none,
     required this.inputType,
+    this.maxLength = 32,
+    this.maxLines = 1,
+    this.suffix = ""
   });
 
   @override
@@ -25,18 +32,19 @@ class CustomTextField extends StatelessWidget {
       enabled: true,
       controller: controller,
       textCapitalization: textCapitalization,
-      maxLength: 32,
-      maxLines: 1,
+      maxLength: maxLength,
+      maxLines: maxLines,
       obscureText: obscureText,
       keyboardType: inputType,
       textAlign: TextAlign.start,
-      style: mediumBlack14,
+      style: mediumBlack16,
       decoration: InputDecoration(
         isDense: true,
-        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         labelText: name,
         counterText: "",
-        labelStyle: mediumGrey13,
+        labelStyle: mediumGrey14,
+        suffix: Text(suffix, style: mediumBlack16),
         floatingLabelBehavior: FloatingLabelBehavior.never,
         border: const OutlineInputBorder(
           borderSide: BorderSide(color: grey_outline_inputtext),

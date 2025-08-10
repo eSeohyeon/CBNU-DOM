@@ -1,12 +1,13 @@
 class Post {
+  final int postId;
   final String title;
   final String writer;
   final String date;
   final String time;
   final String contents;
-  final int likeCount;
 
-  Post({required this.title, required this.writer, required this.date, required this.time, required this.contents, required this.likeCount});
+  Post({required this.postId, required this.title, required this.writer, required this.date, required this.time, required this.contents});
+
 }
 
 class GroupBuyPost {

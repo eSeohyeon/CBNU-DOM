@@ -9,6 +9,7 @@ import 'package:untitled/roommate/checklist_page.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:untitled/roommate/roommate_detail_modal.dart';
+import 'package:untitled/roommate/filter_search_page.dart';
 
 class RoommatePage extends StatefulWidget {
   const RoommatePage({super.key});
@@ -77,7 +78,9 @@ class _RoommatePageState extends State<RoommatePage> {
                               padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 9.h, bottom: 9.h),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0))
                           ),
-                          onPressed: () { },
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => FilterSearchPage()));
+                          },
                         ),
                       ),
                       SizedBox(height: 4.h),

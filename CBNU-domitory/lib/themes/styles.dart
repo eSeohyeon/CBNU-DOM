@@ -11,8 +11,22 @@ final boldWhite15 = TextStyle(
     fontWeight: FontWeight.w700
 );
 
+final boldBlack14 = TextStyle(
+    fontSize: 14.sp,
+    color: black,
+    fontFamily: 'pretendard-medium',
+    fontWeight: FontWeight.w700
+);
+
 final boldBlack20 = TextStyle(
     fontSize: 20.sp,
+    color: black,
+    fontFamily: 'pretendard-medium',
+    fontWeight: FontWeight.w700
+);
+
+final boldBlack24 = TextStyle(
+    fontSize: 24.sp,
     color: black,
     fontFamily: 'pretendard-medium',
     fontWeight: FontWeight.w700
