@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:untitled/auth_gate.dart'; // AuthGate를 import 합니다.
+import 'package:untitled/start/forgot_password_page.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:untitled/common/custom_text_field.dart';
-import 'package:untitled/bottom_navigation_tab.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> signIn() async {
     setState(() {
       _isLoading = true;
-      _errorMessage = null; // 이전 에러 메시지 초기화
+      _errorMessage = null;
     });
 
     try {
@@ -32,10 +32,14 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNavigationTab(navigatedIndex: 0)));
-      // 로그인 성공 시 AuthGate가 자동으로 HomePage로 이동시킴
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const AuthGate()),
+              (route) => false,
+        );
+      }
+
     } on FirebaseAuthException catch (e) {
-      // 흔한 오류 코드에 대한 사용자 친화적 메시지
       String message;
       switch (e.code) {
         case 'user-not-found':
@@ -51,20 +55,17 @@ class _LoginPageState extends State<LoginPage> {
           message = '비활성화된 계정입니다.';
           break;
         default:
-          message = '로그인 중 오류가 발생했습니다: ${e.message}';
+          message = '로그인 중 오류가 발생했습니다.';
       }
       setState(() {
         _errorMessage = message;
       });
-      print('Login failed: ${e.code} - ${e.message}'); // 디버깅용 로그
     } catch (e) {
-      // 기타 예상치 못한 오류
       setState(() {
         _errorMessage = '알 수 없는 오류가 발생했습니다.';
       });
-      print('An unexpected error occurred: $e'); // 디버깅용 로그
     } finally {
-      if (mounted) { // 위젯이 여전히 트리에 있는지 확인
+      if (mounted) {
         setState(() {
           _isLoading = false;
         });
@@ -86,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(title: Text('로그인', style: mediumBlack18), titleSpacing: 0, backgroundColor: white, surfaceTintColor: white),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-        child: SingleChildScrollView( // 키보드가 올라올 때 화면 깨짐 방지
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -106,15 +107,14 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: true,
                 inputType: TextInputType.visiblePassword,
               ),
-
-              // 에러 메시지 표시
               if (_errorMessage != null)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: Text(
-                    _errorMessage!,
-                    style: mediumBlack14.copyWith(color: Colors.red),
-                    textAlign: TextAlign.center,
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Center(
+                    child: Text(
+                      _errorMessage!,
+                      style: mediumBlack14.copyWith(color: Colors.red),
+                    ),
                   ),
                 ),
               SizedBox(height: 20.h),
@@ -123,32 +123,35 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if(_isLoading)
-              CircularProgressIndicator(),
-            SizedBox(height: 10.h),
-            SizedBox(
-              width: double.infinity,
-              height: 45.h,
-              child: ElevatedButton(
-                onPressed: signIn,
-                style: btnBlackRound30,
-                child: Text('로그인', style: mediumWhite16),
-              ),
-            ),
-            SizedBox(height: 2.h),
-            TextButton(
-              onPressed: () {
-                // 아이디 비번 찾기 페이지로 이동
-              },
-              style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory),
-              child: Text('아이디/비밀번호 찾기', style: mediumGrey14)
-            )
-          ],
-        )
+          padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_isLoading)
+                const CircularProgressIndicator()
+              else
+                SizedBox(
+                  width: double.infinity,
+                  height: 45.h,
+                  child: ElevatedButton(
+                    onPressed: signIn,
+                    style: btnBlackRound30,
+                    child: Text('로그인', style: mediumWhite16),
+                  ),
+                ),
+              SizedBox(height: 2.h),
+              TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                    );
+                  },
+                  style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory),
+                  child: Text('아이디/비밀번호 찾기', style: mediumGrey14)
+              )
+            ],
+          )
       ),
     );
   }
