@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:untitled/profile/profile_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:untitled/themes/colors.dart';
@@ -278,7 +278,16 @@ class _HomePageState extends State<HomePage> {
           titleSpacing: 0,
           title: Text(_selectedDorm, style: boldBlack18),
           actions: [
-            IconButton(icon: Icon(Icons.account_circle_rounded, color: black, size: 32), onPressed: signOut)
+            IconButton(
+              icon: Icon(Icons.account_circle_rounded, color: black, size: 32),
+              onPressed: () {
+                // ProfilePage로 이동합니다.
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage()),
+                );
+              },
+            )
           ],
           actionsPadding: EdgeInsets.only(right: 8),
         ),

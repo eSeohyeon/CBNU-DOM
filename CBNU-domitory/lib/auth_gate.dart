@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import 'bottom_navigation_tab.dart';
+import 'package:untitled/home_page.dart';
 import 'package:untitled/start/start_page.dart';
+import 'package:untitled/start/verify_email_page.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -11,22 +11,27 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<User?>(
-        // FirebaseAuth의 인증 상태 변경 스트림을 구독
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          // 로딩 중일 때 (연결 대기)
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState != ConnectionState.active) {
             return const Center(child: CircularProgressIndicator());
           }
-          // 사용자가 로그인한 경우
-          if (snapshot.hasData) {
-            // HomePage 표시
-            return BottomNavigationTab(navigatedIndex: 0);
+
+          final user = snapshot.data;
+
+          if (user == null) {
+            // 사용자가 없으면(로그아웃 상태) StartPage를 보여줍니다.
+            return const StartPage();
           }
-          // 사용자가 로그인하지 않은 경우
           else {
-            // LoginPage 또는 RegisterPage를 선택하는 페이지 표시
-            return StartPage();
+            // 사용자가 있으면 이메일 인증 여부를 확인합니다.
+            if (user.emailVerified) {
+              // 인증 완료 시, 홈 페이지로 이동
+              return const HomePage();
+            } else {
+              // 인증 미완료 시, 인증 대기 페이지로 이동
+              return const VerifyEmailPage();
+            }
           }
         },
       ),
