@@ -39,8 +39,9 @@ dependencies:
   group_button: ^5.3.4
   fluttertoast: ^8.2.12
   intl: ^0.20.2
-  url_launcher: ^6.3.2
-  shimmer: ^3.0.0
+  url_launcher: ^6.3.2 # 공동구매 게시글 외부 링크 이동
+  shimmer: ^3.0.0 # 로딩 중인 위젯 박스 표시
+  percent_indicator: ^4.2.5 # 유사도 표시 바
 
 
 

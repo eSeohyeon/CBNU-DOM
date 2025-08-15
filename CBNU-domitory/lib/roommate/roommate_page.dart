@@ -10,6 +10,7 @@ import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:untitled/roommate/roommate_detail_modal.dart';
 import 'package:untitled/roommate/filter_search_page.dart';
+import 'package:untitled/roommate/similarity_detail_page.dart';
 
 class RoommatePage extends StatefulWidget {
   const RoommatePage({super.key});
@@ -157,6 +158,7 @@ class RecommendItem extends StatelessWidget {
                               style: ElevatedButton.styleFrom(overlayColor: grey_8, backgroundColor: grey_button, padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 9.h, bottom: 9.h), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)), elevation: 0),
                               onPressed: () {
                                 //쪽지 생성
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => SimilarityDetailPage()));
                               },
                             )
                           ]),
