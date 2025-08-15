@@ -74,14 +74,28 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _currentDate = getCurrentDate();
     _onRefresh();
+    setState(() {
+      _isAnyLoadingError = true;
+    });
   }
 
   Future<void> _onRefresh() async {
-    await Future.wait([
-      fetchTodayMenu(),
-      fetchWeatherData(),
-      fetchLatestNotice()
-    ]);
+    setState(() {
+      _isAnyLoadingError = false;
+    });
+
+    try {
+      await Future.wait([
+        fetchTodayMenu(),
+        fetchWeatherData(),
+        fetchLatestNotice()
+      ]);
+    } catch (e) {
+      debugPrint('Error in _onRefresh: $e');
+      setState(() {
+        _isAnyLoadingError = true;
+      });
+    }
   }
 
   Future<void> fetchWeatherData() async {
@@ -296,8 +310,20 @@ class _HomePageState extends State<HomePage> {
           child: _isAnyLoadingError
             ? SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            child: Center(
-              child: Text(' 데이터 불러오기 실패, 새로고침 ㄱㄱ', style: boldBlack18)
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - MediaQuery.of(context).padding.top,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/screen_error.png'),
+                    SizedBox(height: 10.h),
+                    Text('화면 로딩 중에 오류가 발생했어요', style: boldBlack18),
+                    SizedBox(height: 4.h),
+                    Text('화면을 아래로 당겨서 새로고침', style: mediumBlack14)
+                  ]
+                )
+              ),
             )
           )
             : SingleChildScrollView(
