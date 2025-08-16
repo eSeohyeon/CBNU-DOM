@@ -3,14 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:untitled/themes/colors.dart';
 
-class BottomFixedTextField extends StatelessWidget {
+class GreyFilledTextField extends StatelessWidget {
   final TextEditingController controller;
   final String name;
   final bool obscureText;
   final TextInputType inputType;
   final int maxLength;
 
-  const BottomFixedTextField({
+  const GreyFilledTextField({
     super.key,
     required this.controller,
     required this.name,

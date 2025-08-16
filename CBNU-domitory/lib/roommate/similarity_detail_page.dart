@@ -61,40 +61,60 @@ class _SimilarityDetailPageState extends State<SimilarityDetailPage> {
       ),
       body: SafeArea(
         top: false,
-        child: ListView.builder(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-          itemCount: _similarities.length,
-          itemBuilder: (context, index) {
-            final factor = _similarities[index]['name'];
-            final similarity = _similarities[index]['similarity'] as double;
-            final color = colors[index];
-
-            return Padding(
-              padding: EdgeInsets.symmetric(vertical: 20.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(factor, style: mediumBlack16),
-                      Text('${(similarity * 100).toStringAsFixed(1)}%', style: mediumGrey14)
-                    ]
-                  ),
-                  SizedBox(height: 4.h),
-                  LinearPercentIndicator(
-                    animation: true,
-                    animationDuration: 1000,
-                    lineHeight: 24,
-                    percent: similarity,
-                    backgroundColor: Colors.grey.shade300,
-                    progressColor: color,
-                    barRadius: const Radius.circular(20),
-                  )
-                ]
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
+                child: Row(
+                  children: [
+                    Icon(Icons.help_outline_rounded, color: grey, size: 20),
+                    SizedBox(width: 4.w),
+                    Expanded(child: Text('체크리스트의 모든 항목에 대한 유사도를 표시하고 있어요.', style: mediumGrey13))
+                  ]
+                ),
+              ),
+              SizedBox(height: 4.h),
+              ListView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: _similarities.length,
+                  itemBuilder: (context, index) {
+                    final factor = _similarities[index]['name'];
+                    final similarity = _similarities[index]['similarity'] as double;
+                    final color = colors[index];
+          
+                    return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20.h),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(factor, style: mediumBlack16),
+                                    Text('${(similarity * 100).toStringAsFixed(1)}%', style: mediumGrey14)
+                                  ]
+                              ),
+                              SizedBox(height: 4.h),
+                              LinearPercentIndicator(
+                                animation: true,
+                                animationDuration: 1000,
+                                lineHeight: 24,
+                                percent: similarity,
+                                backgroundColor: Colors.grey.shade300,
+                                progressColor: color,
+                                barRadius: const Radius.circular(20),
+                              )
+                            ]
+                        )
+                    );
+                  }
               )
-            );
-          }
+            ]
+          ),
         )
       )
     );

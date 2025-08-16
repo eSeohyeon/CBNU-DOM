@@ -74,9 +74,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _currentDate = getCurrentDate();
     _onRefresh();
-    setState(() {
-      _isAnyLoadingError = true;
-    });
   }
 
   Future<void> _onRefresh() async {
@@ -149,7 +146,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     try {
-      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 5));
+      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 6));
       if (response.statusCode != 200) {
         throw Exception('식단 데이터 불러오기 실패'); // 이런 거 뜨면 새로고침할 수 있게 해야함 (버튼이나 스크롤)
       }
@@ -196,7 +193,7 @@ class _HomePageState extends State<HomePage> {
         'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20039&mod=&page=1&scode=00000002&listCnt=20');
 
     try {
-      final response = await http.get(url).timeout(const Duration(seconds: 5));
+      final response = await http.get(url).timeout(const Duration(seconds: 6));
       if (response.statusCode == 200) {
         int count = 0;
         final document = parser.parse(response.body);
@@ -319,7 +316,7 @@ class _HomePageState extends State<HomePage> {
                     Image.asset('assets/screen_error.png'),
                     SizedBox(height: 10.h),
                     Text('화면 로딩 중에 오류가 발생했어요', style: boldBlack18),
-                    SizedBox(height: 4.h),
+                    SizedBox(height: 2.h),
                     Text('화면을 아래로 당겨서 새로고침', style: mediumBlack14)
                   ]
                 )

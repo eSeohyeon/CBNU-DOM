@@ -4,7 +4,7 @@ import 'package:untitled/themes/styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
-import 'package:untitled/common/bottom_fixed_text_field.dart';
+import 'package:untitled/common/grey_filled_text_field.dart';
 import 'package:untitled/models/chat_message.dart';
 
 class ChattingPage extends StatefulWidget {
@@ -88,7 +88,7 @@ class _ChattingPageState extends State<ChattingPage> {
                 child: Row(
                     children: [
                       Expanded(
-                          child: BottomFixedTextField(controller: _messageController, name: '메시지 입력', inputType: TextInputType.visiblePassword)
+                          child: GreyFilledTextField(controller: _messageController, name: '메시지 입력', inputType: TextInputType.visiblePassword)
                       ),
                       SizedBox(width: 4.w),
                       InkWell(

@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/models/post.dart';
 import 'package:untitled/models/comment.dart';
 import 'dart:math';
-import 'package:untitled/common/bottom_fixed_text_field.dart';
+import 'package:untitled/common/grey_filled_text_field.dart';
 
 class FreePostDetailPage extends StatefulWidget {
   final Post post;
@@ -143,7 +143,7 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
               child: Row(
                   children: [
                     Expanded(
-                        child: BottomFixedTextField(controller: _commentController, name: '댓글을 입력하세요', inputType: TextInputType.visiblePassword)
+                        child: GreyFilledTextField(controller: _commentController, name: '댓글을 입력하세요', inputType: TextInputType.visiblePassword)
                     ),
                     SizedBox(width: 4.w),
                     InkWell(
