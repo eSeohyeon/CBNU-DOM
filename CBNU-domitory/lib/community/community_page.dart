@@ -7,9 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/community/community_free_tab.dart';
 import 'package:untitled/community/community_groupbuy_tab.dart';
 
-
-
-
 class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});
 

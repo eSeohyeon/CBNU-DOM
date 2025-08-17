@@ -49,68 +49,71 @@ class _RoommatePageState extends State<RoommatePage> {
       body: SafeArea(
         bottom: false,
         child: _isAnswered ? SingleChildScrollView(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: 24.h),
-                Text('AI 추천 룸메이트', style: boldBlack18),
-                SizedBox(height: 4.h),
-                CarouselSlider.builder(
-                    itemCount: _recommendedUsers.length,
-                    itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => RecommendItem(user: _recommendedUsers[itemIndex], similarity: _recommendedUsersSimilarity[itemIndex].similarity, similar_factors: _recommendedUsersSimilarity[itemIndex].similar_factors),
-                    options: CarouselOptions(
-                        height: 0.43.sh,
-                        viewportFraction: 0.65,
-                        initialPage: 0,
-                        enableInfiniteScroll: true,
-                        reverse: false,
-                        autoPlay: false,
-                        enlargeCenterPage: true,
-                        scrollDirection: Axis.horizontal,
-                        enlargeFactor: 0.17
-                    )
-                ),
-                SizedBox(height: 72.h),
-                Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('추천 룸메이트가\n마음에 들지 않는다면?', style: boldBlack16, textAlign: TextAlign.center),
-                      SizedBox(height: 10.h),
-                      SizedBox(
-                        width: 150.w,
-                        child: ElevatedButton(
-                          child: Text('직접 검색하기', style: mediumBlack14.copyWith(color: grey_button)),
-                          style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              backgroundColor: black,
-                              overlayColor: Colors.transparent,
-                              padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 9.h, bottom: 9.h),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0))
-                          ),
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => FilterSearchPage()));
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      SizedBox(
-                        width: 150.w,
-                        child: ElevatedButton(
-                          child: Text('체크리스트 수정하기', style: mediumBlack14),
-                          style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              backgroundColor: grey_button_greyBG,
-                              overlayColor: Colors.transparent,
-                              padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 9.h, bottom: 9.h),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0))
-                          ),
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => AnswerChecklistPage()));
-                          },
-                        ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 24.h),
+                  Text('AI 추천 룸메이트', style: boldBlack18),
+                  SizedBox(height: 8.h),
+                  CarouselSlider.builder(
+                      itemCount: _recommendedUsers.length,
+                      itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => RecommendItem(user: _recommendedUsers[itemIndex], similarity: _recommendedUsersSimilarity[itemIndex].similarity, similar_factors: _recommendedUsersSimilarity[itemIndex].similar_factors),
+                      options: CarouselOptions(
+                          height: 0.43.sh,
+                          viewportFraction: 0.7,
+                          initialPage: 0,
+                          enableInfiniteScroll: true,
+                          reverse: false,
+                          autoPlay: false,
+                          enlargeCenterPage: true,
+                          scrollDirection: Axis.horizontal,
+                          enlargeFactor: 0.14
                       )
-                    ]
-                ),]
+                  ),
+                  SizedBox(height: 72.h),
+                  Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('추천 룸메이트가\n마음에 들지 않는다면?', style: boldBlack16, textAlign: TextAlign.center),
+                        SizedBox(height: 10.h),
+                        SizedBox(
+                          width: 150.w,
+                          child: ElevatedButton(
+                            child: Text('직접 검색하기', style: mediumBlack14.copyWith(color: grey_button)),
+                            style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                backgroundColor: black,
+                                overlayColor: Colors.transparent,
+                                padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 9.h, bottom: 9.h),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0))
+                            ),
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => FilterSearchPage()));
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        SizedBox(
+                          width: 150.w,
+                          child: ElevatedButton(
+                            child: Text('체크리스트 수정하기', style: mediumBlack14),
+                            style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                backgroundColor: grey_button_greyBG,
+                                overlayColor: Colors.transparent,
+                                padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 9.h, bottom: 9.h),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0))
+                            ),
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => AnswerChecklistPage()));
+                            },
+                          ),
+                        )
+                      ]
+                  ),]
+            ),
           ),
         ) :
             Center( // 체크리스트 응답 전
@@ -164,7 +167,7 @@ class RecommendItem extends StatelessWidget {
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
           child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 28.w, vertical: 12.h),
+              padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 10.h),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,

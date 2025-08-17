@@ -431,9 +431,8 @@ class _HomePageState extends State<HomePage> {
                                   decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.grey.shade300),
                                 ))
                         )
-                        : CarouselSlider.builder(
-                            itemCount: _todayMenu.length,
-                            itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => MealCard(timeIndex: itemIndex, menu: _todayMenu[itemIndex]),
+                        : CarouselSlider(
+                            items: [MealCard(menu: _todayMenu[0], timeIndex: 0), MealCard(menu: _todayMenu[1], timeIndex: 1), MealCard(menu: _todayMenu[2], timeIndex: 2)],
                             options: CarouselOptions(
                                 viewportFraction: 0.88,
                                 height: 300.h,
