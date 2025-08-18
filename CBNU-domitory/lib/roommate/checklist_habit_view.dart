@@ -21,7 +21,7 @@ class _ChecklistHabitViewState extends State<ChecklistHabitView> {
 
   final List<String> habitTitleOptions = ['흡연여부', '잠버릇', '청소', '소리'];
   final List<String> smokingOptions = ['흡연', '비흡연'];
-  final List<String> sleepingHabitOptions = ['없음', '코골이', '이갈이', '잠꼬대'];
+  final List<String> sleepingHabitOptions = ['없음', '있음'];
   final List<String> cleaningFrequencyOptions = ['수시로', '한 번에'];
   final List<String> soundOptions = ['이어폰', '스피커'];
 

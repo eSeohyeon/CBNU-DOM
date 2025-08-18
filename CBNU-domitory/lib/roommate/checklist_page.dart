@@ -35,12 +35,14 @@ class _AnswerChecklistPageState extends State<AnswerChecklistPage> {
     'MBTI_PJ': '',
     '더위': '',
     '추위': '',
-    '향 민감도': '',
+    '잠귀' : '',
+    '실내취식': '',
     '실내통화': '',
     '친구초대': '',
     '벌레': '',
     '컴퓨터 게임': '',
     '운동': '',
+    '이것만은 양보 못해' : ''
   };
   PageController _pageController = PageController();
   int _currentPage = 0;

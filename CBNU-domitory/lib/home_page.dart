@@ -146,7 +146,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     try {
-      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 6));
+      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 12));
       if (response.statusCode != 200) {
         throw Exception('식단 데이터 불러오기 실패'); // 이런 거 뜨면 새로고침할 수 있게 해야함 (버튼이나 스크롤)
       }
@@ -193,7 +193,7 @@ class _HomePageState extends State<HomePage> {
         'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20039&mod=&page=1&scode=00000002&listCnt=20');
 
     try {
-      final response = await http.get(url).timeout(const Duration(seconds: 6));
+      final response = await http.get(url).timeout(const Duration(seconds: 12));
       if (response.statusCode == 200) {
         int count = 0;
         final document = parser.parse(response.body);
