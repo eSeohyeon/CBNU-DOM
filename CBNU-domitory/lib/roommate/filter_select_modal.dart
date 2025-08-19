@@ -238,7 +238,7 @@ class _FilterSelectModalState extends State<FilterSelectModal> with TickerProvid
                                       buttonBuilder: (selected, value, context) {
                                         return filterGroupButton(selected, value);
                                       },
-                                      options: GroupButtonOptions(spacing: 4, alignment: Alignment.centerLeft),
+                                      options: GroupButtonOptions(spacing: 4, mainGroupAlignment: MainGroupAlignment.start),
                                     ),
                                     SizedBox(height: 22.h)
                                   ]

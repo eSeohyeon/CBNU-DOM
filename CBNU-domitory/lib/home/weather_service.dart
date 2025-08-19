@@ -71,6 +71,7 @@ class WeatherService {
       if(openWeatherResponse.statusCode == 200){
         final data = json.decode(openWeatherResponse.body);
         description = _skyToString(data['weather'][0]['main']);
+        print(data['weather'][0]['main']);
       } else {
         throw Exception('날씨 데이터 불러오기 실패');
       }
@@ -140,6 +141,8 @@ class WeatherService {
       case 'Fog':
       case 'Haze':
         return '안개';
+      case 'Rain':
+        return '비';
       default:
         return 'null';
     }

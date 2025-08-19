@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 import 'package:untitled/models/meal.dart';
+import 'package:untitled/themes/styles.dart';
+import 'package:untitled/themes/colors.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 enum DormType{
   BONGUAN(name: "본관", url: "https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20041&type=1"),
@@ -20,161 +24,168 @@ class MealDetailPage extends StatefulWidget {
   State<MealDetailPage> createState() => _MealPageState();
 }
 
-class _MealPageState extends State<MealDetailPage> {
+class _MealPageState extends State<MealDetailPage> with TickerProviderStateMixin{
   DormType _selectedDorm = DormType.BONGUAN;
-  final List<Meal> _meals = [];
   bool _isLoading = false;
+  late TabController _tabController;
+  String _content = '식단을 불러오는 중...';
 
   @override
   void initState() {
     super.initState();
-    fetchMeals();
+    _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
+    _tabController.addListener((){
+      if(_tabController.indexIsChanging) return;
+      final currentIndex = _tabController.index;
+
+      if(currentIndex == 0){
+        setState(() {
+          _selectedDorm = DormType.BONGUAN;
+          fetchMealScreen();
+        });
+      } else if (currentIndex == 1) {
+        setState(() {
+          _selectedDorm = DormType.SEONGJAE;
+          fetchMealScreen();
+        });
+      } else if (currentIndex == 2) {
+        setState(() {
+          _selectedDorm = DormType.JINJAE;
+          fetchMealScreen();
+        });
+      }
+    });
   }
 
-  Future<void> fetchMeals() async {
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  Future<void> fetchMealScreen() async {
     setState(() {
       _isLoading = true;
     });
 
-    final url = _selectedDorm.url;
-    final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode != 200) {
-      throw Exception('식단 데이터 불러오기 실패'); // 이런 거 뜨면 새로고침할 수 있게 해야함 (버튼이나 스크롤)
+    try {
+      final url = _selectedDorm.url;
+      final response = await http.get(Uri.parse(url));
+      if(response.statusCode == 200){
+        final document = parser.parse(response.body);
+        final table = document.querySelector('table.contTable_c');
+
+        if(table != null) {
+          final style = '''
+            <style>
+    .contTable_c {
+      width: 100%;
+      border-collapse: collapse;
     }
-
-    final document = parser.parse(response.body);
-    final tbody = document.querySelector('#contentBody > table.contTable_c.m_table_c.margin_t_30 > tbody');
-
-    if (tbody == null) {
-      throw Exception('식단 데이터 없음');
+    .contTable_c th, .contTable_c td {
+      border: 1px solid #ddd;
+      padding: 16px;  /* Increase this value for more internal spacing */
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+      line-height: 1.6; /* Add line height for better text readability */
     }
-
-    final rows = tbody.querySelectorAll('tr');
-    _meals.clear();
-
-    for (var row in rows) {
-      final cells = row.querySelectorAll('td');
-      if (cells.length < 4) continue;
-
-      final dateAndDay = cells[0].text.trim().split('\n');
-      final date = dateAndDay[0].trim();
-      final dayOfWeek = dateAndDay.length > 1 ? dateAndDay[1].trim() : '';
-
-      final breakfast = cells[1].innerHtml.replaceAll('<br>', '\n').trim();
-      final lunch = cells[2].innerHtml.replaceAll('<br>', '\n').trim();
-      final dinner = cells[3].innerHtml.replaceAll('<br>', '\n').trim();
-
-      _meals.add(Meal(
-        date: date,
-        dayOfWeek: dayOfWeek,
-        breakfast: breakfast,
-        lunch: lunch,
-        dinner: dinner,
-      ));
+    .contTable_c th {
+      background-color: #f2f2f2;
     }
+    .contTable_c td br {
+      content: "";
+      display: block;
+      margin-bottom: 10px; /* Add margin below line breaks */
+    }
+  </style>
+          ''';
+          setState(() {
+            _content = style + table.outerHtml;
+            _isLoading = false;
+          });
+        } else {
+          setState(() {
+            _content = '식단표 테이블을 찾을 수 없습니다.';
+            _isLoading = false;
+          });
+        }
+      }
 
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
-  void onDormTypeSelected(DormType type) {
-    if (_selectedDorm != type) {
+    } catch(e) {
       setState(() {
-        _selectedDorm = type;
+        _content = '<p>에러 발생: ${e.toString()}</p>';
+        _isLoading = false;
       });
-      fetchMeals();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: white,
       appBar: AppBar(
-        title: Text('기숙사 식단'),
+        backgroundColor: white,
+        surfaceTintColor: white,
+        titleSpacing: 0,
+        title: Text('이번주 식단', style: mediumBlack16),
       ),
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              DormButton(
-                title: '본관',
-                isSelected: _selectedDorm == DormType.BONGUAN,
-                onTap: () => onDormTypeSelected(DormType.BONGUAN),
-              ),
-              DormButton(
-                title: '양성재',
-                isSelected: _selectedDorm == DormType.SEONGJAE,
-                onTap: () => onDormTypeSelected(DormType.SEONGJAE),
-              ),
-              DormButton(
-                title: '양진재',
-                isSelected: _selectedDorm == DormType.JINJAE,
-                onTap: () => onDormTypeSelected(DormType.JINJAE),
-              ),
-            ],
-          ),
-          Expanded(
-            child: _isLoading
-                ? Center(child: CircularProgressIndicator())
-                : ListView.builder(
-              itemCount: _meals.length,
-              itemBuilder: (context, index) {
-                final meal = _meals[index];
-                return SizedBox(
-                  width: 300,
-                  height: 1200,
-                  child: Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(meal.dayOfWeek, style: TextStyle(fontSize: 16)),
-                        Text(meal.date, style: TextStyle(fontSize: 16)),
-                        SizedBox(height: 10),
-                        Text('아침',  style: TextStyle(fontSize: 14, color: Colors.blueAccent)),
-                        Text(meal.breakfast, style: TextStyle(fontSize: 14)),
-                        Text('점심',  style: TextStyle(fontSize: 14, color: Colors.blueAccent)),
-                        Text(meal.lunch, style: TextStyle(fontSize: 14)),
-                        Text('저녁',  style: TextStyle(fontSize: 14, color: Colors.blueAccent)),
-                        Text(meal.dinner, style: TextStyle(fontSize: 14)),
-                      ],
-                    ),
-                  ),
-                );
-              },
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        child: Column(
+          children: [
+            TabBar(
+                controller: _tabController,
+                tabAlignment: TabAlignment.center,
+                labelStyle: mediumBlack16,
+                unselectedLabelColor: grey,
+                indicatorColor: black,
+                isScrollable: true,
+                dividerColor: Colors.transparent,
+                indicatorPadding: EdgeInsets.only(bottom: -2),
+                overlayColor: WidgetStatePropertyAll(Colors.transparent),
+                labelPadding: EdgeInsets.symmetric(horizontal: 24.w),
+                tabs: [
+                  Tab(text: '본관'),
+                  Tab(text: '양성재'),
+                  Tab(text: '양진재'),
+                ]
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-class DormButton extends StatelessWidget { // 그냥 버튼 ui용 기능이랑 관계 없음
-  final String title;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const DormButton({
-    required this.title,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isSelected ? Colors.blue : Colors.grey,
+            Container(
+                width: double.infinity,
+                height: 1.h,
+                color: grey_seperating_line
+            ),
+            SizedBox(height: 6.h),
+            Expanded( // <-- Wrap TabBarView with Expanded
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  // You should handle the loading state within each TabView child
+                  _isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: HtmlWidget(_content, textStyle: const TextStyle(fontSize: 14)),
+                  ),
+                  _isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: HtmlWidget(_content, textStyle: const TextStyle(fontSize: 14)),
+                  ),
+                  _isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: HtmlWidget(_content, textStyle: const TextStyle(fontSize: 14)),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        onPressed: onTap,
-        child: Text(title),
       ),
     );
   }
