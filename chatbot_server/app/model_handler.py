@@ -1,5 +1,6 @@
 import pandas as pd
 import torch
+import torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import pickle
 
@@ -7,7 +8,7 @@ import pickle
 # 1. 답변 엑셀 불러오기
 # ------------------------------
 answers_df = pd.read_excel("answers.xlsx")  # 1열: Label, 2열: Answer
-answers_dict = dict(zip(answers_df.iloc[:,0], answers_df.iloc[:,1]))
+answers_dict = dict(zip(answers_df.iloc[:, 0], answers_df.iloc[:, 1]))
 
 # ------------------------------
 # 2. Rule-based 분류
@@ -69,16 +70,24 @@ class DLModelHandler:
             self.le = pickle.load(f)
 
     def predict(self, question: str) -> str:
-        inputs = self.tokenizer(question, 
-                                return_tensors="pt", 
-                                padding="max_length", 
-                                truncation=True, 
-                                max_length=64)
-        inputs = {k:v.to(self.device) for k,v in inputs.items()}
+        inputs = self.tokenizer(
+            question,
+            return_tensors="pt",
+            padding="max_length",
+            truncation=True,
+            max_length=64
+        )
+        inputs = {k: v.to(self.device) for k, v in inputs.items()}
         with torch.no_grad():
             outputs = self.model(**inputs)
-            pred = torch.argmax(outputs.logits, dim=1).item()
-        label = self.le.inverse_transform([pred])[0]
+            probs = F.softmax(outputs.logits, dim=1)
+            confidence, pred = torch.max(probs, dim=1)
+
+        confidence = confidence.item()
+        if confidence < 0.9:  # 신뢰도 임계값 체크
+            return None  # 낮으면 None 반환
+
+        label = self.le.inverse_transform([pred.item()])[0]
         return label
 
 # ------------------------------
