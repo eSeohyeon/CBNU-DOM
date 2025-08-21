@@ -1,20 +1,20 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, APIRouter
 from pydantic import BaseModel
 from model_handler import rule_based_classify, DLModelHandler, get_answer
 
-app = FastAPI(title="Dormitory Q&A API")
+router = APIRouter()
 
 # DL 모델 핸들러 초기화
-dl_model = DLModelHandler(model_dir="kobert_model_0.95")
+dl_model = DLModelHandler(model_dir="./models/kobert_model_0.95")
 
 class QuestionRequest(BaseModel):
     question: str
 
-@app.get("/")
+@router.get("/")
 def root():
     return {"message": "Dormitory Q&A API is running."}
 
-@app.post("/get_answer")
+@router.post("/get_answer")
 def get_answer_api(request: QuestionRequest):
     question = request.question
 

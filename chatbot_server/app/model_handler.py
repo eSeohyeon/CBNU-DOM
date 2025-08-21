@@ -58,7 +58,7 @@ def rule_based_classify(question: str) -> str:
 # 3. 딥러닝 모델 로드
 # ------------------------------
 class DLModelHandler:
-    def __init__(self, model_dir="kobert_model_0.95"):
+    def __init__(self, model_dir="./models/kobert_model_0.95"):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = AutoModelForSequenceClassification.from_pretrained(model_dir)
         self.tokenizer = AutoTokenizer.from_pretrained(model_dir, use_fast=False)

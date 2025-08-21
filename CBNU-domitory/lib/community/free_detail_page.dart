@@ -57,119 +57,122 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
           )
         ]
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                            children: [
-                              SizedBox(
-                                  width: 36.w,
-                                  height: 36.w,
-                                  child: Image.asset('assets/profile_man.png')
-                              ),
-                              SizedBox(width: 6.w),
-                              Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(widget.post.writer, style: boldBlack14),
-                                    Text('${widget.post.date} ${widget.post.time}', style: mediumGrey13)
-                                  ]
-                              )
-                            ]
-                        ),
-                        SizedBox(height: 16.h),
-                        Text(widget.post.title, style: boldBlack16),
-                        SizedBox(height: 4.h),
-                        Text(widget.post.contents, style: mediumBlack14),
-                        SizedBox(height: 24.h),
-                      ]
-                    ),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    height: 1.h,
-                    color: grey_seperating_line
-                  ),
-                  SizedBox(height: 16.h),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 18.w),
-                    child: Row(
-                      children: [
-                        Text('댓글', style: boldBlack14),
-                        SizedBox(width: 4.w),
-                        Text('${_comments.length}', style: mediumGrey14)
-                      ]
-                    )
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                    child: _isCommentsEmpty? Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.comments_disabled_rounded, size: 56, color: grey_seperating_line),
-                        SizedBox(height: 6.h),
-                        Text('댓글이 없습니다.', style: mediumGrey14)
-                      ]
-                    ) : ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _comments.length,
-                      itemBuilder: (context, index){
-                        final comment = _comments[index];
-                        return CommentsItem(comment: comment);
-                      },
-                      separatorBuilder: (context, index) => Divider(height: 1, color: grey_seperating_line),
-                    )
-                  )
-                ]
-              ),
-            ),
-          ),
-          Padding(
-              padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 24.h, top: 10.h),
-              child: Row(
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                        child: GreyFilledTextField(controller: _commentController, name: '댓글을 입력하세요', inputType: TextInputType.visiblePassword)
-                    ),
-                    SizedBox(width: 4.w),
-                    InkWell(
-                        onTap: () {
-                          if(_commentController.text.isNotEmpty) {
-                            setState(() {
-                              _comments.add(Comment(postId: widget.post.postId, commentId: _comments.length+1, userId: '사자', contents: _commentController.text, dateTime: DateTime.now(), subComments: []));
-                            });
-                          }
-                        },
-                        child: Container(
-                            decoration: BoxDecoration(color: black, borderRadius: BorderRadius.circular(20)),
-                            child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-                                child: Icon(
-                                    Icons.keyboard_return_rounded,
-                                    color: white,
-                                    size: 28
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                              children: [
+                                SizedBox(
+                                    width: 36.w,
+                                    height: 36.w,
+                                    child: Image.asset('assets/profile_man.png')
+                                ),
+                                SizedBox(width: 6.w),
+                                Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(widget.post.writer, style: boldBlack14),
+                                      Text('${widget.post.date} ${widget.post.time}', style: mediumGrey13)
+                                    ]
                                 )
-                            )
-                        )
+                              ]
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(widget.post.title, style: boldBlack16),
+                          SizedBox(height: 4.h),
+                          Text(widget.post.contents, style: mediumBlack14),
+                          SizedBox(height: 24.h),
+                        ]
+                      ),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      height: 1.h,
+                      color: grey_seperating_line
+                    ),
+                    SizedBox(height: 16.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 18.w),
+                      child: Row(
+                        children: [
+                          Text('댓글', style: boldBlack14),
+                          SizedBox(width: 4.w),
+                          Text('${_comments.length}', style: mediumGrey14)
+                        ]
+                      )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                      child: _isCommentsEmpty? Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.comments_disabled_rounded, size: 56, color: grey_seperating_line),
+                          SizedBox(height: 6.h),
+                          Text('댓글이 없습니다.', style: mediumGrey14)
+                        ]
+                      ) : ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _comments.length,
+                        itemBuilder: (context, index){
+                          final comment = _comments[index];
+                          return CommentsItem(comment: comment);
+                        },
+                        separatorBuilder: (context, index) => Divider(height: 1, color: grey_seperating_line),
+                      )
                     )
                   ]
-              )
-          ),
-        ],
+                ),
+              ),
+            ),
+            Padding(
+                padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 24.h, top: 10.h),
+                child: Row(
+                    children: [
+                      Expanded(
+                          child: GreyFilledTextField(controller: _commentController, name: '댓글을 입력하세요', inputType: TextInputType.visiblePassword)
+                      ),
+                      SizedBox(width: 4.w),
+                      InkWell(
+                          onTap: () {
+                            if(_commentController.text.isNotEmpty) {
+                              setState(() {
+                                _comments.add(Comment(postId: widget.post.postId, commentId: _comments.length+1, userId: '사자', contents: _commentController.text, dateTime: DateTime.now(), subComments: []));
+                              });
+                            }
+                          },
+                          child: Container(
+                              decoration: BoxDecoration(color: black, borderRadius: BorderRadius.circular(20)),
+                              child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                                  child: Icon(
+                                      Icons.keyboard_return_rounded,
+                                      color: white,
+                                      size: 28
+                                  )
+                              )
+                          )
+                      )
+                    ]
+                )
+            ),
+          ],
+        ),
       ),
     );
   }
