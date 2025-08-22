@@ -2,19 +2,19 @@ from fastapi import FastAPI, Query, APIRouter
 from pydantic import BaseModel
 from model_handler import rule_based_classify, DLModelHandler, get_answer
 
-router = APIRouter()
+router = APIRouter() # app 두 개 있어서 수정한 부분
 
 # DL 모델 핸들러 초기화
-dl_model = DLModelHandler(model_dir="./models/kobert_model_0.95")
+dl_model = DLModelHandler(model_dir="../models/kobert_model_0.95") # 모델 경로 때문에 수정한 부분
 
 class QuestionRequest(BaseModel):
     question: str
 
-@router.get("/")
+@router.get("/") # 수정
 def root():
     return {"message": "Dormitory Q&A API is running."}
 
-@router.post("/get_answer")
+@router.post("/get_answer") # 수정
 def get_answer_api(request: QuestionRequest):
     question = request.question
 

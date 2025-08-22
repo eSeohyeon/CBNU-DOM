@@ -23,7 +23,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
 
   final List<Map<String, String>> _messages = [];
 
-  //테스트 쓰레기는 어떻게 버려?
+  //테스트 빨래는 어떻게 해?
   String _question = '';
   String _answer = '';
 
@@ -58,6 +58,8 @@ class _ChatbotPageState extends State<ChatbotPage> {
       _messages.add({'챗봇_로딩' : '로딩 중...'});
     });
 
+    _scrollToBottom();
+
     try {
       final response = await http.post(
           Uri.parse(serverUrl),
@@ -74,6 +76,8 @@ class _ChatbotPageState extends State<ChatbotPage> {
           _messages.removeLast();
           _messages.add({'챗봇' : answer});
         });
+
+        _scrollToBottom();
         return;
       } else {
         print('HTTP request failed with status: ${response.statusCode}');
@@ -86,6 +90,20 @@ class _ChatbotPageState extends State<ChatbotPage> {
       _isLoading = false;
       _messages.removeLast();
       _messages.add({'챗봇' : '죄송해요. 답변을 불러오는 데에 실패했어요.'});
+    });
+
+    _scrollToBottom();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if(_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
     });
   }
 
