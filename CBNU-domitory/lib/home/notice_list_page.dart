@@ -93,32 +93,35 @@ class _NoticeListPageState extends State<NoticeListPage> {
         title: Text('공지사항', style: mediumBlack16),
         titleSpacing: 0,
       ),
-      body: ListView.separated(
-        controller: _scrollController,
-        itemCount: _notices.length + 1,
-        separatorBuilder: (context, index) => Divider(height: 1, color: grey_seperating_line),
-        itemBuilder: (context, index) {
-          if (index == _notices.length) {
-            return _isLoading
-                ? const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()))
-                : const SizedBox.shrink();
-          }
-          final notice = _notices[index];
-          return ListTile(
-            title: Text(notice.title),
-            subtitle: Text('${notice.writer} | ${notice.date}'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => NoticeDetailPage(url: notice.link, item: notice),
-                ),
-              );
-            },
-          );
-        },
+      body: SafeArea(
+        top: false,
+        child: ListView.separated(
+          controller: _scrollController,
+          itemCount: _notices.length + 1,
+          separatorBuilder: (context, index) => Divider(height: 1, color: grey_seperating_line),
+          itemBuilder: (context, index) {
+            if (index == _notices.length) {
+              return _isLoading
+                  ? const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Center(child: CircularProgressIndicator()))
+                  : const SizedBox.shrink();
+            }
+            final notice = _notices[index];
+            return ListTile(
+              title: Text(notice.title),
+              subtitle: Text('${notice.writer} | ${notice.date}'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => NoticeDetailPage(url: notice.link, item: notice),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

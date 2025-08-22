@@ -29,41 +29,44 @@ class StartPage extends StatelessWidget {
           ),
         )
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: double.infinity,
-              height: 45.h,
-              child: ElevatedButton(
-                onPressed: () {
-                  // 회원가입 페이지로 이동
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
-                },
-                child: Text("시작하기", style: mediumWhite16),
-                style: btnBlackRound30
-              )
-            ),
-            SizedBox(height: 2.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('이미 계정이 있으신가요?', style: mediumGrey14),
-                TextButton(
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                height: 45.h,
+                child: ElevatedButton(
                   onPressed: () {
-                    // 로그인 페이지로 이동
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                    // 회원가입 페이지로 이동
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
                   },
-                  style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory),
-                  child: Text('로그인', style: boldBlack16.copyWith(fontSize: 14.sp))
+                  child: Text("시작하기", style: mediumWhite16),
+                  style: btnBlackRound30
                 )
-              ]
-            )
-          ]
-        )
+              ),
+              SizedBox(height: 2.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('이미 계정이 있으신가요?', style: mediumGrey14),
+                  TextButton(
+                    onPressed: () {
+                      // 로그인 페이지로 이동
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                    },
+                    style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory),
+                    child: Text('로그인', style: boldBlack16.copyWith(fontSize: 14.sp))
+                  )
+                ]
+              )
+            ]
+          )
+        ),
       )
     );
   }

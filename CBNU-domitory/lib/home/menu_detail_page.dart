@@ -131,19 +131,19 @@ class _MealPageState extends State<MealDetailPage> with TickerProviderStateMixin
         titleSpacing: 0,
         title: Text('이번주 식단', style: mediumBlack16),
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
+      body: SafeArea(
+        top: false,
         child: Column(
           children: [
             TabBar(
                 controller: _tabController,
                 tabAlignment: TabAlignment.center,
-                labelStyle: mediumBlack16,
+                labelStyle: boldBlack16,
                 unselectedLabelColor: grey,
                 indicatorColor: black,
                 isScrollable: true,
                 dividerColor: Colors.transparent,
-                indicatorPadding: EdgeInsets.only(bottom: -2),
+                indicatorPadding: EdgeInsets.only(bottom: 0),
                 overlayColor: WidgetStatePropertyAll(Colors.transparent),
                 labelPadding: EdgeInsets.symmetric(horizontal: 24.w),
                 tabs: [
@@ -159,29 +159,32 @@ class _MealPageState extends State<MealDetailPage> with TickerProviderStateMixin
             ),
             SizedBox(height: 6.h),
             Expanded( // <-- Wrap TabBarView with Expanded
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  // You should handle the loading state within each TabView child
-                  _isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : SingleChildScrollView(
-                    padding: const EdgeInsets.all(16.0),
-                    child: HtmlWidget(_content, textStyle: const TextStyle(fontSize: 14)),
-                  ),
-                  _isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : SingleChildScrollView(
-                    padding: const EdgeInsets.all(16.0),
-                    child: HtmlWidget(_content, textStyle: const TextStyle(fontSize: 14)),
-                  ),
-                  _isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : SingleChildScrollView(
-                    padding: const EdgeInsets.all(16.0),
-                    child: HtmlWidget(_content, textStyle: const TextStyle(fontSize: 14)),
-                  ),
-                ],
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    // You should handle the loading state within each TabView child
+                    _isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : SingleChildScrollView(
+                      padding: const EdgeInsets.all(16.0),
+                      child: HtmlWidget(_content, textStyle: const TextStyle(fontSize: 14)),
+                    ),
+                    _isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : SingleChildScrollView(
+                      padding: const EdgeInsets.all(16.0),
+                      child: HtmlWidget(_content, textStyle: const TextStyle(fontSize: 14)),
+                    ),
+                    _isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : SingleChildScrollView(
+                      padding: const EdgeInsets.all(16.0),
+                      child: HtmlWidget(_content, textStyle: const TextStyle(fontSize: 14)),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
