@@ -58,7 +58,7 @@ def rule_based_classify(question: str) -> str:
 # 3. 딥러닝 모델 로드
 # ------------------------------
 class DLModelHandler:
-    def __init__(self, model_dir="kobert_model_0.95"):
+    def __init__(self, model_dir="../models/kobert_model_0.95"): # 모델 경로 문제로 수정한 부분
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = AutoModelForSequenceClassification.from_pretrained(model_dir)
         self.tokenizer = AutoTokenizer.from_pretrained(model_dir, use_fast=False)
@@ -77,6 +77,10 @@ class DLModelHandler:
             truncation=True,
             max_length=64
         )
+
+        if "token_type_ids" in inputs: # 토큰 관련 문제로 추가한 부분
+                    del inputs["token_type_ids"]
+
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
         with torch.no_grad():
             outputs = self.model(**inputs)

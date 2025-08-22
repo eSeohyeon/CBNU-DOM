@@ -17,6 +17,7 @@ import 'package:untitled/home/menu_detail_page.dart';
 import 'package:untitled/home/notice_detail_page.dart';
 import 'package:untitled/home/notice_list_page.dart';
 import 'package:untitled/home/dorm_score_ranking.dart';
+import 'package:untitled/home/chatbot_page.dart';
 
 
 
@@ -226,6 +227,22 @@ class _HomePageState extends State<HomePage> {
             if(count>=2) break;
           }
         }
+      } else {
+        _latestNotices.add(Notice(
+            title: '공지사항을 불러올 수 없습니다.',
+            writer: '',
+            date: '',
+            link: ''
+        ));
+        _latestNotices.add(Notice(
+            title: '새로고침 시도.',
+            writer: '',
+            date: '',
+            link: ''
+        ));
+        setState(() {
+          _isAnyLoadingError = true;
+        });
       }
     } catch (e) {
       debugPrint("Failed to get data: $e");
@@ -372,6 +389,7 @@ class _HomePageState extends State<HomePage> {
                                 onTap: () {
                                   if(index == 0){
                                     print('chatbot');
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ChatbotPage()));
                                   } else if(index==1){
                                     print('세탁카드');
                                   } else if(index==2){
