@@ -141,7 +141,7 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
               ),
             ),
             Padding(
-                padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 24.h, top: 10.h),
+                padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 10.h, top: 10.h),
                 child: Row(
                     children: [
                       Expanded(
