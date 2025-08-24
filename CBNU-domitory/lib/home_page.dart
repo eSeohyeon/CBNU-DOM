@@ -47,6 +47,8 @@ class _HomePageState extends State<HomePage> {
   bool _isWeatherLoading = false;
   bool _isNoticeLoading = false;
   bool _isAnyLoadingError = false;
+  final ScrollController _scrollController = ScrollController();
+  double _opacity = 0.0;
 
   final User? user = FirebaseAuth.instance.currentUser;
 
@@ -74,7 +76,18 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _currentDate = getCurrentDate();
+    _scrollController.addListener(() {
+      double offset = _scrollController.offset;
+      double newOpacity = (offset / 150).clamp(0.0, 1.0);
+      setState(() => _opacity = newOpacity);
+    });
     _onRefresh();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _onRefresh() async {
@@ -115,9 +128,9 @@ class _HomePageState extends State<HomePage> {
       });
     }
 
-     setState(() {
-       _isWeatherLoading = false;
-     });
+    setState(() {
+      _isWeatherLoading = false;
+    });
   }
 
   Future<void> fetchTodayMenu() async {
@@ -217,10 +230,10 @@ class _HomePageState extends State<HomePage> {
                 'https://dorm.chungbuk.ac.kr/home/$href';
 
             _latestNotices.add(Notice(
-              title: title,
-              writer: writer,
-              date: date,
-              link: link
+                title: title,
+                writer: writer,
+                date: date,
+                link: link
             ));
 
             count++;
@@ -247,10 +260,10 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       debugPrint("Failed to get data: $e");
       _latestNotices.add(Notice(
-        title: '공지사항을 불러올 수 없습니다.',
-        writer: '',
-        date: '',
-        link: ''
+          title: '공지사항을 불러올 수 없습니다.',
+          writer: '',
+          date: '',
+          link: ''
       ));
       _latestNotices.add(Notice(
           title: '새로고침 시도.',
@@ -280,10 +293,11 @@ class _HomePageState extends State<HomePage> {
     return SafeArea(
       top: false,
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         backgroundColor: background,
         appBar: AppBar(
-          backgroundColor: background,
-          surfaceTintColor: background,
+          backgroundColor: background.withOpacity(_opacity),
+          surfaceTintColor: background.withOpacity(_opacity),
           leading: PopupMenuButton<String>(
             icon: Icon(Icons.keyboard_arrow_down_rounded, color: black, size: 24),
             onSelected: (String dorm) {
@@ -320,217 +334,254 @@ class _HomePageState extends State<HomePage> {
           actionsPadding: EdgeInsets.only(right: 8),
         ),
         body: RefreshIndicator(
-          onRefresh: _onRefresh,
-          child: _isAnyLoadingError
-            ? SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - MediaQuery.of(context).padding.top,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset('assets/screen_error.png'),
-                    SizedBox(height: 10.h),
-                    Text('화면 로딩 중에 오류가 발생했어요', style: boldBlack18),
-                    SizedBox(height: 2.h),
-                    Text('화면을 아래로 당겨서 새로고침', style: mediumBlack14)
-                  ]
+            onRefresh: _onRefresh,
+            child: _isAnyLoadingError
+                ? SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - MediaQuery.of(context).padding.top,
+                  child: Center(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset('assets/screen_error.png'),
+                            SizedBox(height: 10.h),
+                            Text('화면 로딩 중에 오류가 발생했어요', style: boldBlack18),
+                            SizedBox(height: 2.h),
+                            Text('화면을 아래로 당겨서 새로고침', style: mediumBlack14)
+                          ]
+                      )
+                  ),
                 )
-              ),
             )
-          )
-            : SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                : SingleChildScrollView(
+              controller: _scrollController,
               child: Column( // 본문 내용
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: 10.h),
-                  _isWeatherLoading ?
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.w),
-                        child: Shimmer.fromColors(
-                          baseColor: Colors.grey.shade300,
-                          highlightColor: Colors.grey.shade100,
-                          child: Container(
-                            width: double.infinity,
-                            height: 90.h,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.grey.shade300),
-                          ))
-                      ) :
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.w),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(_currentWeather!.description, style: boldBlack16),
-                              Text('${_currentWeather!.temperature.toStringAsFixed(0)}°C', style: boldBlack24),
-                              Text('체감온도 ${_currentWeather!.feelsLike.toStringAsFixed(0)}°C', style: mediumGrey14),
-                            ]
+                  Stack(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                          height: 200.h,
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [Color(0xFF71A8BF), background],
+                                  stops: [0.0, 1.0]
+                              )
                           )
-                        ),
                       ),
-                  SizedBox(height: 16.h),
-                  SingleChildScrollView( // CircleButtons
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: List.generate(circleButtons.length, (index) {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10.w),
-                          child: Column(
-                            children: [
-                              InkWell(
-                                borderRadius: BorderRadius.circular(30.0),
-                                onTap: () {
-                                  if(index == 0){
-                                    print('chatbot');
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ChatbotPage()));
-                                  } else if(index==1){
-                                    print('세탁카드');
-                                  } else if(index==2){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => DormScoreRanking()));
-                                  } else if(index==3){
-                                    print('공구쪽지');
-                                  } else if(index==4){
-                                    print('룸메쪽지');
-                                  }
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Container(
-                                    width: 42.w,
-                                    height: 42.h,
-                                    padding: EdgeInsets.all(12.0),
-                                    decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(25.0)),
-                                    child: circleButtonImages[index]
-                                  ),
-                                )
-                              ),
-                              SizedBox(height: 4.h),
-                              Text(circleButtons[index], style: mediumBlack14)
-                            ]
-                          )
-                        );
-                      })
-                    )
-                  ),
-                  SizedBox(height: 48.h),
-                  Column( // 식단 메뉴 타이틀
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox(width: 12.w),
-                            Expanded(child: Text('오늘의 식단', style: boldBlack18)),
-                            InkWell(child: Text('더 보기 >', style: mediumGrey14), onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => MealDetailPage())
-                              );
-                            }),
-                            SizedBox(width: 10.w)
-                          ],
-                        ),
-                        SizedBox(height: 10.h),
-                        _isMealLoading ?
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Image.asset('assets/test_cloud.png', width: double.infinity)
+                      ),
+                      Positioned(
+                        top: kToolbarHeight + MediaQuery.of(context).padding.top + 4.h,
+                        left: 10.w,
+                        right: 10.w,
+                        child: _isWeatherLoading ?
                         Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10.w),
+                            padding: EdgeInsets.symmetric(horizontal: 14.w),
                             child: Shimmer.fromColors(
                                 baseColor: Colors.grey.shade300,
                                 highlightColor: Colors.grey.shade100,
                                 child: Container(
                                   width: double.infinity,
-                                  height: 300.h,
+                                  height: 90.h,
                                   decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.grey.shade300),
                                 ))
-                        )
-                        : CarouselSlider(
-                            items: [MealCard(menu: _todayMenu[0], timeIndex: 0), MealCard(menu: _todayMenu[1], timeIndex: 1), MealCard(menu: _todayMenu[2], timeIndex: 2)],
-                            options: CarouselOptions(
-                                viewportFraction: 0.88,
-                                height: 300.h,
-                                initialPage: 1,
-                                enableInfiniteScroll: true,
-                                autoPlay: false,
-                                enlargeCenterPage: true,
-                                scrollDirection: Axis.horizontal,
-                                enlargeFactor: 0.15
-                            )
-                        ), // 식단 메뉴 카드
-                      ]
-                  ),
-                  SizedBox(height: 42.h),
-                  Column( // 최신공지사항 타이틀
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
+                        ) :
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 14.w),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              SizedBox(width: 12.w),
-                              Expanded(child: Text('공지사항', style: boldBlack18)),
-                              InkWell(child: Text('더 보기 >', style: mediumGrey14), onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => NoticeListPage())
-                                );
-                              }),
-                              SizedBox(width: 10.w)
+                              Expanded(
+                                  child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(_currentWeather!.description, style: boldBlack16),
+                                        Text('${_currentWeather!.temperature.toStringAsFixed(0)}°C', style: boldBlack24),
+                                        Text('체감온도 ${_currentWeather!.feelsLike.toStringAsFixed(0)}°C', style: mediumGrey14),
+                                      ]
+                                  )
+                              ),
+                              /*Image.asset(
+                                'assets/woowang_cloudy.png',
+                                width: .w,
+                                height: 200.h
+                              )*/
+                            ]
+                          )
+                        ),
+                      ),
+                    ]
+                  ),
+                  SingleChildScrollView( // CircleButtons
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: List.generate(circleButtons.length, (index) {
+                            return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                                child: Column(
+                                    children: [
+                                      InkWell(
+                                          borderRadius: BorderRadius.circular(30.0),
+                                          onTap: () {
+                                            if(index == 0){
+                                              print('chatbot');
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatbotPage()));
+                                            } else if(index==1){
+                                              print('세탁카드');
+                                            } else if(index==2){
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => DormScoreRanking()));
+                                            } else if(index==3){
+                                              print('공구쪽지');
+                                            } else if(index==4){
+                                              print('룸메쪽지');
+                                            }
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Container(
+                                                width: 42.w,
+                                                height: 42.h,
+                                                padding: EdgeInsets.all(12.0),
+                                                decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(25.0)),
+                                                child: circleButtonImages[index]
+                                            ),
+                                          )
+                                      ),
+                                      SizedBox(height: 4.h),
+                                      Text(circleButtons[index], style: mediumBlack14)
+                                    ]
+                                )
+                            );
+                          })
+                      )
+                  ),
+                  SizedBox(height: 36.h),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                    child: Column(
+                      children: [
+                        Column( // 식단 메뉴 타이틀
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  SizedBox(width: 12.w),
+                                  Expanded(child: Text('오늘의 식단', style: boldBlack18)),
+                                  InkWell(child: Text('더 보기 >', style: mediumGrey14), onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => MealDetailPage())
+                                    );
+                                  }),
+                                  SizedBox(width: 10.w)
+                                ],
+                              ),
+                              SizedBox(height: 10.h),
+                              _isMealLoading ?
+                              Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                                  child: Shimmer.fromColors(
+                                      baseColor: Colors.grey.shade300,
+                                      highlightColor: Colors.grey.shade100,
+                                      child: Container(
+                                        width: double.infinity,
+                                        height: 300.h,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.grey.shade300),
+                                      ))
+                              )
+                                  : CarouselSlider(
+                                  items: [MealCard(menu: _todayMenu[0], timeIndex: 0), MealCard(menu: _todayMenu[1], timeIndex: 1), MealCard(menu: _todayMenu[2], timeIndex: 2)],
+                                  options: CarouselOptions(
+                                      viewportFraction: 0.88,
+                                      height: 300.h,
+                                      initialPage: 1,
+                                      enableInfiniteScroll: true,
+                                      autoPlay: false,
+                                      enlargeCenterPage: true,
+                                      scrollDirection: Axis.horizontal,
+                                      enlargeFactor: 0.15
+                                  )
+                              ), // 식단 메뉴 카드
                             ]
                         ),
-                        SizedBox(height: 6.h),
-                        _isNoticeLoading?
-                        Shimmer.fromColors(
-                            baseColor: Colors.grey.shade300,
-                            highlightColor: Colors.grey.shade100,
-                            child: Container(
-                              width: double.infinity,
-                              height: 150.h,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.grey.shade300),
-                            ))
-                        : NoticeCard(notice1: _latestNotices[0], notice2: _latestNotices[1])// 공지사항 카드
-                      ]
-                  ),
-                  SizedBox(height: 42.h),
-                  Column( // 실시간 인기글 타이틀
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 12.w),
-                          child: Align(alignment: AlignmentDirectional.centerStart, child: Text('실시간 인기 글', style: boldBlack18)),
+                        SizedBox(height: 42.h),
+                        Column( // 최신공지사항 타이틀
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                  children: [
+                                    SizedBox(width: 12.w),
+                                    Expanded(child: Text('공지사항', style: boldBlack18)),
+                                    InkWell(child: Text('더 보기 >', style: mediumGrey14), onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => NoticeListPage())
+                                      );
+                                    }),
+                                    SizedBox(width: 10.w)
+                                  ]
+                              ),
+                              SizedBox(height: 6.h),
+                              _isNoticeLoading?
+                              Shimmer.fromColors(
+                                  baseColor: Colors.grey.shade300,
+                                  highlightColor: Colors.grey.shade100,
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 150.h,
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.grey.shade300),
+                                  ))
+                                  : NoticeCard(notice1: _latestNotices[0], notice2: _latestNotices[1])// 공지사항 카드
+                            ]
                         ),
-                        SizedBox(height: 6.h),
+                        SizedBox(height: 42.h),
+                        Column( // 실시간 인기글 타이틀
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(left: 12.w),
+                                child: Align(alignment: AlignmentDirectional.centerStart, child: Text('실시간 인기 글', style: boldBlack18)),
+                              ),
+                              SizedBox(height: 6.h),
+                              Column(
+                                  children: [
+                                    BestPostCard(bestPost: _post1),
+                                    SizedBox(height: 2.h),
+                                    BestPostCard(bestPost: _post2)
+                                  ]
+                              )
+                            ]
+                        ),
+                        SizedBox(height: 42.h),
                         Column(
                             children: [
-                              BestPostCard(bestPost: _post1),
+                              Padding(
+                                padding: EdgeInsets.only(left: 12.w),
+                                child: Align(alignment: AlignmentDirectional.centerStart, child: Text('너만 오면 되는 공동구매', style: boldBlack18)),
+                              ),
+                              SizedBox(height: 6.h),
+                              GroupBuyPostCard(groupBuyPost: _groupBuyPost1),
                               SizedBox(height: 2.h),
-                              BestPostCard(bestPost: _post2)
+                              GroupBuyPostCard(groupBuyPost: _groupBuyPost2)
                             ]
-                        )
-                      ]
-                  ),
-                  SizedBox(height: 42.h),
-                  Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 12.w),
-                          child: Align(alignment: AlignmentDirectional.centerStart, child: Text('너만 오면 되는 공동구매', style: boldBlack18)),
                         ),
-                        SizedBox(height: 6.h),
-                        GroupBuyPostCard(groupBuyPost: _groupBuyPost1),
-                        SizedBox(height: 2.h),
-                        GroupBuyPostCard(groupBuyPost: _groupBuyPost2)
+                        SizedBox(height: 150.h)
                       ]
-                  ),
-                  SizedBox(height: 150.h)
+                    ),
+                  )
                 ],
               ),
-            ),
-          )
+            )
         ),
       ),
     );
@@ -561,18 +612,18 @@ class MealCard extends StatelessWidget {
         decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0), border: Border.all(color: grey_seperating_line, width: 1.0)),
         width: double.infinity,
         child: Padding(
-          padding: EdgeInsets.only(top:14.h, bottom: 12.h),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(mealLabel, style: boldBlack16),
-              Text(mealTime, style: mediumGrey14),
-              SizedBox(height: 20.h),
-              SizedBox(
-                  height: 195.h,
-                  child: SingleChildScrollView(child: Text(menu, style: mediumBlack16, textAlign: TextAlign.center)))
-            ]
-          )
+            padding: EdgeInsets.only(top:14.h, bottom: 12.h),
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(mealLabel, style: boldBlack16),
+                  Text(mealTime, style: mediumGrey14),
+                  SizedBox(height: 20.h),
+                  SizedBox(
+                      height: 195.h,
+                      child: SingleChildScrollView(child: Text(menu, style: mediumBlack16, textAlign: TextAlign.center)))
+                ]
+            )
         )
     );
   }
