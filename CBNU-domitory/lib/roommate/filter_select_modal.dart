@@ -119,168 +119,171 @@ class _FilterSelectModalState extends State<FilterSelectModal> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 0.7.sh,
-      decoration: BoxDecoration(
-        color: white,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 20.h),
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text('필터', style: boldBlack18),
-                  ]
-              ),
-            ),
-            SizedBox(height: 4.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Row(
-                children: [
-                  InkWell(
-                      child: Container(
-                          padding: EdgeInsets.all(6.0),
-                          decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0), border: Border.all(color: group_button_outline, width: 1.0)),
-                          child: Icon(Icons.refresh_rounded, color: black, size: 18)
-                      ),
-                      onTap: () {
-                        setState(() {
-                          _modalSelectedFilters.clear();
-                          for (var category in allCategories) {
-                            for (var group in category.groups) {
-                              group.controller.unselectAll();
-                            }
-                          }
-                        });
-                        if(widget.onModalReset != null) {
-                          widget.onModalReset!();
-                        }
-                      }
-                  ),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: _buildSelectedFilterButtons(),
-                      )
-                    )
-                  )
-                ]
-              )
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: TabBar(
-                  controller: _tabController,
-                  tabAlignment: TabAlignment.center,
-                  labelStyle: mediumBlack16,
-                  unselectedLabelColor: grey,
-                  indicatorColor: black,
-                  isScrollable: true,
-                  dividerColor: Colors.transparent,
-                  indicatorPadding: EdgeInsets.only(bottom: 0),
-                  overlayColor: WidgetStatePropertyAll(Colors.transparent),
-                  labelPadding: EdgeInsets.symmetric(horizontal: 8.w),
-                  tabs: [
-                    Tab(text: '기본정보'),
-                    Tab(text: '생활패턴'),
-                    Tab(text: '생활습관'),
-                    Tab(text: '성격'),
-                    Tab(text: '성향'),
-                    Tab(text: '취미/기타'),
-                  ]
-              ),
-            ),
-            Container(height: 1, color: grey_seperating_line),
-            Expanded(
-                child: TabBarView(
-                    controller: _tabController,
-                    children: allCategories.map((groupCategory) {
-                      return SingleChildScrollView(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 28.w, vertical: 14.h),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: groupCategory.groups.map((groupData) {
-                              return Padding(
-                                padding: EdgeInsets.symmetric(vertical: 0.h),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(groupData.title, style: mediumBlack16),
-                                    SizedBox(height: 10.h),
-                                    GroupButton(
-                                      controller: groupData.controller,
-                                      buttons: groupData.options,
-                                      isRadio: false,
-                                      onSelected: (val, i, selected) {
-                                        setState(() {
-                                          String filterKey = '${groupCategory.categoryName}:${groupData.title}';
-                                          _modalSelectedFilters.putIfAbsent(filterKey, () => {});
-
-                                          if(selected) {
-                                            _modalSelectedFilters[filterKey]!.add(val);
-                                          } else {
-                                            _modalSelectedFilters[filterKey]!.remove(val);
-                                            if(_modalSelectedFilters[filterKey]!.isEmpty){
-                                              _modalSelectedFilters.remove(filterKey);
-                                            }
-                                          }
-                                        });
-                                      },
-                                      buttonBuilder: (selected, value, context) {
-                                        return filterGroupButton(selected, value);
-                                      },
-                                      options: GroupButtonOptions(spacing: 4, alignment: Alignment.centerLeft),
-                                    ),
-                                    SizedBox(height: 22.h)
-                                  ]
-                                )
-                              );
-                            }).toList()
-                          )
-                        )
-                      );
-                    }).toList()
-                )
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              child: SizedBox(
-                width: double.infinity,
-                height: 48.h,
-                child: ElevatedButton(
-                    onPressed: () {
-                      for (var category in allCategories){
-                        for (var group in category.groups){
-                          group.controller.unselectAll();
-                        }
-                      } // groupbutton 선택 해제 안되는 문제 해결
-
-                      print(_modalSelectedFilters);
-
-                      Navigator.pop(context, _modalSelectedFilters);
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: black,
-                        overlayColor: Colors.transparent,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28.0)),
-                        elevation: 0
-                    ),
-                    child: Text('필터 적용하고 닫기', style: boldWhite15)
+    return SafeArea(
+      top: false,
+      child: Container(
+        height: 0.7.sh,
+        decoration: BoxDecoration(
+          color: white,
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 20.h),
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text('필터', style: boldBlack18),
+                    ]
                 ),
               ),
-            )
-          ]
+              SizedBox(height: 4.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Row(
+                  children: [
+                    InkWell(
+                        child: Container(
+                            padding: EdgeInsets.all(6.0),
+                            decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0), border: Border.all(color: group_button_outline, width: 1.0)),
+                            child: Icon(Icons.refresh_rounded, color: black, size: 18)
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _modalSelectedFilters.clear();
+                            for (var category in allCategories) {
+                              for (var group in category.groups) {
+                                group.controller.unselectAll();
+                              }
+                            }
+                          });
+                          if(widget.onModalReset != null) {
+                            widget.onModalReset!();
+                          }
+                        }
+                    ),
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: _buildSelectedFilterButtons(),
+                        )
+                      )
+                    )
+                  ]
+                )
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: TabBar(
+                    controller: _tabController,
+                    tabAlignment: TabAlignment.center,
+                    labelStyle: mediumBlack16,
+                    unselectedLabelColor: grey,
+                    indicatorColor: black,
+                    isScrollable: true,
+                    dividerColor: Colors.transparent,
+                    indicatorPadding: EdgeInsets.only(bottom: 0),
+                    overlayColor: WidgetStatePropertyAll(Colors.transparent),
+                    labelPadding: EdgeInsets.symmetric(horizontal: 8.w),
+                    tabs: [
+                      Tab(text: '기본정보'),
+                      Tab(text: '생활패턴'),
+                      Tab(text: '생활습관'),
+                      Tab(text: '성격'),
+                      Tab(text: '성향'),
+                      Tab(text: '취미/기타'),
+                    ]
+                ),
+              ),
+              Container(height: 1, color: grey_seperating_line),
+              Expanded(
+                  child: TabBarView(
+                      controller: _tabController,
+                      children: allCategories.map((groupCategory) {
+                        return SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 28.w, vertical: 14.h),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: groupCategory.groups.map((groupData) {
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 0.h),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(groupData.title, style: mediumBlack16),
+                                      SizedBox(height: 10.h),
+                                      GroupButton(
+                                        controller: groupData.controller,
+                                        buttons: groupData.options,
+                                        isRadio: false,
+                                        onSelected: (val, i, selected) {
+                                          setState(() {
+                                            String filterKey = '${groupCategory.categoryName}:${groupData.title}';
+                                            _modalSelectedFilters.putIfAbsent(filterKey, () => {});
+
+                                            if(selected) {
+                                              _modalSelectedFilters[filterKey]!.add(val);
+                                            } else {
+                                              _modalSelectedFilters[filterKey]!.remove(val);
+                                              if(_modalSelectedFilters[filterKey]!.isEmpty){
+                                                _modalSelectedFilters.remove(filterKey);
+                                              }
+                                            }
+                                          });
+                                        },
+                                        buttonBuilder: (selected, value, context) {
+                                          return filterGroupButton(selected, value);
+                                        },
+                                        options: GroupButtonOptions(spacing: 4, mainGroupAlignment: MainGroupAlignment.start),
+                                      ),
+                                      SizedBox(height: 22.h)
+                                    ]
+                                  )
+                                );
+                              }).toList()
+                            )
+                          )
+                        );
+                      }).toList()
+                  )
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 48.h,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        for (var category in allCategories){
+                          for (var group in category.groups){
+                            group.controller.unselectAll();
+                          }
+                        } // groupbutton 선택 해제 안되는 문제 해결
+
+                        print(_modalSelectedFilters);
+
+                        Navigator.pop(context, _modalSelectedFilters);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: black,
+                          overlayColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28.0)),
+                          elevation: 0
+                      ),
+                      child: Text('필터 적용하고 닫기', style: boldWhite15)
+                  ),
+                ),
+              )
+            ]
+          )
         )
-      )
+      ),
     );
   }
 }
