@@ -120,6 +120,14 @@ final mediumWhite14 = TextStyle(
     fontWeight: FontWeight.w500
 );
 
+final mediumWhite13 = TextStyle(
+    fontSize: 13.sp,
+    color: white,
+//height: 1.5,
+    fontFamily: 'pretendard-medium',
+    fontWeight: FontWeight.w500
+);
+
 final mediumWhite16 = TextStyle(
     fontSize: 16.sp,
     color: white,
