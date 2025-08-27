@@ -316,6 +316,7 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: background,
           surfaceTintColor: background,
           leading: PopupMenuButton<String>(
+            color: white,
             icon: Icon(Icons.keyboard_arrow_down_rounded, color: black, size: 24),
             onSelected: (String dorm) {
               setState(() {
@@ -502,7 +503,7 @@ class _HomePageState extends State<HomePage> {
                                   : CarouselSlider(
                                   items: [MealCard(menu: _todayMenu[0], timeIndex: 0), MealCard(menu: _todayMenu[1], timeIndex: 1), MealCard(menu: _todayMenu[2], timeIndex: 2)],
                                   options: CarouselOptions(
-                                      viewportFraction: 0.88,
+                                      viewportFraction: 0.86,
                                       height: 300.h,
                                       initialPage: 1,
                                       enableInfiniteScroll: true,

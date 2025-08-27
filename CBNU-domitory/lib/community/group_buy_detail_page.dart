@@ -61,8 +61,8 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                   ),
                   SizedBox(height: 10.h),
                   Container(
-                    width: 200.w,
-                    height: 200.h,
+                    width: 160.w,
+                    height: 160.h,
                     child: Image.asset(widget.post.itemImagePath, fit: BoxFit.cover),
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                   ),
@@ -107,16 +107,18 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                 height: 1.h,
                 color: grey_seperating_line
             ),
+            SizedBox(height: 16.h),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: Text(widget.post.basePost.contents, style: mediumBlack14)
-            )
+            ),
+            SizedBox(height: 80.h)
           ]
         )
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 20.w),
+            padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
             child: SizedBox(
               width: double.infinity,
               height: 45.h,

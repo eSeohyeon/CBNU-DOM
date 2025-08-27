@@ -161,7 +161,7 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
                               child: Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
                                   child: Icon(
-                                      Icons.keyboard_return_rounded,
+                                      Icons.send_rounded,
                                       color: white,
                                       size: 28
                                   )

@@ -56,13 +56,13 @@ class _RoommatePageState extends State<RoommatePage> {
                 children: [
                   SizedBox(height: 24.h),
                   Text('AI 추천 룸메이트', style: boldBlack18),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 4.h),
                   CarouselSlider.builder(
                       itemCount: _recommendedUsers.length,
                       itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => RecommendItem(user: _recommendedUsers[itemIndex], similarity: _recommendedUsersSimilarity[itemIndex].similarity, similar_factors: _recommendedUsersSimilarity[itemIndex].similar_factors),
                       options: CarouselOptions(
-                          height: 0.43.sh,
-                          viewportFraction: 0.7,
+                          height: 360.h,
+                          viewportFraction: 0.85,
                           initialPage: 0,
                           enableInfiniteScroll: true,
                           reverse: false,
@@ -72,7 +72,7 @@ class _RoommatePageState extends State<RoommatePage> {
                           enlargeFactor: 0.14
                       )
                   ),
-                  SizedBox(height: 72.h),
+                  SizedBox(height: 60.h),
                   Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -119,7 +119,7 @@ class _RoommatePageState extends State<RoommatePage> {
             Center( // 체크리스트 응답 전
               child: Column(
                 children: [
-                  SizedBox(height: 0.27.sh),
+                  SizedBox(height: 200.h),
                   Text('AI 추천 룸메이트', style: boldBlack18),
                   SizedBox(height: 6.h),
                   Image.asset('assets/no_checklist.png'),
@@ -167,7 +167,7 @@ class RecommendItem extends StatelessWidget {
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
           child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 10.h),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
@@ -222,7 +222,7 @@ class RecommendItem extends StatelessWidget {
                                       children: [
                                         Text(
                                             similar_factors[0],
-                                            style: mediumWhite14.copyWith(fontSize: 13.sp)
+                                            style: mediumWhite14
                                         ),
                                         SizedBox(width: 4.w),
                                         Icon(Icons.chevron_right_rounded, color: white, size: 14)
@@ -247,7 +247,7 @@ class RecommendItem extends StatelessWidget {
                                       children: [
                                         Text(
                                             similar_factors[1],
-                                            style: mediumWhite14.copyWith(fontSize: 13.sp)
+                                            style: mediumWhite14
                                         ),
                                         SizedBox(width: 4.w),
                                         Icon(Icons.chevron_right_rounded, color: white, size: 14)
@@ -262,7 +262,7 @@ class RecommendItem extends StatelessWidget {
                     SizedBox(height: 28.h),
                     ElevatedButton(
                       child: Text('상세정보 보기', style: mediumBlack14),
-                      style: ElevatedButton.styleFrom(overlayColor: grey_8, backgroundColor: grey_button, padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)), elevation: 0),
+                      style: ElevatedButton.styleFrom(overlayColor: grey_8, backgroundColor: grey_button, padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(36.0)), elevation: 0),
                       onPressed: () {
                         //쪽지 생성
                         showBarModalBottomSheet(
