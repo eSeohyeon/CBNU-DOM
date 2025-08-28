@@ -21,6 +21,7 @@ class RoommatePage extends StatefulWidget {
 }
 
 class _RoommatePageState extends State<RoommatePage> {
+  final bool _isStudent = false;
   bool _isMatched = false;
   bool _isAnswered = true;
   final List<User> _recommendedUsers = [];
@@ -48,7 +49,7 @@ class _RoommatePageState extends State<RoommatePage> {
       backgroundColor: background,
       body: SafeArea(
         bottom: false,
-        child: _isAnswered ? SingleChildScrollView(
+        child: _isStudent ? _isAnswered ? SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
             child: Column(
@@ -116,8 +117,8 @@ class _RoommatePageState extends State<RoommatePage> {
             ),
           ),
         ) :
-            Center( // 체크리스트 응답 전
-              child: Column(
+        Center( // 체크리스트 응답 전
+            child: Column(
                 children: [
                   SizedBox(height: 200.h),
                   Text('AI 추천 룸메이트', style: boldBlack18),
@@ -144,8 +145,38 @@ class _RoommatePageState extends State<RoommatePage> {
                     ),
                   ),
                 ]
-              )
             )
+        ) :
+        Center(
+            child: Column(
+                children: [
+                  SizedBox(height: 200.h),
+                  Text('재학생 인증 미완료', style: boldBlack18),
+                  SizedBox(height: 6.h),
+                  Image.asset('assets/not_student.png'),
+                  SizedBox(height: 10.h),
+                  Text('룸메추천 기능을 이용하려면 재학생 인증이 필요해요', style: mediumBlack16, textAlign: TextAlign.center, overflow: TextOverflow.ellipsis),
+                  SizedBox(height: 2.h),
+                  Text('합격증 또는 학생증으로 인증할 수 있어요!', style: mediumGrey14),
+                  SizedBox(height: 20.h),
+                  SizedBox(
+                    child: ElevatedButton(
+                      child: Text('재학생 인증하기', style: mediumBlack16.copyWith(color: grey_button)),
+                      style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor: black,
+                          overlayColor: Colors.transparent,
+                          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
+                      ),
+                      onPressed: () {
+                        // 인증하러 가기~
+                      },
+                    ),
+                  ),
+                ]
+            )
+        )
       ),
     );
   }
@@ -167,7 +198,7 @@ class RecommendItem extends StatelessWidget {
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
           child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,

@@ -6,6 +6,7 @@ import 'package:untitled/models/post.dart';
 import 'package:untitled/models/comment.dart';
 import 'dart:math';
 import 'package:untitled/common/grey_filled_text_field.dart';
+import 'package:untitled/common/popup_dialog.dart';
 
 class FreePostDetailPage extends StatefulWidget {
   final Post post;
@@ -18,6 +19,8 @@ class FreePostDetailPage extends StatefulWidget {
 class _FreePostDetailPageState extends State<FreePostDetailPage> {
   final _commentController = TextEditingController();
   final bool _isCommentsEmpty = false;
+  final bool _isMine = false;
+  final bool _isStudent = true;
   final List<Comment> _comments = [];
 
   @override
@@ -49,12 +52,41 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
         title: Text('자유게시판', style: boldBlack16),
         centerTitle: true,
         actions: [
-          IconButton(
+          PopupMenuButton<String>(
+            color: white,
             icon: Icon(Icons.more_vert_rounded, color: black, size: 24),
-            onPressed: () {
-              print('more button clicked!');
-            }
-          )
+            onSelected: (value) {
+              if(value == 'delete'){
+                // 글 삭제
+              } else if(value == 'dm'){
+                if(_isStudent){
+                  // 쪽지 창으로 이동
+                } else {
+                  showDialog(context: context, builder: (context) => PopupDialog(), barrierDismissible: false);
+                }
+              } else if(value == 'report'){
+                // 신고 (일단 넣긴 했는데, 뺄까요?)
+              }
+            },
+            itemBuilder: (BuildContext context) => [
+              if(_isMine)
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Text('삭제', style: mediumBlack16)
+                ),
+              if(!_isMine)
+                PopupMenuItem(
+                  value: 'dm',
+                  child: Text('1:1 쪽지', style: mediumBlack16)
+                ),
+              if(!_isMine)
+                PopupMenuItem(
+                  value: 'report',
+                  child: Text('신고', style: mediumBlack16)
+                ),
+            ],
+            offset: Offset(0, 56),
+          ),
         ]
       ),
       body: SafeArea(
