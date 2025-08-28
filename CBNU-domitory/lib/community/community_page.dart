@@ -6,6 +6,7 @@ import 'package:untitled/themes/styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/community/community_free_tab.dart';
 import 'package:untitled/community/community_groupbuy_tab.dart';
+import 'package:untitled/common/popup_dialog.dart';
 
 class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});
@@ -16,6 +17,7 @@ class CommunityPage extends StatefulWidget {
 
 class _CommunityPageState extends State<CommunityPage> with TickerProviderStateMixin {
   late TabController _tabController;
+  bool _isStudent = false;
 
   void initState(){
     super.initState();
@@ -55,11 +57,15 @@ class _CommunityPageState extends State<CommunityPage> with TickerProviderStateM
             leading: SizedBox.shrink(),
             leadingWidth: 0,
             actions: [
-              IconButton(icon: Icon(Icons.edit, color: black, size: 24), onPressed: () {
-                if(_tabController.index==0){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => CreateFreePost()));
+              IconButton(icon: Icon(Icons.edit, color: _isStudent ? black : black40, size: 24), onPressed: () {
+                if(_isStudent) {
+                  if(_tabController.index==0){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => CreateFreePost()));
+                  } else {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => GroupBuyCreatePage()));
+                  }
                 } else {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => GroupBuyCreatePage()));
+                  showDialog(context: context, builder: (context) => PopupDialog(), barrierDismissible: false);
                 }
               },),
               IconButton(icon: Icon(Icons.search, color: black, size: 24), onPressed: () { print("Search Button is Cliked!"); },),

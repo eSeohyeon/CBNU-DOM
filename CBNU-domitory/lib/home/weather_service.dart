@@ -1,7 +1,9 @@
 import 'dart:math';
 import 'dart:convert';
+import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:untitled/themes/colors.dart';
 
 class WeatherData {
   final double temperature;
@@ -9,6 +11,10 @@ class WeatherData {
   final double humidity;
   final String description;
   final double feelsLike;
+
+  final Color gradientStartColor;
+  final Color gradientEndColor;
+  final String iconPath;
 
   // 기상청 encode key : uYw4a9z1phdIEnV5kw1h9yEMUx4hzLfnGj39uqc0uUvR%2B999QeTF8yHecMuc3c9zSvHvcgEl6I027rCYJFYbNQ%3D%3D | 발급일: 2025-08-07
 
@@ -18,6 +24,9 @@ class WeatherData {
     required this.humidity,
     required this.description,
     required this.feelsLike,
+    required this.gradientStartColor,
+    required this.gradientEndColor,
+    required this.iconPath
   });
 }
 
@@ -59,8 +68,14 @@ class WeatherService {
 
     // PTY가 0인 경우에만 sky 정보 조회
     String description;
+    Color gradientStartColor;
+    Color gradientEndColor;
+    String iconPath;
     if(pty!='0'){
       description = _ptyToString(pty);
+      gradientStartColor = rainy_start;
+      gradientEndColor = rainy_end;
+      iconPath = 'assets/rainy.png';
     } else {
       final openWeatherUri = Uri.parse(
         'https://api.openweathermap.org/data/2.5/weather'
@@ -71,6 +86,24 @@ class WeatherService {
       if(openWeatherResponse.statusCode == 200){
         final data = json.decode(openWeatherResponse.body);
         description = _skyToString(data['weather'][0]['main']);
+
+        switch(description) {
+          case '맑음':
+            gradientStartColor = sunny_start;
+            gradientEndColor = sunny_end;
+            iconPath = 'assets/sunny.png';
+            break;
+          case '흐림':
+            gradientStartColor = cloudy_start;
+            gradientEndColor = cloudy_end;
+            iconPath = 'assets/cloudy.png';
+            break;
+          default:
+            gradientStartColor = cloudy_start;
+            gradientEndColor = cloudy_end;
+            iconPath = 'assets/cloudy.png';
+        }
+
         print(data['weather'][0]['main']);
       } else {
         throw Exception('날씨 데이터 불러오기 실패');
@@ -86,7 +119,10 @@ class WeatherService {
         windSpeed: wind,
         feelsLike: feelsLike,
         humidity: humidity,
-        description: description
+        description: description,
+        gradientStartColor: gradientStartColor,
+        gradientEndColor: gradientEndColor,
+        iconPath: iconPath
     );
   }
 

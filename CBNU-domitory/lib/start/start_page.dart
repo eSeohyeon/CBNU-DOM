@@ -32,7 +32,7 @@ class StartPage extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
+          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,

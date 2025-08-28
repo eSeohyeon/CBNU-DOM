@@ -16,6 +16,7 @@ class MessagePage extends StatefulWidget {
 
 class _MessagePageState extends State<MessagePage> with TickerProviderStateMixin {
   late TabController _tabController;
+  final bool _isStudent = false;
 
   void initState(){
     super.initState();
@@ -29,7 +30,7 @@ class _MessagePageState extends State<MessagePage> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return _isStudent ? Scaffold(
       backgroundColor: white,
         appBar: AppBar(
             backgroundColor: white,
@@ -67,7 +68,43 @@ class _MessagePageState extends State<MessagePage> with TickerProviderStateMixin
               MessageListTab(tabIndex: 1),
               MessageListTab(tabIndex: 2)
             ])
-    );
+    ) :
+     Scaffold(
+       backgroundColor: background,
+       body: SafeArea(
+           bottom: false,
+           child: Center(
+               child: Column(
+                   children: [
+                     SizedBox(height: 200.h),
+                     Text('재학생 인증 미완료', style: boldBlack18),
+                     SizedBox(height: 6.h),
+                     Image.asset('assets/not_student.png'),
+                     SizedBox(height: 10.h),
+                     Text('쪽지 기능을 이용하려면 재학생 인증이 필요해요', style: mediumBlack16),
+                     SizedBox(height: 2.h),
+                     Text('합격증 또는 학생증으로 인증할 수 있어요!', style: mediumGrey14),
+                     SizedBox(height: 20.h),
+                     SizedBox(
+                       child: ElevatedButton(
+                         child: Text('재학생 인증하기', style: mediumBlack16.copyWith(color: grey_button)),
+                         style: ElevatedButton.styleFrom(
+                             elevation: 0,
+                             backgroundColor: black,
+                             overlayColor: Colors.transparent,
+                             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
+                         ),
+                         onPressed: () {
+                           // 인증하러 가기~
+                         },
+                       ),
+                     ),
+                   ]
+               )
+           )
+       )
+     );
   }
 }
 

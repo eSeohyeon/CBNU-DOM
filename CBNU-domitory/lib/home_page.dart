@@ -48,7 +48,6 @@ class _HomePageState extends State<HomePage> {
   bool _isNoticeLoading = false;
   bool _isAnyLoadingError = false;
   final ScrollController _scrollController = ScrollController();
-  double _opacity = 0.0;
 
   final User? user = FirebaseAuth.instance.currentUser;
 
@@ -76,11 +75,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _currentDate = getCurrentDate();
-    _scrollController.addListener(() {
-      double offset = _scrollController.offset;
-      double newOpacity = (offset / 150).clamp(0.0, 1.0);
-      setState(() => _opacity = newOpacity);
-    });
     _onRefresh();
   }
 
@@ -162,14 +156,38 @@ class _HomePageState extends State<HomePage> {
     try {
       final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 12));
       if (response.statusCode != 200) {
-        throw Exception('식단 데이터 불러오기 실패'); // 이런 거 뜨면 새로고침할 수 있게 해야함 (버튼이나 스크롤)
+        print('status code 200 아님');
+        _todayMenu.add('');
+        _todayMenu.add('');
+        _todayMenu.add('');
+        setState(() {
+          _isAnyLoadingError = true;
+          _isMealLoading = false;
+        });
+        return;
       }
       final document = parser.parse(response.body);
       final tbody = document.querySelector('#contentBody > table.contTable_c.m_table_c.margin_t_30 > tbody');
       if (tbody == null) {
-        throw Exception('식단 데이터 없음');
+        print('@@@@@@@@@@@@@@t body null @@@@@@@@@@@@@@@@@@@@');
+        _todayMenu.add('식단 데이터가 없습니다.');
+        _todayMenu.add('식단 데이터가 없습니다.');
+        _todayMenu.add('식단 데이터가 없습니다.');
+        setState(() {
+          _isMealLoading = false;
+        });
+        return;
       }
       final rows = tbody.querySelectorAll('tr');
+      if(rows.length != 7) {
+        _todayMenu.add('등록된 식단이 없습니다.');
+        _todayMenu.add('등록된 식단이 없습니다.');
+        _todayMenu.add('등록된 식단이 없습니다.');
+        setState(() {
+          _isMealLoading = false;
+        });
+        return;
+      }
       _todayMenu.clear();
 
       for (var row in rows) {
@@ -293,12 +311,12 @@ class _HomePageState extends State<HomePage> {
     return SafeArea(
       top: false,
       child: Scaffold(
-        extendBodyBehindAppBar: true,
         backgroundColor: background,
         appBar: AppBar(
-          backgroundColor: background.withOpacity(_opacity),
-          surfaceTintColor: background.withOpacity(_opacity),
+          backgroundColor: background,
+          surfaceTintColor: background,
           leading: PopupMenuButton<String>(
+            color: white,
             icon: Icon(Icons.keyboard_arrow_down_rounded, color: black, size: 24),
             onSelected: (String dorm) {
               setState(() {
@@ -360,66 +378,50 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Stack(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                          height: 200.h,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+                    child: _isWeatherLoading ?
+                    Shimmer.fromColors(
+                        baseColor: Colors.grey.shade300,
+                        highlightColor: Colors.grey.shade100,
+                        child: Container(
+                          width: double.infinity,
+                          height: 95.h,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.grey.shade300),
+                        )) :
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
                           decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [Color(0xFF71A8BF), background],
-                                  stops: [0.0, 1.0]
-                              )
-                          )
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Image.asset('assets/test_cloud.png', width: double.infinity)
-                      ),
-                      Positioned(
-                        top: kToolbarHeight + MediaQuery.of(context).padding.top + 4.h,
-                        left: 10.w,
-                        right: 10.w,
-                        child: _isWeatherLoading ?
-                        Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 14.w),
-                            child: Shimmer.fromColors(
-                                baseColor: Colors.grey.shade300,
-                                highlightColor: Colors.grey.shade100,
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 90.h,
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.grey.shade300),
-                                ))
-                        ) :
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 14.w),
+                            borderRadius: BorderRadius.circular(10.0),
+                            gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [_currentWeather!.gradientStartColor, _currentWeather!.gradientEndColor],
+                              stops: [0.0, 1.0]
+                            )
+                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Expanded(
-                                  child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(_currentWeather!.description, style: boldBlack16),
-                                        Text('${_currentWeather!.temperature.toStringAsFixed(0)}°C', style: boldBlack24),
-                                        Text('체감온도 ${_currentWeather!.feelsLike.toStringAsFixed(0)}°C', style: mediumGrey14),
-                                      ]
-                                  )
+                              Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(_currentWeather!.description, style: _currentWeather!.description == '비' ? boldBlack14.copyWith(color: white) : boldBlack14),
+                                    Text('${_currentWeather!.temperature.toStringAsFixed(0)}°C', style: _currentWeather!.description == '비' ?  boldBlack24.copyWith(color: white) : boldBlack24),
+                                    Text('체감온도 ${_currentWeather!.feelsLike.toStringAsFixed(0)}°C', style: _currentWeather!.description == '비' ? mediumWhite13 : mediumGrey13),
+                                  ]
                               ),
-                              /*Image.asset(
-                                'assets/woowang_cloudy.png',
-                                width: .w,
-                                height: 200.h
-                              )*/
+                              Image.asset(
+                                _currentWeather!.iconPath,
+                                width: 70.w,
+                                height: 70.h
+                              )
                             ]
                           )
-                        ),
-                      ),
-                    ]
+                        )
                   ),
+                  SizedBox(height: 12.h),
                   SingleChildScrollView( // CircleButtons
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -501,7 +503,7 @@ class _HomePageState extends State<HomePage> {
                                   : CarouselSlider(
                                   items: [MealCard(menu: _todayMenu[0], timeIndex: 0), MealCard(menu: _todayMenu[1], timeIndex: 1), MealCard(menu: _todayMenu[2], timeIndex: 2)],
                                   options: CarouselOptions(
-                                      viewportFraction: 0.88,
+                                      viewportFraction: 0.86,
                                       height: 300.h,
                                       initialPage: 1,
                                       enableInfiniteScroll: true,
