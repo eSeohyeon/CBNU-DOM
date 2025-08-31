@@ -21,6 +21,7 @@ class RoommatePage extends StatefulWidget {
 }
 
 class _RoommatePageState extends State<RoommatePage> {
+  final bool _isStudent = false;
   bool _isMatched = false;
   bool _isAnswered = true;
   final List<User> _recommendedUsers = [];
@@ -48,7 +49,7 @@ class _RoommatePageState extends State<RoommatePage> {
       backgroundColor: background,
       body: SafeArea(
         bottom: false,
-        child: _isAnswered ? SingleChildScrollView(
+        child: _isStudent ? _isAnswered ? SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
             child: Column(
@@ -56,13 +57,13 @@ class _RoommatePageState extends State<RoommatePage> {
                 children: [
                   SizedBox(height: 24.h),
                   Text('AI 추천 룸메이트', style: boldBlack18),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 4.h),
                   CarouselSlider.builder(
                       itemCount: _recommendedUsers.length,
                       itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => RecommendItem(user: _recommendedUsers[itemIndex], similarity: _recommendedUsersSimilarity[itemIndex].similarity, similar_factors: _recommendedUsersSimilarity[itemIndex].similar_factors),
                       options: CarouselOptions(
-                          height: 0.43.sh,
-                          viewportFraction: 0.7,
+                          height: 360.h,
+                          viewportFraction: 0.85,
                           initialPage: 0,
                           enableInfiniteScroll: true,
                           reverse: false,
@@ -72,7 +73,7 @@ class _RoommatePageState extends State<RoommatePage> {
                           enlargeFactor: 0.14
                       )
                   ),
-                  SizedBox(height: 72.h),
+                  SizedBox(height: 60.h),
                   Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -116,10 +117,10 @@ class _RoommatePageState extends State<RoommatePage> {
             ),
           ),
         ) :
-            Center( // 체크리스트 응답 전
-              child: Column(
+        Center( // 체크리스트 응답 전
+            child: Column(
                 children: [
-                  SizedBox(height: 0.27.sh),
+                  SizedBox(height: 200.h),
                   Text('AI 추천 룸메이트', style: boldBlack18),
                   SizedBox(height: 6.h),
                   Image.asset('assets/no_checklist.png'),
@@ -144,8 +145,38 @@ class _RoommatePageState extends State<RoommatePage> {
                     ),
                   ),
                 ]
-              )
             )
+        ) :
+        Center(
+            child: Column(
+                children: [
+                  SizedBox(height: 200.h),
+                  Text('재학생 인증 미완료', style: boldBlack18),
+                  SizedBox(height: 6.h),
+                  Image.asset('assets/not_student.png'),
+                  SizedBox(height: 10.h),
+                  Text('룸메추천 기능을 이용하려면 재학생 인증이 필요해요', style: mediumBlack16, textAlign: TextAlign.center, overflow: TextOverflow.ellipsis),
+                  SizedBox(height: 2.h),
+                  Text('합격증 또는 학생증으로 인증할 수 있어요!', style: mediumGrey14),
+                  SizedBox(height: 20.h),
+                  SizedBox(
+                    child: ElevatedButton(
+                      child: Text('재학생 인증하기', style: mediumBlack16.copyWith(color: grey_button)),
+                      style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor: black,
+                          overlayColor: Colors.transparent,
+                          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
+                      ),
+                      onPressed: () {
+                        // 인증하러 가기~
+                      },
+                    ),
+                  ),
+                ]
+            )
+        )
       ),
     );
   }
@@ -167,7 +198,7 @@ class RecommendItem extends StatelessWidget {
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
           child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 10.h),
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
@@ -222,7 +253,7 @@ class RecommendItem extends StatelessWidget {
                                       children: [
                                         Text(
                                             similar_factors[0],
-                                            style: mediumWhite14.copyWith(fontSize: 13.sp)
+                                            style: mediumWhite14
                                         ),
                                         SizedBox(width: 4.w),
                                         Icon(Icons.chevron_right_rounded, color: white, size: 14)
@@ -247,7 +278,7 @@ class RecommendItem extends StatelessWidget {
                                       children: [
                                         Text(
                                             similar_factors[1],
-                                            style: mediumWhite14.copyWith(fontSize: 13.sp)
+                                            style: mediumWhite14
                                         ),
                                         SizedBox(width: 4.w),
                                         Icon(Icons.chevron_right_rounded, color: white, size: 14)
@@ -262,7 +293,7 @@ class RecommendItem extends StatelessWidget {
                     SizedBox(height: 28.h),
                     ElevatedButton(
                       child: Text('상세정보 보기', style: mediumBlack14),
-                      style: ElevatedButton.styleFrom(overlayColor: grey_8, backgroundColor: grey_button, padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)), elevation: 0),
+                      style: ElevatedButton.styleFrom(overlayColor: grey_8, backgroundColor: grey_button, padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(36.0)), elevation: 0),
                       onPressed: () {
                         //쪽지 생성
                         showBarModalBottomSheet(

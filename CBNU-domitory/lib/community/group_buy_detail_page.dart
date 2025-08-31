@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/models/post.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:untitled/common/popup_dialog.dart';
 
 class GroupBuyPostDetailPage extends StatefulWidget {
   final GroupBuyPost post;
@@ -15,6 +16,9 @@ class GroupBuyPostDetailPage extends StatefulWidget {
 }
 
 class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
+  final bool _isMine = false;
+  final bool _isStudent = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,12 +29,41 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
           title: Text('공동구매 게시판', style: boldBlack16),
           centerTitle: true,
           actions: [
-            IconButton(
-                icon: Icon(Icons.more_vert_rounded, color: black, size: 24),
-                onPressed: () {
-                  print('more button clicked!');
+            PopupMenuButton<String>(
+              color: white,
+              icon: Icon(Icons.more_vert_rounded, color: black, size: 24),
+              onSelected: (value) {
+                if(value == 'delete'){
+                  // 글 삭제
+                } else if(value == 'dm'){
+                  if(_isStudent){
+                    // 쪽지 창으로 이동
+                  } else {
+                    showDialog(context: context, builder: (context) => PopupDialog(), barrierDismissible: false);
+                  }
+                } else if(value == 'report'){
+                  // 신고 (일단 넣긴 했는데, 뺄까요?)
                 }
-            )
+              },
+              itemBuilder: (BuildContext context) => [
+                if(_isMine)
+                  PopupMenuItem(
+                      value: 'delete',
+                      child: Text('삭제', style: mediumBlack16)
+                  ),
+                if(!_isMine)
+                  PopupMenuItem(
+                      value: 'dm',
+                      child: Text('1:1 쪽지', style: mediumBlack16)
+                  ),
+                if(!_isMine)
+                  PopupMenuItem(
+                      value: 'report',
+                      child: Text('신고', style: mediumBlack16)
+                  ),
+              ],
+              offset: Offset(0, 56),
+            ),
           ]
       ),
       body: SingleChildScrollView(
@@ -61,8 +94,8 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                   ),
                   SizedBox(height: 10.h),
                   Container(
-                    width: 200.w,
-                    height: 200.h,
+                    width: 160.w,
+                    height: 160.h,
                     child: Image.asset(widget.post.itemImagePath, fit: BoxFit.cover),
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                   ),
@@ -107,25 +140,31 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                 height: 1.h,
                 color: grey_seperating_line
             ),
+            SizedBox(height: 16.h),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: Text(widget.post.basePost.contents, style: mediumBlack14)
-            )
+            ),
+            SizedBox(height: 80.h)
           ]
         )
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 20.w),
+            padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
             child: SizedBox(
               width: double.infinity,
               height: 45.h,
               child: ElevatedButton(
                 child: Text("공동구매 참여하기", style: mediumWhite16),
                 onPressed: () {
-                  print('참여 버튼 클릭');
+                  if(_isStudent){
+                    // 참여하기
+                  } else {
+                    showDialog(context: context, builder: (context) => PopupDialog(), barrierDismissible: false);
+                  }
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: black, padding: EdgeInsets.only(top: 6.h, bottom: 6.h), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)), elevation: 2,),
+                style: ElevatedButton.styleFrom(backgroundColor: _isStudent ? black : black40, padding: EdgeInsets.only(top: 6.h, bottom: 6.h), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)), elevation: 2,),
               ),
             )
         ),

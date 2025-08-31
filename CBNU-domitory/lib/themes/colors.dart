@@ -15,3 +15,10 @@ const black_semi = Color(0xFF505050);
 
 const grey_button = Color(0xFFE6E6E6);
 const group_button_outline = Color(0xFFD2D2D2);
+
+const sunny_start = Color(0xFFBBE7FE);
+const sunny_end = Color(0xFF6DCEFF);
+const cloudy_start = Color(0xFFBAD8E6);
+const cloudy_end = Color(0xFF91ACB9);
+const rainy_start = Color(0xFF8595B7);
+const rainy_end = Color(0xFF4D5F87);
