@@ -508,9 +508,8 @@ class _HomePageState extends State<HomePage> {
                                       initialPage: 1,
                                       enableInfiniteScroll: true,
                                       autoPlay: false,
-                                      enlargeCenterPage: true,
+                                      enlargeCenterPage: false,
                                       scrollDirection: Axis.horizontal,
-                                      enlargeFactor: 0.15
                                   )
                               ), // 식단 메뉴 카드
                             ]
@@ -610,23 +609,26 @@ class MealCard extends StatelessWidget {
     String mealLabel = timeLabels[timeIndex];
     String mealTime = isWeekend() ? weekendTime[timeIndex] : weekdayTime[timeIndex];
 
-    return Container(
-        decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0), border: Border.all(color: grey_seperating_line, width: 1.0)),
-        width: double.infinity,
-        child: Padding(
-            padding: EdgeInsets.only(top:14.h, bottom: 12.h),
-            child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(mealLabel, style: boldBlack16),
-                  Text(mealTime, style: mediumGrey14),
-                  SizedBox(height: 20.h),
-                  SizedBox(
-                      height: 195.h,
-                      child: SingleChildScrollView(child: Text(menu, style: mediumBlack16, textAlign: TextAlign.center)))
-                ]
-            )
-        )
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4.w),
+      child: Container(
+          decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0), border: Border.all(color: grey_seperating_line, width: 1.0)),
+          width: double.infinity,
+          child: Padding(
+              padding: EdgeInsets.only(top:14.h, bottom: 12.h),
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(mealLabel, style: boldBlack16),
+                    Text(mealTime, style: mediumGrey14),
+                    SizedBox(height: 20.h),
+                    SizedBox(
+                        height: 195.h,
+                        child: SingleChildScrollView(child: Text(menu, style: mediumBlack16, textAlign: TextAlign.center)))
+                  ]
+              )
+          )
+      ),
     );
   }
 }

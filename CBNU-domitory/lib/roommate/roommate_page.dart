@@ -21,7 +21,7 @@ class RoommatePage extends StatefulWidget {
 }
 
 class _RoommatePageState extends State<RoommatePage> {
-  final bool _isStudent = false;
+  final bool _isStudent = true;
   bool _isMatched = false;
   bool _isAnswered = true;
   final List<User> _recommendedUsers = [];
@@ -57,6 +57,8 @@ class _RoommatePageState extends State<RoommatePage> {
                 children: [
                   SizedBox(height: 24.h),
                   Text('AI 추천 룸메이트', style: boldBlack18),
+                  SizedBox(height: 1.h),
+                  Text('작성하신 체크리스트를 기반으로 추천해요!', style: mediumGrey14),
                   SizedBox(height: 4.h),
                   CarouselSlider.builder(
                       itemCount: _recommendedUsers.length,
@@ -113,7 +115,9 @@ class _RoommatePageState extends State<RoommatePage> {
                           ),
                         )
                       ]
-                  ),]
+                  ),
+                  SizedBox(height: 120.h)
+                ]
             ),
           ),
         ) :
