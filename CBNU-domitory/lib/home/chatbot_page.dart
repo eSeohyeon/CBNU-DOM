@@ -234,17 +234,21 @@ class _ChatbotPageState extends State<ChatbotPage> {
                   ),
                   SizedBox(width: 6.w),
                   InkWell(
+                    borderRadius: BorderRadius.circular(18.0),
                     onTap: () {
                       getAnswerFromChatbot();
                     },
-                    child: Container(
-                      decoration: BoxDecoration(color: black, borderRadius: BorderRadius.circular(28)),
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 8.h, bottom: 8.h, left: 12.w, right: 10.w),
-                        child: Icon(
-                          Icons.send_rounded,
-                          color: white,
-                          size: 28,
+                    child: Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: Container(
+                        decoration: BoxDecoration(color: black, borderRadius: BorderRadius.circular(28)),
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 8.h, bottom: 8.h, left: 12.w, right: 10.w),
+                          child: Icon(
+                            Icons.send_rounded,
+                            color: white,
+                            size: 28,
+                          ),
                         ),
                       ),
                     ),

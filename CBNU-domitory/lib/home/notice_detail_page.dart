@@ -83,13 +83,16 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
               children: [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(_title, style: mediumBlack16),
-                      SizedBox(height: 8.h),
-                      Text('$_writer | $_date', style: mediumGrey14)
-                    ],
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(_title, style: mediumBlack16, textAlign: TextAlign.left),
+                        SizedBox(height: 8.h),
+                        Text('$_writer | $_date', style: mediumGrey14, textAlign: TextAlign.left)
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(height: 12.h),
