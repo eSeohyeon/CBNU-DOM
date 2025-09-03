@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/bottom_navigation_tab.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -43,7 +44,7 @@ class StartPage extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     // 회원가입 페이지로 이동
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage())); // 수정뜨는 거 테스트 때문에
                   },
                   child: Text("시작하기", style: mediumWhite16),
                   style: btnBlackRound30

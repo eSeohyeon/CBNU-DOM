@@ -92,6 +92,7 @@ class _ChattingPageState extends State<ChattingPage> {
                       ),
                       SizedBox(width: 4.w),
                       InkWell(
+                        borderRadius: BorderRadius.circular(18.0),
                           onTap: () {
                             // 메시지 전송 로직 추가
                             if(_messageController.text.isNotEmpty){
@@ -114,16 +115,19 @@ class _ChattingPageState extends State<ChattingPage> {
                               });
                             }
                           },
-                          child: Container(
-                              decoration: BoxDecoration(color: black, borderRadius: BorderRadius.circular(28)),
-                              child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-                                  child: Icon(
-                                      Icons.keyboard_return_rounded,
-                                      color: white,
-                                      size: 28
-                                  )
-                              )
+                          child: Padding(
+                            padding: const EdgeInsets.all(3.0),
+                            child: Container(
+                                decoration: BoxDecoration(color: black, borderRadius: BorderRadius.circular(28)),
+                                child: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                                    child: Icon(
+                                        Icons.keyboard_return_rounded,
+                                        color: white,
+                                        size: 28
+                                    )
+                                )
+                            ),
                           )
                       )
                     ]

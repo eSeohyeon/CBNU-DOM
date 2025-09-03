@@ -181,6 +181,7 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
                       ),
                       SizedBox(width: 4.w),
                       InkWell(
+                        borderRadius: BorderRadius.circular(18.0),
                           onTap: () {
                             if(_commentController.text.isNotEmpty) {
                               setState(() {
@@ -188,16 +189,19 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
                               });
                             }
                           },
-                          child: Container(
-                              decoration: BoxDecoration(color: black, borderRadius: BorderRadius.circular(20)),
-                              child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-                                  child: Icon(
-                                      Icons.send_rounded,
-                                      color: white,
-                                      size: 28
-                                  )
-                              )
+                          child: Padding(
+                            padding: const EdgeInsets.all(3.0),
+                            child: Container(
+                                decoration: BoxDecoration(color: black, borderRadius: BorderRadius.circular(20)),
+                                child: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                                    child: Icon(
+                                        Icons.send_rounded,
+                                        color: white,
+                                        size: 28
+                                    )
+                                )
+                            ),
                           )
                       )
                     ]

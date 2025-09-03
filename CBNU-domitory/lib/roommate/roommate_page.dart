@@ -21,9 +21,10 @@ class RoommatePage extends StatefulWidget {
 }
 
 class _RoommatePageState extends State<RoommatePage> {
-  final bool _isStudent = false;
+  final bool _isStudent = true;
   bool _isMatched = false;
   bool _isAnswered = true;
+  bool _isNotEnough = false;
   final List<User> _recommendedUsers = [];
   final List<Similarity> _recommendedUsersSimilarity = [];
 
@@ -57,7 +58,99 @@ class _RoommatePageState extends State<RoommatePage> {
                 children: [
                   SizedBox(height: 24.h),
                   Text('AI 추천 룸메이트', style: boldBlack18),
+                  SizedBox(height: 1.h),
+                  Text('작성하신 체크리스트를 기반으로 추천해요!', style: mediumGrey14),
                   SizedBox(height: 4.h),
+                  _isNotEnough ? CarouselSlider(
+                    items : [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4.w),
+                        child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15.0),
+                            color: white
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 200.w,
+                                height: 200.h,
+                                child: Image.asset('assets/not_enough.png'),
+                              ),
+                              SizedBox(height: 4.h),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('룸메이트 추천 불가', style: boldBlack16),
+                                  SizedBox(height: 8.h),
+                                  Text('현재 같은 생활관에 등록된 학생 수가 적어서 추천이 어려워요', style: mediumBlack14),
+                                  SizedBox(height: 16.h),
+                                  ElevatedButton(
+                                    child: Text('지금 바로 룸메 만나기', style: mediumBlack14),
+                                    onPressed: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => FilterSearchPage()));
+                                    },
+                                    style: ElevatedButton.styleFrom(backgroundColor: grey_button
+                                    ),
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                        )
+                      ),
+                      Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4.w),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  color: white
+                              ),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 200.w,
+                                      height: 200.h,
+                                      child: Image.asset('assets/not_enough.png'),
+                                    ),
+                                    SizedBox(height: 4.h),
+                                    Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('생활관 인원수 30명 이하', style: boldBlack16),
+                                          SizedBox(height: 8.h),
+                                          Text('곧 AI 추천 기능이 열려 룸메이트를 자동으로 추천받을 수 있어요!', style: mediumBlack14),
+                                          SizedBox(height: 16.h),
+                                          ElevatedButton(
+                                            child: Text('지금 바로 룸메 만나기', style: mediumBlack14),
+                                            onPressed: () {
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => FilterSearchPage()));
+                                            },
+                                            style: ElevatedButton.styleFrom(backgroundColor: grey_button
+                                            ),
+                                          )
+                                        ]
+                                    )
+                                  ]
+                              )
+                          )
+                      )
+                    ],
+                    options : CarouselOptions(
+                      height: 380.h,
+                      viewportFraction: 0.9,
+                      initialPage:0,
+                      enableInfiniteScroll: true,
+                      reverse: false,
+                      autoPlay: true,
+                      enlargeCenterPage: false,
+                      scrollDirection: Axis.horizontal,
+                    )
+                  ) :
                   CarouselSlider.builder(
                       itemCount: _recommendedUsers.length,
                       itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => RecommendItem(user: _recommendedUsers[itemIndex], similarity: _recommendedUsersSimilarity[itemIndex].similarity, similar_factors: _recommendedUsersSimilarity[itemIndex].similar_factors),
@@ -74,6 +167,29 @@ class _RoommatePageState extends State<RoommatePage> {
                       )
                   ),
                   SizedBox(height: 60.h),
+                  _isNotEnough ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('체크리스트를 다시\n작성하고 싶다면?', style: boldBlack16, textAlign: TextAlign.center),
+                      SizedBox(height: 10.h),
+                      SizedBox(
+                        width: 150.w,
+                        child: ElevatedButton(
+                          child: Text('체크리스트 수정하기', style: mediumBlack14.copyWith(color: grey_button)),
+                          style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              backgroundColor: black,
+                              overlayColor: Colors.transparent,
+                              padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 9.h, bottom: 9.h),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0))
+                          ),
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => AnswerChecklistPage()));
+                          },
+                        ),
+                      )
+                    ]
+                  ) :
                   Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -113,7 +229,9 @@ class _RoommatePageState extends State<RoommatePage> {
                           ),
                         )
                       ]
-                  ),]
+                  ),
+                  SizedBox(height: 120.h)
+                ]
             ),
           ),
         ) :
