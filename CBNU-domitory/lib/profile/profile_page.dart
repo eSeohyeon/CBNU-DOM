@@ -1,7 +1,12 @@
+// lib/profile/profile_page.dart
+
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:untitled/profile/change_password_page.dart';
 import 'package:untitled/profile/edit_profile_page.dart';
 import 'package:untitled/start/start_page.dart';
@@ -22,11 +27,9 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    // 페이지가 시작될 때 사용자 데이터를 불러옵니다.
     _loadUserData();
   }
 
-  // --- Firestore에서 사용자 정보를 가져오는 함수 ---
   Future<void> _loadUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -34,14 +37,14 @@ class _ProfilePageState extends State<ProfilePage> {
       return;
     }
     try {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final doc =
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       if (doc.exists) {
         setState(() {
           _userData = doc.data();
         });
       }
     } catch (e) {
-      // 에러 처리
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('사용자 정보를 불러오는 데 실패했습니다: $e')),
       );
@@ -78,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const EditProfilePage()),
-    ).then((_) => _loadUserData()); // 수정 페이지에서 돌아왔을 때 정보를 새로고침
+    ).then((_) => _loadUserData());
   }
 
   void _changePassword(BuildContext context) {
@@ -88,14 +91,20 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _showNotImplemented(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('아직 구현되지 않은 기능입니다.')),
-    );
+  // --- 👇 재학생 인증 팝업을 띄우는 함수 ---
+  void _verifyStudent(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => const _StudentVerificationDialog(),
+    ).then((_) => _loadUserData()); // 팝업이 닫힌 후 사용자 정보 새로고침
   }
 
   @override
   Widget build(BuildContext context) {
+    // isVerified 필드를 확인하여 인증 상태 텍스트를 결정합니다.
+    final bool isVerified = _userData?['isVerified'] ?? false;
+    final verificationStatusText = isVerified ? '인증 완료' : '미인증';
+
     return Scaffold(
       backgroundColor: background,
       appBar: AppBar(
@@ -109,7 +118,6 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: ListView(
         children: [
-          // --- 사용자 정보 표시 UI ---
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
             child: _isLoading
@@ -118,7 +126,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 ? const Text('사용자 정보를 불러올 수 없습니다.')
                 : Row(
               children: [
-                Icon(Icons.account_circle, size: 60.w, color: Colors.grey[400]),
+                Icon(Icons.account_circle,
+                    size: 60.w, color: Colors.grey[400]),
                 SizedBox(width: 16.w),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,7 +147,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           const Divider(),
-
           ListTile(
             leading: const Icon(Icons.edit),
             title: Text('사용자 정보 수정', style: mediumBlack16),
@@ -150,9 +158,15 @@ class _ProfilePageState extends State<ProfilePage> {
             onTap: () => _changePassword(context),
           ),
           ListTile(
-            leading: const Icon(Icons.verified_user_outlined),
+            leading: Icon(Icons.verified_user_outlined,
+                color: isVerified ? Colors.blue : Colors.grey),
             title: Text('재학생 인증', style: mediumBlack16),
-            onTap: () => _showNotImplemented(context),
+            // --- 👇 인증 상태에 따라 다른 텍스트를 보여줍니다. ---
+            trailing: Text(
+              verificationStatusText,
+              style: TextStyle(color: isVerified ? Colors.blue : Colors.grey),
+            ),
+            onTap: () => _verifyStudent(context),
           ),
           ListTile(
             leading: const Icon(Icons.logout),
@@ -161,7 +175,8 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           ListTile(
             leading: const Icon(Icons.delete_forever, color: Colors.red),
-            title: Text('계정 탈퇴', style: mediumBlack16.copyWith(color: Colors.red)),
+            title: Text('계정 탈퇴',
+                style: mediumBlack16.copyWith(color: Colors.red)),
             onTap: () => _deleteAccount(context),
           ),
         ],
@@ -170,6 +185,139 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
+// --- 👇 재학생 인증 팝업을 위한 새로운 위젯 ---
+class _StudentVerificationDialog extends StatefulWidget {
+  const _StudentVerificationDialog();
+
+  @override
+  State<_StudentVerificationDialog> createState() =>
+      _StudentVerificationDialogState();
+}
+
+class _StudentVerificationDialogState
+    extends State<_StudentVerificationDialog> {
+  final ImagePicker _picker = ImagePicker();
+  File? _imageFile;
+  bool _isUploading = false;
+
+  Future<void> _pickImage() async {
+    try {
+      final XFile? pickedFile =
+      await _picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _imageFile = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('이미지를 가져오는 데 실패했습니다: $e')),
+      );
+    }
+  }
+
+  Future<void> _uploadVerificationImage() async {
+    if (_imageFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('먼저 이미지를 첨부해주세요.')),
+      );
+      return;
+    }
+
+    setState(() => _isUploading = true);
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) throw Exception('로그인 정보 없음');
+
+      // 1. Firebase Storage에 이미지 업로드
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('student_verification_images')
+          .child('${user.uid}.jpg');
+      await ref.putFile(_imageFile!);
+      final downloadUrl = await ref.getDownloadURL();
+
+      // 2. Firestore에 이미지 URL과 인증 상태, 역할 업데이트 (수정된 부분)
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'studentIdImageUrl': downloadUrl,
+        'isVerified': false, // 관리자 승인을 위해 false로 설정
+        'role': '인증 대기자', // 역할을 '인증 대기자'로 명시적으로 변경
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('인증 이미지가 성공적으로 제출되었습니다. 관리자 승인 후 적용됩니다.')),
+      );
+      Navigator.of(context).pop();
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('업로드에 실패했습니다: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isUploading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('재학생 인증'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 200,
+            width: double.maxFinite,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.grey.shade400),
+            ),
+            child: _imageFile != null
+                ? ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.file(_imageFile!, fit: BoxFit.contain),
+            )
+                : const Center(child: Text('이미지를 첨부해주세요.')),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '재학생 신분 인증 가능한 것들을 첨부해주세요.',
+            textAlign: TextAlign.center,
+            style: mediumGrey14,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: _pickImage,
+            icon: const Icon(Icons.photo_library_outlined),
+            label: const Text('이미지 첨부'),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isUploading ? null : () => Navigator.of(context).pop(),
+          child: const Text('취소'),
+        ),
+        ElevatedButton(
+          onPressed: _isUploading ? null : _uploadVerificationImage,
+          child: _isUploading
+              ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2))
+              : const Text('업로드'),
+        ),
+      ],
+    );
+  }
+}
+
+// _PasswordConfirmDialog 위젯은 이전과 동일하게 유지
 class _PasswordConfirmDialog extends StatefulWidget {
   @override
   __PasswordConfirmDialogState createState() => __PasswordConfirmDialogState();
@@ -182,11 +330,16 @@ class __PasswordConfirmDialogState extends State<_PasswordConfirmDialog> {
 
   Future<void> _handleDeleteAccount() async {
     if (_passwordController.text.isEmpty) {
-      setState(() { _errorMessage = '비밀번호를 입력해주세요.'; });
+      setState(() {
+        _errorMessage = '비밀번호를 입력해주세요.';
+      });
       return;
     }
 
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -208,18 +361,25 @@ class __PasswordConfirmDialogState extends State<_PasswordConfirmDialog> {
               (route) => false,
         );
       }
-
     } on FirebaseAuthException catch (e) {
       if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
-        setState(() { _errorMessage = '비밀번호가 올바르지 않습니다.'; });
+        setState(() {
+          _errorMessage = '비밀번호가 올바르지 않습니다.';
+        });
       } else {
-        setState(() { _errorMessage = '오류가 발생했습니다: ${e.message}'; });
+        setState(() {
+          _errorMessage = '오류가 발생했습니다: ${e.message}';
+        });
       }
     } catch (e) {
-      setState(() { _errorMessage = '알 수 없는 오류가 발생했습니다.'; });
+      setState(() {
+        _errorMessage = '알 수 없는 오류가 발생했습니다.';
+      });
     } finally {
-      if(mounted){
-        setState(() { _isLoading = false; });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
