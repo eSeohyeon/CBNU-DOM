@@ -182,10 +182,18 @@ class _HomePageState extends State<HomePage> {
         return;
       }
       final rows = tbody.querySelectorAll('tr');
-      if(rows.length != 7) {
-        _todayMenu.add('등록된 식단이 없습니다.');
-        _todayMenu.add('등록된 식단이 없습니다.');
-        _todayMenu.add('등록된 식단이 없습니다.');
+      if(rows.length != 7 && _selectedDorm !='본관') { // 본관은 5개, 양성재 양진재는 7개
+        _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
+        _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
+        _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
+        setState(() {
+          _isMealLoading = false;
+        });
+        return;
+      } else if (rows.length !=5 && _selectedDorm == '본관') {
+        _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
+        _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
+        _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
         setState(() {
           _isMealLoading = false;
         });
@@ -228,7 +236,7 @@ class _HomePageState extends State<HomePage> {
         'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20039&mod=&page=1&scode=00000002&listCnt=20');
 
     try {
-      final response = await http.get(url).timeout(const Duration(seconds: 12));
+      final response = await http.get(url).timeout(const Duration(seconds: 20));
       if (response.statusCode == 200) {
         int count = 0;
         final document = parser.parse(response.body);
@@ -237,7 +245,7 @@ class _HomePageState extends State<HomePage> {
         _latestNotices.clear();
 
         for (var row in rows) {
-          final isPinned = row.classes.contains('brd_notice'); // 고정 공지 UI에서 분리해야함.
+          final isPinned = row.classes.contains('brd_notice');
           if (isPinned) continue;
 
           final cells = row.querySelectorAll('td');
@@ -269,7 +277,7 @@ class _HomePageState extends State<HomePage> {
             link: ''
         ));
         _latestNotices.add(Notice(
-            title: '새로고침 시도.',
+            title: '새로고침 해 주세요.',
             writer: '',
             date: '',
             link: ''
@@ -287,7 +295,7 @@ class _HomePageState extends State<HomePage> {
           link: ''
       ));
       _latestNotices.add(Notice(
-          title: '새로고침 시도.',
+          title: '새로고침 해 주세요.',
           writer: '',
           date: '',
           link: ''
@@ -504,9 +512,8 @@ class _HomePageState extends State<HomePage> {
                                         initialPage: 1,
                                         enableInfiniteScroll: true,
                                         autoPlay: false,
-                                        enlargeCenterPage: true,
+                                        enlargeCenterPage: false,
                                         scrollDirection: Axis.horizontal,
-                                        enlargeFactor: 0.15
                                     )
                                 ), // 식단 메뉴 카드
                               ]
@@ -666,23 +673,26 @@ class MealCard extends StatelessWidget {
     String mealLabel = timeLabels[timeIndex];
     String mealTime = isWeekend() ? weekendTime[timeIndex] : weekdayTime[timeIndex];
 
-    return Container(
-        decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0), border: Border.all(color: grey_seperating_line, width: 1.0)),
-        width: double.infinity,
-        child: Padding(
-            padding: EdgeInsets.only(top:14.h, bottom: 12.h),
-            child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(mealLabel, style: boldBlack16),
-                  Text(mealTime, style: mediumGrey14),
-                  SizedBox(height: 20.h),
-                  SizedBox(
-                      height: 195.h,
-                      child: SingleChildScrollView(child: Text(menu, style: mediumBlack16, textAlign: TextAlign.center)))
-                ]
-            )
-        )
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 3.w),
+      child: Container(
+          decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0), border: Border.all(color: grey_seperating_line, width: 1.0)),
+          width: double.infinity,
+          child: Padding(
+              padding: EdgeInsets.only(top:14.h, bottom: 12.h),
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(mealLabel, style: boldBlack16),
+                    Text(mealTime, style: mediumGrey14),
+                    SizedBox(height: 20.h),
+                    SizedBox(
+                        height: 195.h,
+                        child: SingleChildScrollView(child: Text(menu, style: mediumBlack16, textAlign: TextAlign.center)))
+                  ]
+              )
+          )
+      ),
     );
   }
 }

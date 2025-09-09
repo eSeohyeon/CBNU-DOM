@@ -161,9 +161,8 @@ class _RoommatePageState extends State<RoommatePage> {
                           enableInfiniteScroll: true,
                           reverse: false,
                           autoPlay: false,
-                          enlargeCenterPage: true,
+                          enlargeCenterPage: false,
                           scrollDirection: Axis.horizontal,
-                          enlargeFactor: 0.14
                       )
                   ),
                   SizedBox(height: 60.h),
@@ -309,119 +308,122 @@ class RecommendItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Card(
-          color: white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-          child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                        width: 80.w,
-                        height: 80.h,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: grey_seperating_line, width: 1.0)
-                        ),
-                        child: CircleAvatar(
-                          backgroundImage: AssetImage(user.profilePath),
-                        )
-                    ),
-                    SizedBox(height: 8.h),
-                    Text('${user.name}', style: mediumBlack16, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, softWrap: false),
-                    Text('${user.department} | ${user.yearEnrolled}학번', style: mediumGrey13, textAlign: TextAlign.center),
-                    SizedBox(height: 12.h),
-                    Container(
-                        width: double.infinity,
-                        height: 1.h,
-                        color: grey_seperating_line
-                    ),
-                    SizedBox(height: 12.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text('유사도', style: mediumGrey14),
-                            Text('$similarity%', style: boldBlack20)
-                          ]
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => SimilarityDetailPage()));
-                              },
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 3.h),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.shade500,
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                            similar_factors[0],
-                                            style: mediumWhite14
-                                        ),
-                                        SizedBox(width: 4.w),
-                                        Icon(Icons.chevron_right_rounded, color: white, size: 14)
-                                      ]
-                                  )
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 3.w),
+      child: SizedBox(
+        width: double.infinity,
+        child: Card(
+            color: white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+            child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                          width: 80.w,
+                          height: 80.h,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: grey_seperating_line, width: 1.0)
+                          ),
+                          child: CircleAvatar(
+                            backgroundImage: AssetImage(user.profilePath),
+                          )
+                      ),
+                      SizedBox(height: 8.h),
+                      Text('${user.name}', style: mediumBlack16, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, softWrap: false),
+                      Text('${user.department} | ${user.yearEnrolled}학번', style: mediumGrey13, textAlign: TextAlign.center),
+                      SizedBox(height: 12.h),
+                      Container(
+                          width: double.infinity,
+                          height: 1.h,
+                          color: grey_seperating_line
+                      ),
+                      SizedBox(height: 12.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text('유사도', style: mediumGrey14),
+                              Text('$similarity%', style: boldBlack20)
+                            ]
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => SimilarityDetailPage()));
+                                },
+                                borderRadius: BorderRadius.circular(20.0),
+                                child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 3.h),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.shade500,
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    ),
+                                    child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                              similar_factors[0],
+                                              style: mediumWhite14
+                                          ),
+                                          SizedBox(width: 4.w),
+                                          Icon(Icons.chevron_right_rounded, color: white, size: 14)
+                                        ]
+                                    )
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 2.h),
-                            InkWell(
-                              onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => SimilarityDetailPage()));
-                              },
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 3.h),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.shade300,
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                            similar_factors[1],
-                                            style: mediumWhite14
-                                        ),
-                                        SizedBox(width: 4.w),
-                                        Icon(Icons.chevron_right_rounded, color: white, size: 14)
-                                      ]
-                                  )
-                              ),
-                            )
-                          ]
-                        )
-                      ]
-                    ),
-                    SizedBox(height: 28.h),
-                    ElevatedButton(
-                      child: Text('상세정보 보기', style: mediumBlack14),
-                      style: ElevatedButton.styleFrom(overlayColor: grey_8, backgroundColor: grey_button, padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(36.0)), elevation: 0),
-                      onPressed: () {
-                        //쪽지 생성
-                        showBarModalBottomSheet(
-                          context: context,
-                          builder: (BuildContext context) => RoommateDetailModal(user: user),
-                        );
-                      },
-                    )
-                  ]),
-          )
+                              SizedBox(height: 2.h),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => SimilarityDetailPage()));
+                                },
+                                borderRadius: BorderRadius.circular(20.0),
+                                child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 3.h),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.shade300,
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    ),
+                                    child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                              similar_factors[1],
+                                              style: mediumWhite14
+                                          ),
+                                          SizedBox(width: 4.w),
+                                          Icon(Icons.chevron_right_rounded, color: white, size: 14)
+                                        ]
+                                    )
+                                ),
+                              )
+                            ]
+                          )
+                        ]
+                      ),
+                      SizedBox(height: 28.h),
+                      ElevatedButton(
+                        child: Text('상세정보 보기', style: mediumBlack14),
+                        style: ElevatedButton.styleFrom(overlayColor: grey_8, backgroundColor: grey_button, padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(36.0)), elevation: 0),
+                        onPressed: () {
+                          //쪽지 생성
+                          showBarModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext context) => RoommateDetailModal(user: user),
+                          );
+                        },
+                      )
+                    ]),
+            )
+        ),
       ),
     );
   }
