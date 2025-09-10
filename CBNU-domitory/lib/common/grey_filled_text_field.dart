@@ -9,6 +9,7 @@ class GreyFilledTextField extends StatelessWidget {
   final bool obscureText;
   final TextInputType inputType;
   final int maxLength;
+  final FocusNode? focusNode;
 
   const GreyFilledTextField({
     super.key,
@@ -16,7 +17,8 @@ class GreyFilledTextField extends StatelessWidget {
     required this.name,
     this.obscureText = false,
     required this.inputType,
-    this.maxLength = 32
+    this.maxLength = 32,
+    this.focusNode,
   });
 
   @override
@@ -24,6 +26,7 @@ class GreyFilledTextField extends StatelessWidget {
     return TextField(
       enabled: true,
       controller: controller,
+      focusNode: focusNode,
       textCapitalization: TextCapitalization.none,
       maxLength: maxLength,
       maxLines: 1,

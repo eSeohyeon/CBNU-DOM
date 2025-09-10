@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/community/free_create_page.dart';
-import 'package:untitled/community/group_buy_create_page.dart';
+import 'package:untitled/community/free/free_create_page.dart';
+import 'package:untitled/community/groupbuy/group_buy_create_page.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:untitled/community/community_free_tab.dart';
-import 'package:untitled/community/community_groupbuy_tab.dart';
+import 'package:untitled/community/free/community_free_tab.dart';
+import 'package:untitled/community/groupbuy/community_groupbuy_tab.dart';
 import 'package:untitled/common/popup_dialog.dart';
 
 class CommunityPage extends StatefulWidget {

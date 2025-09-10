@@ -35,7 +35,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
 
-    _messages.add({'챗봇' : '저는 충북대학교 생활관과 관련된 질문에만 답변할 수 있어요. 관련되지 않은 질문은 답변드리기 어려운 점 양해 부탁드려요.\n무엇이 궁금하신가요?'});
+    _messages.add({'챗봇' : '저는 충북대학교 생활관과 관련된 질문에만 답변할 수 있어요. 관련되지 않은 질문은 답변드리기 어려운 점 양해 부탁드려요.\n\n-원하는 답변이 나오지 않는다면?\n 1. 질문을 짧고 간단하게 적어주세요.\n 2. 핵심 키워드를 반드시 포함해서 질문해주세요.\n\n무엇이 궁금하신가요?'});
   }
 
   @override
@@ -234,17 +234,21 @@ class _ChatbotPageState extends State<ChatbotPage> {
                   ),
                   SizedBox(width: 6.w),
                   InkWell(
+                    borderRadius: BorderRadius.circular(18.0),
                     onTap: () {
                       getAnswerFromChatbot();
                     },
-                    child: Container(
-                      decoration: BoxDecoration(color: black, borderRadius: BorderRadius.circular(28)),
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 8.h, bottom: 8.h, left: 12.w, right: 10.w),
-                        child: Icon(
-                          Icons.send_rounded,
-                          color: white,
-                          size: 28,
+                    child: Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: Container(
+                        decoration: BoxDecoration(color: black, borderRadius: BorderRadius.circular(28)),
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 8.h, bottom: 8.h, left: 12.w, right: 10.w),
+                          child: Icon(
+                            Icons.send_rounded,
+                            color: white,
+                            size: 28,
+                          ),
                         ),
                       ),
                     ),

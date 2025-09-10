@@ -4,6 +4,7 @@ import 'package:untitled/themes/styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/login_page.dart';
 import 'package:untitled/register_page.dart';
+import 'package:untitled/bottom_navigation_tab.dart';
 
 class StartPage extends StatelessWidget {
   const StartPage({super.key});

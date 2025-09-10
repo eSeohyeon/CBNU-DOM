@@ -43,7 +43,8 @@ dependencies:
   shimmer: ^3.0.0 # 로딩 중인 위젯 박스 표시
   percent_indicator: ^4.2.5 # 유사도 표시 바
   lottie: ^3.3.1
-
+  image_picker: ^1.1.2
+  firebase_storage: ^12.1.0
 
 
 dev_dependencies:

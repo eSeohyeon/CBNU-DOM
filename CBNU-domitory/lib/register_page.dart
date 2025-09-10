@@ -90,6 +90,7 @@ class _RegisterPageState extends State<RegisterPage> {
       'department': _departmentController.text.trim(),
       'createdAt': Timestamp.now(),
       'emailVerified': user.emailVerified, // 인증 상태 저장 (초기값 false)
+      'role': '미인증자', // <-- 이 줄이 추가되었습니다.
     });
   }
 

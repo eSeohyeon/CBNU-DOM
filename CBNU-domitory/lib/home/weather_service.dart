@@ -53,7 +53,7 @@ class WeatherService {
     final temp = _getDoubleValue(ncstItems, 'T1H');
     final wind = _getDoubleValue(ncstItems, 'WSD');
     final humidity = _getDoubleValue(ncstItems, 'REH');
-    final pty = _getStringValue(ncstItems, 'PTY');
+    final pty = _getStringValue(ncstItems, 'PTY'); // pty : 현재 강수 상태 표현. 0 : 없음, 1 : 비, 2 : 비/눈, 3 : 눈, 5 : 빗방울, 6 : 빗방울눈날림, 7 : 눈날림
     final response_baseTime = ncstItems[0]['baseTime'];
     final response_baseDate = ncstItems[0]['baseDate'];
 
@@ -66,7 +66,7 @@ class WeatherService {
     print('response_baseDate: $response_baseDate');
 
 
-    // PTY가 0인 경우에만 sky 정보 조회
+    // PTY가 0인 경우에만 sky 정보 조회 >> 맑음, 흐림 판단
     String description;
     Color gradientStartColor;
     Color gradientEndColor;
@@ -75,7 +75,7 @@ class WeatherService {
       description = _ptyToString(pty);
       gradientStartColor = rainy_start;
       gradientEndColor = rainy_end;
-      iconPath = 'assets/rainy.png';
+      iconPath = 'assets/rainy.png'; //  rainy
     } else {
       final openWeatherUri = Uri.parse(
         'https://api.openweathermap.org/data/2.5/weather'
@@ -91,17 +91,17 @@ class WeatherService {
           case '맑음':
             gradientStartColor = sunny_start;
             gradientEndColor = sunny_end;
-            iconPath = 'assets/sunny.png';
+            iconPath = 'assets/sunny.png'; // sunny
             break;
           case '흐림':
             gradientStartColor = cloudy_start;
             gradientEndColor = cloudy_end;
-            iconPath = 'assets/cloudy.png';
+            iconPath = 'assets/cloudy.png'; // cloudy
             break;
           default:
             gradientStartColor = cloudy_start;
             gradientEndColor = cloudy_end;
-            iconPath = 'assets/cloudy.png';
+            iconPath = 'assets/cloudy.png'; // cloudy
         }
 
         print(data['weather'][0]['main']);
