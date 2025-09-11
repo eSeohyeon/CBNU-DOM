@@ -156,7 +156,7 @@ class _RoommatePageState extends State<RoommatePage> {
                       itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => RecommendItem(user: _recommendedUsers[itemIndex], similarity: _recommendedUsersSimilarity[itemIndex].similarity, similar_factors: _recommendedUsersSimilarity[itemIndex].similar_factors),
                       options: CarouselOptions(
                           height: 360.h,
-                          viewportFraction: 0.85,
+                          viewportFraction: 0.82,
                           initialPage: 0,
                           enableInfiniteScroll: true,
                           reverse: false,
@@ -309,7 +309,7 @@ class RecommendItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 3.w),
+      padding: EdgeInsets.symmetric(horizontal: 2.w),
       child: SizedBox(
         width: double.infinity,
         child: Card(

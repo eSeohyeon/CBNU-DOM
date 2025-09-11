@@ -383,7 +383,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+                      padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 6.h),
                       child: _isWeatherLoading ?
                       Shimmer.fromColors(
                           baseColor: Colors.grey.shade300,
@@ -395,7 +395,7 @@ class _HomePageState extends State<HomePage> {
                           )) :
                       Container(
                           width: double.infinity,
-                          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.0),
                               gradient: LinearGradient(
@@ -412,7 +412,7 @@ class _HomePageState extends State<HomePage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(_currentWeather!.description, style: _currentWeather!.description == '비' ? boldBlack14.copyWith(color: white) : boldBlack14),
-                                      Text('${_currentWeather!.temperature.toStringAsFixed(0)}°C', style: _currentWeather!.description == '비' ?  boldBlack24.copyWith(color: white) : boldBlack24),
+                                      Text('${_currentWeather!.temperature.toStringAsFixed(0)}°C', style: _currentWeather!.description == '비' ?  boldBlack24.copyWith(color: white, fontSize: 20.sp) : boldBlack24.copyWith(fontSize: 20.sp)),
                                       Text('체감온도 ${_currentWeather!.feelsLike.toStringAsFixed(0)}°C', style: _currentWeather!.description == '비' ? mediumWhite13 : mediumGrey13),
                                     ]
                                 ),
