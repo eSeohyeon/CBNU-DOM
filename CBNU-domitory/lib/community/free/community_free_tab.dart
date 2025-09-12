@@ -94,7 +94,7 @@ class FreePostListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(post.title, style: boldBlack16, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  SizedBox(height: 4.h),
+                  SizedBox(height: 1.h),
                   Text(post.contents, style: mediumBlack14, maxLines: 1, overflow: TextOverflow.ellipsis),
                   SizedBox(height: 6.h),
                   Row(

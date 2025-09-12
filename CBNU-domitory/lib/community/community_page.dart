@@ -17,7 +17,7 @@ class CommunityPage extends StatefulWidget {
 
 class _CommunityPageState extends State<CommunityPage> with TickerProviderStateMixin {
   late TabController _tabController;
-  bool _isStudent = false;
+  bool _isStudent = true;
 
   void initState(){
     super.initState();
