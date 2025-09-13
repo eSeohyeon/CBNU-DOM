@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
-import 'package:untitled/models/meal.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 enum DormType{
   BONGUAN(name: "본관", url: "https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20041&type=1"),
@@ -18,107 +16,93 @@ enum DormType{
 }
 
 class MealDetailPage extends StatefulWidget {
-  const MealDetailPage({Key? key}) : super(key: key);
+  String selectedDorm;
+  MealDetailPage({super.key, required this.selectedDorm});
 
   @override
   State<MealDetailPage> createState() => _MealPageState();
 }
 
 class _MealPageState extends State<MealDetailPage> with TickerProviderStateMixin{
-  DormType _selectedDorm = DormType.BONGUAN;
+  late String _selectedDorm;
+  final List<String> dorms = ['본관', '양성재', '양진재'];
+  final List<Map<String, dynamic>> _weekMenu = [];
   bool _isLoading = false;
-  late TabController _tabController;
   String _content = '식단을 불러오는 중...';
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
-    _tabController.addListener((){
-      if(_tabController.indexIsChanging) return;
-      final currentIndex = _tabController.index;
-
-      if(currentIndex == 0){
-        setState(() {
-          _selectedDorm = DormType.BONGUAN;
-          fetchMealScreen();
-        });
-      } else if (currentIndex == 1) {
-        setState(() {
-          _selectedDorm = DormType.SEONGJAE;
-          fetchMealScreen();
-        });
-      } else if (currentIndex == 2) {
-        setState(() {
-          _selectedDorm = DormType.JINJAE;
-          fetchMealScreen();
-        });
-      }
+    setState(() {
+      _selectedDorm = widget.selectedDorm;
     });
+    fetchWeekMenu();
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
     super.dispose();
   }
 
-  Future<void> fetchMealScreen() async {
+  Future<void> fetchWeekMenu() async {
     setState(() {
       _isLoading = true;
     });
-
+    final String url;
+    if(_selectedDorm == '본관') {
+      url = "https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20041&type=1";
+    } else if (_selectedDorm == '양성재') {
+      url = "https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20041&type=2";
+    } else if (_selectedDorm == '양진재') {
+      url = "https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20041&type=3";
+    } else {
+      url = "https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20041&type=1";
+    }
 
     try {
-      final url = _selectedDorm.url;
-      final response = await http.get(Uri.parse(url));
+      final uriUrl = Uri.parse(url);
+      final response = await http.get(uriUrl);
+
       if(response.statusCode == 200){
         final document = parser.parse(response.body);
-        final table = document.querySelector('table.contTable_c');
+        final rows = document.querySelectorAll('tbody tr');
 
-        if(table != null) {
-          final style = '''
-            <style>
-    .contTable_c {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .contTable_c th, .contTable_c td {
-      border: 1px solid #ddd;
-      padding: 16px;  /* Increase this value for more internal spacing */
-      text-align: left;
-      vertical-align: top;
-      font-size: 14px;
-      line-height: 1.6; /* Add line height for better text readability */
-    }
-    .contTable_c th {
-      background-color: #f2f2f2;
-    }
-    .contTable_c td br {
-      content: "";
-      display: block;
-      margin-bottom: 10px; /* Add margin below line breaks */
-    }
-  </style>
-          ''';
-          setState(() {
-            _content = style + table.outerHtml;
-            _isLoading = false;
-          });
-        } else {
-          setState(() {
-            _content = '식단표 테이블을 찾을 수 없습니다.';
-            _isLoading = false;
+        _weekMenu.clear();
+
+        for(var row in rows) {
+          final dayTd = row.querySelector('td.foodday');
+          final breakfastTd = row.querySelector('td.morning');
+          final lunchTd = row.querySelector('td.lunch');
+          final dinnerTd = row.querySelector('td.evening');
+
+          if (dayTd == null || dayTd.innerHtml.trim().isEmpty) {
+            continue; // 유효하지 않은 행은 건너뜁니다.
+          }
+
+          final dayContent = dayTd?.querySelector('strong')?.innerHtml ?? dayTd?.innerHtml; // strong 태그 있을때만
+
+          _weekMenu.add({
+            'day': dayContent?.replaceAll('\n', '').replaceAll('<br>', '\n').trim() ?? '',
+            'breakfast': breakfastTd?.innerHtml.replaceAll('\n', '').replaceAll('<br>', '\n').replaceAll('&amp;', '&').trim() ?? '',
+            'lunch': lunchTd?.innerHtml.replaceAll('\n', '').replaceAll('<br>', '\n').replaceAll('&amp;', '&').trim() ?? '',
+            'dinner': dinnerTd?.innerHtml.replaceAll('\n', '').replaceAll('<br>', '\n').replaceAll('&amp;', '&').trim() ?? '',
           });
         }
-      }
 
-    } catch(e) {
+        for(var item in _weekMenu){
+          print(item);
+        }
+      }
+    } catch (e) {
+      debugPrint("Failed to get week menu: $e");
       setState(() {
-        _content = '<p>에러 발생: ${e.toString()}</p>';
         _isLoading = false;
       });
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -130,66 +114,96 @@ class _MealPageState extends State<MealDetailPage> with TickerProviderStateMixin
         surfaceTintColor: white,
         titleSpacing: 0,
         title: Text('이번주 식단', style: mediumBlack16),
+        actions: [
+          Text(_selectedDorm, style: mediumBlack14),
+          PopupMenuButton<String>(
+            color: white,
+            icon: Icon(Icons.keyboard_arrow_down_rounded, color: black, size: 24),
+            onSelected: (String dorm) {
+              setState(() {
+                _selectedDorm = dorm;
+                fetchWeekMenu();
+              });
+            },
+            itemBuilder: (BuildContext context){
+              return dorms.map((String dorm) {
+                return PopupMenuItem<String>(
+                    value: dorm,
+                    child: Text(dorm, style: mediumBlack16)
+                );
+              }).toList();
+            },
+            offset: Offset(0, 56),
+          ),
+        ]
       ),
       body: SafeArea(
         top: false,
-        child: Column(
-          children: [
-            TabBar(
-                controller: _tabController,
-                tabAlignment: TabAlignment.center,
-                labelStyle: boldBlack16,
-                unselectedLabelColor: grey,
-                indicatorColor: black,
-                isScrollable: true,
-                dividerColor: Colors.transparent,
-                indicatorPadding: EdgeInsets.only(bottom: 0),
-                overlayColor: WidgetStatePropertyAll(Colors.transparent),
-                labelPadding: EdgeInsets.symmetric(horizontal: 24.w),
-                tabs: [
-                  Tab(text: '본관'),
-                  Tab(text: '양성재'),
-                  Tab(text: '양진재'),
-                ]
+        child: SingleChildScrollView(
+          child: _isLoading ?
+          Center(
+            child: CircularProgressIndicator(
+                color: black
             ),
-            Container(
-                width: double.infinity,
-                height: 1.h,
-                color: grey_seperating_line
-            ),
-            SizedBox(height: 6.h),
-            Expanded( // <-- Wrap TabBarView with Expanded
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.w),
-                child: TabBarView(
-                  controller: _tabController,
+          ) :
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Table(
+                  border: TableBorder(
+                    verticalInside: BorderSide(color: grey_seperating_line, width: 1),
+                    horizontalInside: BorderSide(color: grey_seperating_line, width: 1),
+                  ),
+                  columnWidths: <int, TableColumnWidth> {
+                    0: FixedColumnWidth(70.w),
+                    1: FixedColumnWidth(120.w),
+                    2: FixedColumnWidth(120.w),
+                    3: FixedColumnWidth(120.w),
+                  },
                   children: [
-                    // You should handle the loading state within each TabView child
-                    _isLoading
-                        ? Center(child: CircularProgressIndicator())
-                        : SingleChildScrollView(
-                      padding: const EdgeInsets.all(16.0),
-                      child: HtmlWidget(_content, textStyle: const TextStyle(fontSize: 14)),
+                    TableRow(
+                      decoration: BoxDecoration(
+                  color: Colors.grey[200],
+              ),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 10.w),
+                            child: TableCell(child: Center(child: Text('요일', style: boldBlack14))),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 10.w),
+                            child: TableCell(child: Center(child: Text('아침', style: boldBlack14))),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 10.w),
+                            child: TableCell(child: Center(child: Text('점심', style: boldBlack14))),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 10.w),
+                            child: TableCell(child: Center(child: Text('저녁', style: boldBlack14))),
+                          ),
+                        ]
                     ),
-                    _isLoading
-                        ? Center(child: CircularProgressIndicator())
-                        : SingleChildScrollView(
-                      padding: const EdgeInsets.all(16.0),
-                      child: HtmlWidget(_content, textStyle: const TextStyle(fontSize: 14)),
-                    ),
-                    _isLoading
-                        ? Center(child: CircularProgressIndicator())
-                        : SingleChildScrollView(
-                      padding: const EdgeInsets.all(16.0),
-                      child: HtmlWidget(_content, textStyle: const TextStyle(fontSize: 14)),
-                    ),
-                  ],
-                ),
+                    ..._weekMenu.map((item) {
+                      return TableRow(
+                          children: item.values.map((value) {
+                            return TableCell(
+                                child: Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+                                    child: Text(value.toString(), style: mediumBlack14, textAlign: TextAlign.center)
+                                )
+                            );
+                          }).toList()
+                      );
+                    }).toList()
+                  ]
               ),
             ),
-          ],
-        ),
-      ),
+          )
+        )
+            )
+
     );
   }
 }

@@ -208,9 +208,11 @@ class _HomePageState extends State<HomePage> {
         final cells = row.querySelectorAll('td');
         if (cells.length < 4) continue;
 
-        _todayMenu.add(cells[1].innerHtml.replaceAll('<br>', '\n').trim());
-        _todayMenu.add(cells[2].innerHtml.replaceAll('<br>', '\n').trim());
-        _todayMenu.add(cells[3].innerHtml.replaceAll('<br>', '\n').trim());
+        print(cells[1].innerHtml);
+
+        _todayMenu.add(cells[1].innerHtml.replaceAll("\n", "").replaceAll('<br>', '\n').replaceAll('&amp;', '&').trim());
+        _todayMenu.add(cells[2].innerHtml.replaceAll("\n", "").replaceAll('<br>', '\n').replaceAll('&amp;', '&').trim());
+        _todayMenu.add(cells[3].innerHtml.replaceAll("\n", "").replaceAll('<br>', '\n').replaceAll('&amp;', '&').trim());
       }
     } catch (e) {
       debugPrint("Failed to get data: $e");
@@ -485,7 +487,7 @@ class _HomePageState extends State<HomePage> {
                                     InkWell(child: Text('더 보기 >', style: mediumGrey14), onTap: () {
                                       Navigator.push(
                                           context,
-                                          MaterialPageRoute(builder: (context) => MealDetailPage())
+                                          MaterialPageRoute(builder: (context) => MealDetailPage(selectedDorm: _selectedDorm))
                                       );
                                     }),
                                     SizedBox(width: 10.w)
