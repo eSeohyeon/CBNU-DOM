@@ -15,6 +15,7 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 import 'package:untitled/home/weather_service.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:untitled/home/menu_detail_page.dart';
 import 'package:untitled/home/notice_detail_page.dart';
@@ -35,11 +36,12 @@ class _HomePageState extends State<HomePage> {
   String _selectedDorm = '본관';
   String _currentDate = '';
   final List<String> dorms = ['본관', '양성재', '양진재'];
-  final List<String> circleButtons = ['챗봇', '세탁카드', '환산점수', '공구쪽지', '룸메쪽지'];
+  final List<String> circleButtons = ['챗봇', '세탁카드', '환산점수', '홈페이지', '공구쪽지', '룸메쪽지'];
   final List<Image> circleButtonImages = [
     Image.asset('assets/chatbot.png'),
     Image.asset('assets/washer.png'),
     Image.asset('assets/ranking.png'),
+    Image.asset('assets/web.png'),
     Image.asset('assets/shopping_bags.png'),
     Image.asset('assets/two_speech_bubles.png'),
   ];
@@ -430,46 +432,51 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 12.h),
                   SingleChildScrollView( // CircleButtons
                       scrollDirection: Axis.horizontal,
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: List.generate(circleButtons.length, (index) {
-                            return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 10.w),
-                                child: Column(
-                                    children: [
-                                      InkWell(
-                                          borderRadius: BorderRadius.circular(30.0),
-                                          onTap: () {
-                                            if(index == 0){
-                                              print('chatbot');
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatbotPage()));
-                                            } else if(index==1){
-                                              print('세탁카드');
-                                            } else if(index==2){
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) => DormScoreRanking()));
-                                            } else if(index==3){
-                                              print('공구쪽지');
-                                            } else if(index==4){
-                                              print('룸메쪽지');
-                                            }
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(4.0),
-                                            child: Container(
-                                                width: 42.w,
-                                                height: 42.h,
-                                                padding: EdgeInsets.all(12.0),
-                                                decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(25.0)),
-                                                child: circleButtonImages[index]
-                                            ),
-                                          )
-                                      ),
-                                      SizedBox(height: 4.h),
-                                      Text(circleButtons[index], style: mediumBlack14)
-                                    ]
-                                )
-                            );
-                          })
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: List.generate(circleButtons.length, (index) {
+                              return Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                                  child: Column(
+                                      children: [
+                                        InkWell(
+                                            borderRadius: BorderRadius.circular(30.0),
+                                            onTap: () {
+                                              if(index == 0){
+                                                print('chatbot');
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => ChatbotPage()));
+                                              } else if(index==1){
+                                                print('세탁카드');
+                                              } else if(index==2){
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => DormScoreRanking()));
+                                              } else if(index==3){
+                                                launchUrl(Uri.parse('https://dorm.chungbuk.ac.kr/home/main.php'));
+                                              } else if(index==4){
+                                                print('공구쪽지');
+                                              } else if(index==5) {
+                                                print('룸메쪽지');
+                                              }
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(4.0),
+                                              child: Container(
+                                                  width: 42.w,
+                                                  height: 42.h,
+                                                  padding: EdgeInsets.all(12.0),
+                                                  decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(25.0)),
+                                                  child: circleButtonImages[index]
+                                              ),
+                                            )
+                                        ),
+                                        SizedBox(height: 4.h),
+                                        Text(circleButtons[index], style: mediumBlack14)
+                                      ]
+                                  )
+                              );
+                            })
+                        ),
                       )
                   ),
                   SizedBox(height: 36.h),
