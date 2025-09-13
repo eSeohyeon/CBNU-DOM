@@ -15,6 +15,7 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 import 'package:untitled/home/weather_service.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:untitled/home/menu_detail_page.dart';
 import 'package:untitled/home/notice_detail_page.dart';
@@ -35,11 +36,12 @@ class _HomePageState extends State<HomePage> {
   String _selectedDorm = '본관';
   String _currentDate = '';
   final List<String> dorms = ['본관', '양성재', '양진재'];
-  final List<String> circleButtons = ['챗봇', '세탁카드', '환산점수', '공구쪽지', '룸메쪽지'];
+  final List<String> circleButtons = ['챗봇', '세탁카드', '환산점수', '홈페이지', '공구쪽지', '룸메쪽지'];
   final List<Image> circleButtonImages = [
     Image.asset('assets/chatbot.png'),
     Image.asset('assets/washer.png'),
     Image.asset('assets/ranking.png'),
+    Image.asset('assets/web.png'),
     Image.asset('assets/shopping_bags.png'),
     Image.asset('assets/two_speech_bubles.png'),
   ];
@@ -182,10 +184,18 @@ class _HomePageState extends State<HomePage> {
         return;
       }
       final rows = tbody.querySelectorAll('tr');
-      if(rows.length != 7) {
-        _todayMenu.add('등록된 식단이 없습니다.');
-        _todayMenu.add('등록된 식단이 없습니다.');
-        _todayMenu.add('등록된 식단이 없습니다.');
+      if(rows.length != 7 && _selectedDorm !='본관') { // 본관은 5개, 양성재 양진재는 7개
+        _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
+        _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
+        _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
+        setState(() {
+          _isMealLoading = false;
+        });
+        return;
+      } else if (rows.length !=5 && _selectedDorm == '본관') {
+        _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
+        _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
+        _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
         setState(() {
           _isMealLoading = false;
         });
@@ -200,9 +210,11 @@ class _HomePageState extends State<HomePage> {
         final cells = row.querySelectorAll('td');
         if (cells.length < 4) continue;
 
-        _todayMenu.add(cells[1].innerHtml.replaceAll('<br>', '\n').trim());
-        _todayMenu.add(cells[2].innerHtml.replaceAll('<br>', '\n').trim());
-        _todayMenu.add(cells[3].innerHtml.replaceAll('<br>', '\n').trim());
+        print(cells[1].innerHtml);
+
+        _todayMenu.add(cells[1].innerHtml.replaceAll("\n", "").replaceAll('<br>', '\n').replaceAll('&amp;', '&').trim());
+        _todayMenu.add(cells[2].innerHtml.replaceAll("\n", "").replaceAll('<br>', '\n').replaceAll('&amp;', '&').trim());
+        _todayMenu.add(cells[3].innerHtml.replaceAll("\n", "").replaceAll('<br>', '\n').replaceAll('&amp;', '&').trim());
       }
     } catch (e) {
       debugPrint("Failed to get data: $e");
@@ -228,7 +240,7 @@ class _HomePageState extends State<HomePage> {
         'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20039&mod=&page=1&scode=00000002&listCnt=20');
 
     try {
-      final response = await http.get(url).timeout(const Duration(seconds: 12));
+      final response = await http.get(url).timeout(const Duration(seconds: 20));
       if (response.statusCode == 200) {
         int count = 0;
         final document = parser.parse(response.body);
@@ -237,7 +249,7 @@ class _HomePageState extends State<HomePage> {
         _latestNotices.clear();
 
         for (var row in rows) {
-          final isPinned = row.classes.contains('brd_notice'); // 고정 공지 UI에서 분리해야함.
+          final isPinned = row.classes.contains('brd_notice');
           if (isPinned) continue;
 
           final cells = row.querySelectorAll('td');
@@ -269,7 +281,7 @@ class _HomePageState extends State<HomePage> {
             link: ''
         ));
         _latestNotices.add(Notice(
-            title: '새로고침 시도.',
+            title: '새로고침 해 주세요.',
             writer: '',
             date: '',
             link: ''
@@ -287,7 +299,7 @@ class _HomePageState extends State<HomePage> {
           link: ''
       ));
       _latestNotices.add(Notice(
-          title: '새로고침 시도.',
+          title: '새로고침 해 주세요.',
           writer: '',
           date: '',
           link: ''
@@ -375,7 +387,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+                      padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 6.h),
                       child: _isWeatherLoading ?
                       Shimmer.fromColors(
                           baseColor: Colors.grey.shade300,
@@ -387,7 +399,7 @@ class _HomePageState extends State<HomePage> {
                           )) :
                       Container(
                           width: double.infinity,
-                          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.0),
                               gradient: LinearGradient(
@@ -404,7 +416,7 @@ class _HomePageState extends State<HomePage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(_currentWeather!.description, style: _currentWeather!.description == '비' ? boldBlack14.copyWith(color: white) : boldBlack14),
-                                      Text('${_currentWeather!.temperature.toStringAsFixed(0)}°C', style: _currentWeather!.description == '비' ?  boldBlack24.copyWith(color: white) : boldBlack24),
+                                      Text('${_currentWeather!.temperature.toStringAsFixed(0)}°C', style: _currentWeather!.description == '비' ?  boldBlack24.copyWith(color: white, fontSize: 20.sp) : boldBlack24.copyWith(fontSize: 20.sp)),
                                       Text('체감온도 ${_currentWeather!.feelsLike.toStringAsFixed(0)}°C', style: _currentWeather!.description == '비' ? mediumWhite13 : mediumGrey13),
                                     ]
                                 ),
@@ -420,46 +432,51 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 12.h),
                   SingleChildScrollView( // CircleButtons
                       scrollDirection: Axis.horizontal,
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: List.generate(circleButtons.length, (index) {
-                            return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 10.w),
-                                child: Column(
-                                    children: [
-                                      InkWell(
-                                          borderRadius: BorderRadius.circular(30.0),
-                                          onTap: () {
-                                            if(index == 0){
-                                              print('chatbot');
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatbotPage()));
-                                            } else if(index==1){
-                                              print('세탁카드');
-                                            } else if(index==2){
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) => DormScoreRanking()));
-                                            } else if(index==3){
-                                              print('공구쪽지');
-                                            } else if(index==4){
-                                              print('룸메쪽지');
-                                            }
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(4.0),
-                                            child: Container(
-                                                width: 42.w,
-                                                height: 42.h,
-                                                padding: EdgeInsets.all(12.0),
-                                                decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(25.0)),
-                                                child: circleButtonImages[index]
-                                            ),
-                                          )
-                                      ),
-                                      SizedBox(height: 4.h),
-                                      Text(circleButtons[index], style: mediumBlack14)
-                                    ]
-                                )
-                            );
-                          })
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: List.generate(circleButtons.length, (index) {
+                              return Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                                  child: Column(
+                                      children: [
+                                        InkWell(
+                                            borderRadius: BorderRadius.circular(30.0),
+                                            onTap: () {
+                                              if(index == 0){
+                                                print('chatbot');
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => ChatbotPage()));
+                                              } else if(index==1){
+                                                print('세탁카드');
+                                              } else if(index==2){
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => DormScoreRanking()));
+                                              } else if(index==3){
+                                                launchUrl(Uri.parse('https://dorm.chungbuk.ac.kr/home/main.php'));
+                                              } else if(index==4){
+                                                print('공구쪽지');
+                                              } else if(index==5) {
+                                                print('룸메쪽지');
+                                              }
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(4.0),
+                                              child: Container(
+                                                  width: 42.w,
+                                                  height: 42.h,
+                                                  padding: EdgeInsets.all(12.0),
+                                                  decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(25.0)),
+                                                  child: circleButtonImages[index]
+                                              ),
+                                            )
+                                        ),
+                                        SizedBox(height: 4.h),
+                                        Text(circleButtons[index], style: mediumBlack14)
+                                      ]
+                                  )
+                              );
+                            })
+                        ),
                       )
                   ),
                   SizedBox(height: 36.h),
@@ -477,7 +494,7 @@ class _HomePageState extends State<HomePage> {
                                     InkWell(child: Text('더 보기 >', style: mediumGrey14), onTap: () {
                                       Navigator.push(
                                           context,
-                                          MaterialPageRoute(builder: (context) => MealDetailPage())
+                                          MaterialPageRoute(builder: (context) => MealDetailPage(selectedDorm: _selectedDorm))
                                       );
                                     }),
                                     SizedBox(width: 10.w)
@@ -504,9 +521,8 @@ class _HomePageState extends State<HomePage> {
                                         initialPage: 1,
                                         enableInfiniteScroll: true,
                                         autoPlay: false,
-                                        enlargeCenterPage: true,
+                                        enlargeCenterPage: false,
                                         scrollDirection: Axis.horizontal,
-                                        enlargeFactor: 0.15
                                     )
                                 ), // 식단 메뉴 카드
                               ]
@@ -666,23 +682,26 @@ class MealCard extends StatelessWidget {
     String mealLabel = timeLabels[timeIndex];
     String mealTime = isWeekend() ? weekendTime[timeIndex] : weekdayTime[timeIndex];
 
-    return Container(
-        decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0), border: Border.all(color: grey_seperating_line, width: 1.0)),
-        width: double.infinity,
-        child: Padding(
-            padding: EdgeInsets.only(top:14.h, bottom: 12.h),
-            child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(mealLabel, style: boldBlack16),
-                  Text(mealTime, style: mediumGrey14),
-                  SizedBox(height: 20.h),
-                  SizedBox(
-                      height: 195.h,
-                      child: SingleChildScrollView(child: Text(menu, style: mediumBlack16, textAlign: TextAlign.center)))
-                ]
-            )
-        )
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 3.w),
+      child: Container(
+          decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0), border: Border.all(color: grey_seperating_line, width: 1.0)),
+          width: double.infinity,
+          child: Padding(
+              padding: EdgeInsets.only(top:14.h, bottom: 12.h),
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(mealLabel, style: boldBlack16),
+                    Text(mealTime, style: mediumGrey14),
+                    SizedBox(height: 20.h),
+                    SizedBox(
+                        height: 195.h,
+                        child: SingleChildScrollView(child: Text(menu, style: mediumBlack16, textAlign: TextAlign.center)))
+                  ]
+              )
+          )
+      ),
     );
   }
 }

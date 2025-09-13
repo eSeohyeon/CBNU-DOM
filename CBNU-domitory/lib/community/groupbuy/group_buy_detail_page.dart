@@ -440,24 +440,115 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                                               if (widget.post.maxParticipants > 0)
                                                 Text(
                                                     '1인당 ${NumberFormat('#,###').format(widget.post.itemPrice ~/ widget.post.maxParticipants)}원',
-                                                    style: mediumGrey14)
+                                                    style: mediumGrey14),
+                                              SizedBox(height: 10.h),
+                                              Row(children: [
+                                                const Icon(Icons.person, color: grey, size: 20),
+                                                SizedBox(width: 4.w),
+                                                Text(
+                                                    '${widget.post.currentParticipants}/${widget.post.maxParticipants}',
+                                                    style: mediumGrey14),
+                                              ]),
                                             ]),
                                       ),
-                                      Container(
-                                          width: 36.w,
-                                          height: 36.h,
-                                          decoration: BoxDecoration(
-                                              color: grey_seperating_line,
-                                              borderRadius: BorderRadius.circular(15)),
-                                          child: IconButton(
-                                            icon: const Icon(Icons.open_in_new_rounded,
-                                                color: black, size: 24),
-                                            onPressed: () {
-                                              if (widget.post.itemUrl.isNotEmpty) {
-                                                launchUrl(Uri.parse(widget.post.itemUrl));
-                                              }
-                                            },
-                                          ))
+                                      Row(
+                                        children: [
+                                          if(widget.post.itemUrl.isNotEmpty)
+                                            Container(
+                                              width: 36.w,
+                                              height: 36.h,
+                                              decoration: BoxDecoration(
+                                                color: grey_seperating_line,
+                                                borderRadius: BorderRadius.circular(15)
+                                              ),
+                                              child: IconButton(
+                                                icon: const Icon(Icons.open_in_new_rounded,
+                                                    color: black, size: 24),
+                                                onPressed: () {
+                                                  launchUrl(Uri.parse(
+                                                      widget.post.itemUrl));
+                                                }
+                                            )), SizedBox(width: 6.w),
+                                          Container(
+                                              width: 36.w,
+                                              height: 35.h,
+                                              decoration: BoxDecoration(
+                                                  color: _isStudent ? black : black40,
+                                                  borderRadius: BorderRadius.circular(15)
+                                              ),
+                                              child: IconButton(
+                                                  icon: const Icon(Icons.chat_bubble_outline_rounded, //////////// 공동구매 채팅 참여 버튼
+                                                      color: white, size: 24),
+                                                  onPressed: () {
+                                                    _isStudent ?
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (context) => AlertDialog(
+                                                          backgroundColor: white,
+                                                          content: Container(
+                                                              padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 12.h),
+                                                              decoration: BoxDecoration(
+                                                                  color: white,
+                                                                  borderRadius: BorderRadius.circular(10.0)
+                                                              ),
+                                                              child: Column(
+                                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                                  mainAxisSize: MainAxisSize.min,
+                                                                  children: [
+                                                                    Text('공동구매 채팅에\n참여하시겠습니까?', style: boldBlack16, textAlign: TextAlign.center,),
+                                                                    SizedBox(height: 16.h),
+                                                                    Column(
+                                                                        mainAxisSize: MainAxisSize.min,
+                                                                        children: [
+                                                                          SizedBox(
+                                                                            width: double.infinity,
+                                                                            child: ElevatedButton(
+                                                                                onPressed: () {
+                                                                                  // TODO: 공동구매 참여 로직 구현
+                                                                                },
+                                                                                child: Text('참여하기', style: mediumWhite14),
+                                                                                style: ElevatedButton.styleFrom(
+                                                                                    elevation: 0,
+                                                                                    backgroundColor: black,
+                                                                                    overlayColor: Colors.transparent,
+                                                                                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                                                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
+                                                                                )
+                                                                            ),
+                                                                          ),
+                                                                          SizedBox(height: 8.h),
+                                                                          SizedBox(
+                                                                            width: double.infinity,
+                                                                            child: ElevatedButton(
+                                                                                onPressed: () {
+                                                                                  Navigator.pop(context);
+                                                                                },
+                                                                                child: Text('닫기', style: mediumBlack14),
+                                                                                style: ElevatedButton.styleFrom(
+                                                                                    elevation: 0,
+                                                                                    backgroundColor: grey_button,
+                                                                                    overlayColor: Colors.transparent,
+                                                                                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                                                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
+                                                                                )
+                                                                            ),
+                                                                          )
+                                                                        ]
+                                                                    )
+                                                                  ]
+                                                              )
+                                                          ),
+                                                        )
+                                                    ) :
+                                                        showDialog(
+                                                            context: context,
+                                                            builder: (context) => PopupDialog(),
+                                                          barrierDismissible: false
+                                                        );
+                                                  }
+                                              )),
+                                        ]
+                                      ),
                                     ]),
                                 SizedBox(height: 24.h),
                                 Align(
@@ -466,32 +557,6 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                                       style: mediumBlack14),
                                 ),
                                 SizedBox(height: 24.h),
-                                Row(children: [
-                                  const Icon(Icons.person, color: grey, size: 20),
-                                  SizedBox(width: 4.w),
-                                  Text(
-                                      '${widget.post.currentParticipants}/${widget.post.maxParticipants}',
-                                      style: mediumGrey14),
-                                ]),
-                                SizedBox(height: 24.h),
-                                SizedBox( // 참여하기 버튼
-                                  width: double.infinity,
-                                  height: 45.h,
-                                  child: ElevatedButton(
-                                    child: Text("공동구매 참여하기", style: mediumWhite16),
-                                    onPressed: () {
-                                      // TODO: 공동구매 참여 로직 구현
-                                      print('참여 버튼 클릭');
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: black,
-                                      padding: EdgeInsets.only(top: 6.h, bottom: 6.h),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(25.0)),
-                                      elevation: 2,
-                                    ),
-                                  ),
-                                ),
                               ])),
                           Container( // 구분선
                               width: double.infinity,
@@ -608,7 +673,7 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                         ])),
               ),
               // --- 댓글 입력창 ---
-              if (_isStudent)
+              //if (_isStudent)
                 Column(
                   children: [
                     if (_replyingToCommentId != null)
@@ -634,25 +699,30 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                                   child: GreyFilledTextField(
                                       controller: _commentController,
                                       focusNode: _commentFocusNode,
-                                      name: '댓글을 입력하세요',
+                                      name: _isStudent ? '댓글을 입력하세요' : '재학생 인증이 필요합니다',
                                       inputType: TextInputType.text
                                   )
                               ),
                               SizedBox(width: 4.w),
                               InkWell(
-                                  onTap: _isRegisteringComment ? null : _submitComment,
-                                  child: Container(
-                                      decoration: BoxDecoration(color: black, borderRadius: BorderRadius.circular(20)),
-                                      child: Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-                                          child: _isRegisteringComment
-                                              ? const SizedBox(width: 28, height: 28, child: CircularProgressIndicator(color: white, strokeWidth: 2))
-                                              : const Icon(
-                                              Icons.send_rounded,
-                                              color: white,
-                                              size: 28
-                                          )
-                                      )
+                                  onTap: _isStudent ?
+                                  _isRegisteringComment ? null : _submitComment : () { showDialog(context: context, builder: (context) => PopupDialog(), barrierDismissible: false); },
+                                  borderRadius: BorderRadius.circular(18.0),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: Container(
+                                        decoration: BoxDecoration(color: _isStudent ? black : black40, borderRadius: BorderRadius.circular(20)),
+                                        child: Padding(
+                                            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                                            child: _isRegisteringComment
+                                                ? const SizedBox(width: 28, height: 28, child: CircularProgressIndicator(color: white, strokeWidth: 2))
+                                                : const Icon(
+                                                Icons.send_rounded,
+                                                color: white,
+                                                size: 28
+                                            )
+                                        )
+                                    ),
                                   )
                               )
                             ]

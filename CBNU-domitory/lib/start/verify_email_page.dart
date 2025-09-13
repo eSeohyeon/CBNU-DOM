@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:untitled/home_page.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
+import 'package:untitled/bottom_navigation_tab.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
@@ -63,7 +64,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
       // AuthGate가 처리해주지만, 만약을 위해 명시적으로 이동합니다.
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => BottomNavigationTab(navigatedIndex: 0)),
             (route) => false,
       );
     }
@@ -93,7 +94,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   Widget build(BuildContext context) {
     // 이미 인증된 상태라면 바로 HomePage를 보여줍니다.
     return _isEmailVerified
-        ? const HomePage()
+        ? BottomNavigationTab(navigatedIndex: 0)
         : Scaffold(
       backgroundColor: white,
       appBar: AppBar(

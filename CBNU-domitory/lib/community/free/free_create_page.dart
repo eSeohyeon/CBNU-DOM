@@ -130,7 +130,7 @@ class _CreateFreePostState extends State<CreateFreePost> {
       appBar: AppBar(
         backgroundColor: white,
         surfaceTintColor: white,
-        title: Text('글쓰기', style: mediumBlack18),
+        title: Text('글쓰기', style: mediumBlack16),
         leading: IconButton(
           icon: Icon(Icons.close, color: black, size: 24),
           onPressed: () {
@@ -151,109 +151,114 @@ class _CreateFreePostState extends State<CreateFreePost> {
         ],
         titleSpacing: 0,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-          child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("제목", style: mediumBlack16),
-                SizedBox(height: 10.h),
-                CustomTextField(controller: _titleController, name: '제목을 입력하세요.', inputType: TextInputType.text, maxLines: 1, maxLength: 50),
-                SizedBox(height: 32.h),
-                Text("내용", style: mediumBlack16),
-                SizedBox(height: 10.h),
-                TextField(
-                  controller: _contentsController,
-                  maxLines: 10,
-                  maxLength: 1000,
-                  decoration: InputDecoration(
-                    hintText: '내용을 입력하세요.',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: grey_seperating_line),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: grey_seperating_line),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: black),
+      body: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("제목", style: mediumBlack16),
+                  SizedBox(height: 10.h),
+                  CustomTextField(controller: _titleController, name: '제목을 입력하세요.', inputType: TextInputType.text, maxLines: 1, maxLength: 50),
+                  SizedBox(height: 32.h),
+                  Text("내용", style: mediumBlack16),
+                  SizedBox(height: 10.h),
+                  TextField(
+                    controller: _contentsController,
+                    maxLines: 10,
+                    maxLength: 1000,
+                    style: mediumBlack16,
+                    decoration: InputDecoration(
+                      hintText: '내용을 입력하세요.',
+                      hintStyle: mediumGrey14,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(color: grey_seperating_line),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(color: grey_seperating_line),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(color: black),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 20.h),
-                // --- 이미지 첨부 ---
-                Text("이미지 첨부", style: mediumBlack16),
-                SizedBox(height: 10.h),
-                Container(
-                  height: 100.h,
-                  child: Row(
-                    children: [
-                      InkWell(
-                        onTap: _pickImages,
-                        child: Container(
-                          width: 100.w,
-                          height: 100.h,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: grey_seperating_line),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.camera_alt, color: grey),
-                              Text('${_selectedImages.length}/5', style: mediumGrey14),
-                            ],
+                  SizedBox(height: 20.h),
+                  // --- 이미지 첨부 ---
+                  Text("이미지 첨부", style: mediumBlack16),
+                  SizedBox(height: 10.h),
+                  Container(
+                    height: 100.h,
+                    child: Row(
+                      children: [
+                        InkWell(
+                          onTap: _pickImages,
+                          child: Container(
+                            width: 100.w,
+                            height: 100.h,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: grey_seperating_line),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.camera_alt, color: grey),
+                                Text('${_selectedImages.length}/5', style: mediumGrey14),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(width: 10.w),
-                      Expanded(
-                        child: _selectedImages.isEmpty
-                            ? Center(child: Text('이미지를 추가해주세요.', style: mediumGrey14))
-                            : ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _selectedImages.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: EdgeInsets.only(right: 10.w),
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Image.file(
-                                      File(_selectedImages[index].path),
-                                      width: 100.w,
-                                      height: 100.h,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  Positioned(
-                                    top: 4,
-                                    right: 4,
-                                    child: InkWell(
-                                      onTap: () => _removeImage(index),
-                                      child: CircleAvatar(
-                                        radius: 12,
-                                        backgroundColor: Colors.black.withOpacity(0.6),
-                                        child: Icon(Icons.close, size: 16, color: white),
+                        SizedBox(width: 10.w),
+                        Expanded(
+                          child: _selectedImages.isEmpty
+                              ? Center(child: Text('이미지를 추가해주세요.', style: mediumGrey14))
+                              : ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _selectedImages.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: EdgeInsets.only(right: 10.w),
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.file(
+                                        File(_selectedImages[index].path),
+                                        width: 100.w,
+                                        height: 100.h,
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+                                    Positioned(
+                                      top: 4,
+                                      right: 4,
+                                      child: InkWell(
+                                        onTap: () => _removeImage(index),
+                                        child: CircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: Colors.black.withOpacity(0.6),
+                                          child: Icon(Icons.close, size: 16, color: white),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ]
+                ]
+            ),
           ),
         ),
       ),

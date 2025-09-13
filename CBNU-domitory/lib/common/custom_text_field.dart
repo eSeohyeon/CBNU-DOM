@@ -48,15 +48,15 @@ class CustomTextField extends StatelessWidget {
         floatingLabelBehavior: FloatingLabelBehavior.never,
         border: const OutlineInputBorder(
           borderSide: BorderSide(color: grey_outline_inputtext),
-          borderRadius: BorderRadius.all(Radius.circular(15)),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         focusedBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: black),
-          borderRadius: BorderRadius.all(Radius.circular(15)),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: grey_outline_inputtext),
-          borderRadius: BorderRadius.all(Radius.circular(15)),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
       ),
     );
