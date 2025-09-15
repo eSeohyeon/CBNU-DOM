@@ -6,12 +6,17 @@ import 'auth_gate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/bottom_navigation_tab.dart';
 import 'package:untitled/start/start_page.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await FlutterDownloader.initialize(
+    debug: true,
+    ignoreSsl: true
   );
   runApp(const MyApp());
 }

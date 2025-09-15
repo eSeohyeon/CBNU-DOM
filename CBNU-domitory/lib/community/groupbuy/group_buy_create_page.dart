@@ -189,7 +189,7 @@ class _GroupBuyCreatePageState extends State<GroupBuyCreatePage> {
         children: [
           Icon(Icons.photo_library_outlined, color: Colors.grey[600], size: 40),
           SizedBox(height: 8.h),
-          Text('검증 시 상품 이미지가 여기에 표시됩니다.', style: TextStyle(color: Colors.grey[700])),
+          Text('검증 시 상품 이미지가\n여기에 표시됩니다.', style: TextStyle(color: Colors.grey[700]), textAlign: TextAlign.center,),
         ],
       ),
     );
@@ -200,9 +200,16 @@ class _GroupBuyCreatePageState extends State<GroupBuyCreatePage> {
     return Scaffold(
       backgroundColor: white,
       appBar: AppBar(
-        title: Text('공동구매 글쓰기', style: boldBlack18),
+        title: Text('공동구매 글쓰기', style: mediumBlack16),
         backgroundColor: white,
         surfaceTintColor: white,
+        titleSpacing: 0,
+        leading: IconButton(
+          icon: Icon(Icons.close, color: black, size: 24),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         actions: [
           if (_isRegistering)
             const Padding(
@@ -216,127 +223,132 @@ class _GroupBuyCreatePageState extends State<GroupBuyCreatePage> {
             ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('상품명', style: mediumBlack16),
-            SizedBox(height: 6.h),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomTextField(
-                    controller: _productNameController,
-                    name: '상품명을 입력하세요',
-                    inputType: TextInputType.text,
-                  ),
-                ),
-                SizedBox(width: 8.w),
-                SizedBox(
-                  height: 48.h,
-                  child: ElevatedButton(
-                    onPressed: _isSearchingPrice ? null : _fetchLowestPrice,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: black,
-                      foregroundColor: white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+      body: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('상품명', style: mediumBlack16),
+              SizedBox(height: 6.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _productNameController,
+                      name: '상품명을 입력하세요',
+                      inputType: TextInputType.text,
                     ),
-                    child: _isSearchingPrice
-                        ? SizedBox(
-                      width: 20.w,
-                      height: 20.w,
-                      child: const CircularProgressIndicator(color: white, strokeWidth: 2),
-                    )
-                        : const Text('검증'),
+                  ),
+                  SizedBox(width: 8.w),
+                  SizedBox(
+                    height: 48.h,
+                    child: ElevatedButton(
+                      onPressed: _isSearchingPrice ? null : _fetchLowestPrice,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: black,
+                        foregroundColor: white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: _isSearchingPrice
+                          ? SizedBox(
+                        width: 20.w,
+                        height: 20.w,
+                        child: const CircularProgressIndicator(color: white, strokeWidth: 2),
+                      )
+                          : const Text('검증'),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 24.h),
+              Text('상품 이미지', style: mediumBlack16),
+              SizedBox(height: 6.h),
+              Center(
+                child: Container(
+                  height: 250.h,
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey.shade400),
+                  ),
+                  child: _buildImagePreview(),
+                ),
+              ),
+              SizedBox(height: 8.h),
+
+              if (_lowestPrice != null)
+                Text(
+                  '다나와 최저가: $_lowestPrice',
+                  style: mediumBlack14,
+                ),
+              if (_searchError != null)
+                Padding(
+                  padding: EdgeInsets.only(top: 8.h),
+                  child: Text(
+                    _searchError!,
+                    style: mediumBlack14.copyWith(color: Colors.red),
                   ),
                 ),
-              ],
-            ),
+              SizedBox(height: 24.h),
 
-            SizedBox(height: 16.h),
-            Text('상품 이미지', style: mediumBlack16),
-            SizedBox(height: 6.h),
-            Center(
-              child: Container(
-                height: 250.h,
-                width: MediaQuery.of(context).size.width * 0.25,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey.shade400),
-                ),
-                child: _buildImagePreview(),
+              Text('상품 링크 (선택)', style: mediumBlack16),
+              SizedBox(height: 6.h),
+              CustomTextField(
+                controller: _productUrlController,
+                name: '상품 판매 페이지 링크를 입력하세요',
+                inputType: TextInputType.url,
               ),
-            ),
-            SizedBox(height: 8.h),
+              SizedBox(height: 24.h),
 
-            if (_lowestPrice != null)
-              Text(
-                '다나와 최저가: $_lowestPrice',
-                style: mediumBlack14,
+              Text('총 금액', style: mediumBlack16),
+              SizedBox(height: 6.h),
+              CustomTextField(
+                controller: _totalPriceController,
+                name: '배송비 포함 총 금액을 입력하세요',
+                inputType: TextInputType.number,
               ),
-            if (_searchError != null)
-              Padding(
-                padding: EdgeInsets.only(top: 8.h),
-                child: Text(
-                  _searchError!,
-                  style: mediumBlack14.copyWith(color: Colors.red),
-                ),
+              SizedBox(height: 24.h),
+
+              Text('모집 인원', style: mediumBlack16),
+              SizedBox(height: 6.h),
+              CustomTextField(
+                controller: _participantsController,
+                name: '본인을 포함한 총 모집 인원을 입력하세요',
+                inputType: TextInputType.number,
               ),
-            SizedBox(height: 20.h),
+              SizedBox(height: 24.h),
 
-            Text('상품 링크 (선택)', style: mediumBlack16),
-            SizedBox(height: 6.h),
-            CustomTextField(
-              controller: _productUrlController,
-              name: '상품 판매 페이지 링크를 입력하세요',
-              inputType: TextInputType.url,
-            ),
-            SizedBox(height: 20.h),
-
-            Text('총 금액', style: mediumBlack16),
-            SizedBox(height: 6.h),
-            CustomTextField(
-              controller: _totalPriceController,
-              name: '배송비 포함 총 금액을 입력하세요',
-              inputType: TextInputType.number,
-            ),
-            SizedBox(height: 20.h),
-
-            Text('모집 인원', style: mediumBlack16),
-            SizedBox(height: 6.h),
-            CustomTextField(
-              controller: _participantsController,
-              name: '본인을 포함한 총 모집 인원을 입력하세요',
-              inputType: TextInputType.number,
-            ),
-            SizedBox(height: 20.h),
-
-            Text('내용', style: mediumBlack16),
-            SizedBox(height: 6.h),
-            TextField(
-              controller: _contentController,
-              maxLines: 8,
-              decoration: InputDecoration(
-                hintText: '내용을 입력하세요.',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: const BorderSide(color: grey_seperating_line),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: const BorderSide(color: grey_seperating_line),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: const BorderSide(color: black),
+              Text('내용', style: mediumBlack16),
+              SizedBox(height: 6.h),
+              TextField(
+                controller: _contentController,
+                maxLines: 8,
+                style: mediumBlack16,
+                decoration: InputDecoration(
+                  hintText: '내용을 입력하세요.',
+                  hintStyle: mediumGrey14,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: grey_seperating_line),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: grey_seperating_line),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: black),
+                  ),
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: 28.h)
+            ],
+          ),
         ),
       ),
     );

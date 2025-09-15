@@ -375,6 +375,7 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
                       ),
                       Container(width: double.infinity, height: 1.h, color: grey_seperating_line),
                       SizedBox(height: 16.h),
+                      ////////////////////////////// 댓글 //////////////////////////////////////////
                       StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance.collection('free_posts').doc(widget.post.postId).collection('comments').orderBy('createdAt').snapshots(),
                         builder: (context, snapshot) {
@@ -432,6 +433,7 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
                                 itemBuilder: (context, index) {
                                   return CommentsItem(
                                     commentDoc: comments[index],
+                                    isStudent : _isStudent,
                                     postId: widget.post.postId,
                                     onReply: _startReplying,
                                     onDelete: _deleteComment,
@@ -447,7 +449,7 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
                     ]),
               ),
             ),
-            if (_isStudent)
+            //if (_isStudent)
               Column(
                 children: [
                   if (_replyingToCommentId != null)
@@ -469,19 +471,22 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
                             child: GreyFilledTextField(
                                 controller: _commentController,
                                 focusNode: _commentFocusNode,
-                                name: '댓글을 입력하세요',
+                                name: _isStudent ? '댓글을 입력하세요' : '재학생 인증이 필요합니다',
                                 inputType: TextInputType.text)),
                         SizedBox(width: 4.w),
                         InkWell(
                             borderRadius: BorderRadius.circular(18.0),
-                            onTap: _isRegisteringComment ? null : _submitComment,
-                            child: Container(
-                                decoration: BoxDecoration(color: black, borderRadius: BorderRadius.circular(20)),
-                                child: Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-                                    child: _isRegisteringComment
-                                        ? const SizedBox(width: 28, height: 28, child: CircularProgressIndicator(color: white, strokeWidth: 2))
-                                        : const Icon(Icons.send_rounded, color: white, size: 28))))
+                            onTap: _isStudent ? (_isRegisteringComment ? null : _submitComment) : () {showDialog(context: context, builder: (context) => PopupDialog(), barrierDismissible: false);} ,
+                            child: Padding(
+                              padding: const EdgeInsets.all(3.0),
+                              child: Container(
+                                  decoration: BoxDecoration(color: _isStudent ? black : black40, borderRadius: BorderRadius.circular(20)),
+                                  child: Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                                      child: _isRegisteringComment
+                                          ? const SizedBox(width: 28, height: 28, child: CircularProgressIndicator(color: white, strokeWidth: 2))
+                                          : const Icon(Icons.send_rounded, color: white, size: 28))),
+                            ))
                       ])),
                 ],
               ),
@@ -493,12 +498,13 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
 }
 
 class CommentsItem extends StatelessWidget {
+  final bool isStudent;
   final DocumentSnapshot commentDoc;
   final String postId;
   final Function(String, String) onReply;
   final Function(String) onDelete;
   final Function(String, String) onDeleteReply;
-  const CommentsItem({super.key, required this.commentDoc, required this.postId, required this.onReply, required this.onDelete, required this.onDeleteReply});
+  const CommentsItem({super.key, required this.isStudent, required this.commentDoc, required this.postId, required this.onReply, required this.onDelete, required this.onDeleteReply});
 
   @override
   Widget build(BuildContext context) {
@@ -541,7 +547,11 @@ class CommentsItem extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton(
-              onPressed: () => onReply(commentDoc.id, authorNickname),
+              onPressed: () {
+                isStudent ?
+                onReply(commentDoc.id, authorNickname)
+                : showDialog(context: context, builder: (context) => PopupDialog(), barrierDismissible: false);
+              },
               child: Text('답글 달기', style: mediumGrey13),
             ),
           ),
