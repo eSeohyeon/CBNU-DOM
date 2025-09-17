@@ -21,8 +21,8 @@ class AnswerChecklistPage extends StatefulWidget {
 
 class _AnswerChecklistPageState extends State<AnswerChecklistPage> {
   Map<String, dynamic> answers = {
-    '취침시간': '',
-    '기상시간': '',
+    '취침시간': <String>[],
+    '기상시간': <String>[],
     '샤워시각': '',
     '본가주기': '',
     '흡연여부': '',
@@ -42,7 +42,6 @@ class _AnswerChecklistPageState extends State<AnswerChecklistPage> {
     '벌레': '',
     '컴퓨터 게임': '',
     '운동': '',
-    '이것만은 양보 못해' : ''
   };
   PageController _pageController = PageController();
   int _currentPage = 0;

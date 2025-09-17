@@ -29,7 +29,6 @@ class _ChecklistPersonalityViewState extends State<ChecklistPersonalityView> {
   final List<String> mbtiPJOptions = ['P', 'J'];
   final List<String> computerGameOptions = ['안 함', '중간', '좋아함'];
   final List<String> exerciseOptions = ['안 함', '중간', '좋아함'];
-  final List<String> neverYieldOptions = ['기상시간', '취침시간', '샤워시각', '흡연여부', '잠버릇', '청소', '더위', '추위', '실내취식', '실내통화', '친구초대'];
 
   @override
   void initState() {
@@ -53,9 +52,6 @@ class _ChecklistPersonalityViewState extends State<ChecklistPersonalityView> {
     _exerciseController = GroupButtonController(
       selectedIndex: _getInitialIndex('운동', exerciseOptions),
     );
-    _neverYieldController = GroupButtonController(
-      selectedIndex: _getInitialIndex('이것만은 양보 못 해', neverYieldOptions)
-    );
   }
 
   int? _getInitialIndex(String key, List<String> options) {
@@ -74,7 +70,6 @@ class _ChecklistPersonalityViewState extends State<ChecklistPersonalityView> {
     _mbtiTFController.dispose();
     _mbtiPJController.dispose();
     _computerGameController.dispose();
-    _neverYieldController.dispose();
     super.dispose();
   }
 
@@ -172,28 +167,6 @@ class _ChecklistPersonalityViewState extends State<ChecklistPersonalityView> {
                 options: GroupButtonOptions(spacing: 8),
               ),
               SizedBox(height: 36.h),
-              Text('이것만은 양보 못해', style: mediumBlack16),
-              Row(
-                  children: [
-                    Icon(Icons.help_outline_rounded, color: grey, size: 20),
-                    SizedBox(width: 4.w),
-                    Expanded(child: Text('룸메이트 추천 시, 반드시 고려되었으면 하는 항목 택1', style: mediumGrey13))
-                  ]
-              ),
-              SizedBox(height: 10.h),
-              GroupButton(
-                buttons: neverYieldOptions,
-                controller : _neverYieldController,
-                onSelected: (val, i, selected){
-                  setState(() {
-                    widget.answers['이것만은 양보 못해'] = val;
-                  });
-                },
-                buttonBuilder: (selected, value, context) {
-                  return checklistGroupButton(selected, value);
-                },
-                options: GroupButtonOptions(spacing: 8, groupRunAlignment: GroupRunAlignment.start, mainGroupAlignment: MainGroupAlignment.start),
-              ),
             ]
         )
     );
