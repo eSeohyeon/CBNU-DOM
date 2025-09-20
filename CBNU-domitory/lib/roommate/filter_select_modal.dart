@@ -30,7 +30,7 @@ class _FilterSelectModalState extends State<FilterSelectModal> with TickerProvid
           Padding(
             padding: EdgeInsets.only(right: 6.w),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+              padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 5.h),
               decoration: BoxDecoration(
                 color: black,
                 borderRadius: BorderRadius.circular(10.0),
@@ -44,7 +44,7 @@ class _FilterSelectModalState extends State<FilterSelectModal> with TickerProvid
                   ),
                   SizedBox(width: 4.w),
                   InkWell(
-                    child: Icon(Icons.close_rounded, color: white, size: 14),
+                    child: Icon(Icons.close_rounded, color: white, size: 16),
                     onTap: () {
                       setState(() {
                         _modalSelectedFilters[key]!.remove(selection);
@@ -149,7 +149,7 @@ class _FilterSelectModalState extends State<FilterSelectModal> with TickerProvid
                         child: Container(
                             padding: EdgeInsets.all(6.0),
                             decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0), border: Border.all(color: group_button_outline, width: 1.0)),
-                            child: Icon(Icons.refresh_rounded, color: black, size: 18)
+                            child: Icon(Icons.refresh_rounded, color: black, size: 20)
                         ),
                         onTap: () {
                           setState(() {

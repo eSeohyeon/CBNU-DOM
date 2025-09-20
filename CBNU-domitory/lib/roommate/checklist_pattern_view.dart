@@ -19,7 +19,7 @@ class _ChecklistPatternViewState extends State<ChecklistPatternView> {
   late GroupButtonController _showerTimeController;
   late GroupButtonController _homeFrequencyController;
 
-  final List<String> patternTitleOptions = ['기상시간', '취침시간', '샤워시각', '본가주기'];
+  //final List<String> patternTitleOptions = ['기상시간', '취침시간', '샤워시각', '본가주기'];
   final List<String> wakeUpOptions = ['4시', '5시', '6시', '7시', '8시', '9시', '10시'];
   final List<String> sleepOptions = ['9시', '10시', '11시', '자정', '1시', '2시', '3시'];
   final List<String> showerOptions = ['아침샤워', '저녁샤워'];
