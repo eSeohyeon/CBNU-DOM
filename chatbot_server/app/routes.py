@@ -11,7 +11,6 @@ dl_model = DLModelHandler(model_dir="../models/kobert_model_0.95")  # 모델 경
 
 class QuestionRequest(BaseModel):
     question: str
-    user_id: str  # 사용자 ID
 
 @router.get("/")
 def root():
@@ -20,7 +19,6 @@ def root():
 @router.post("/get_answer")
 def get_answer_api(request: QuestionRequest):
     question = request.question
-    user_id = request.user_id
 
     # 1. Rule-based 분류
     label = rule_based_classify(question)
@@ -39,7 +37,7 @@ def get_answer_api(request: QuestionRequest):
     try:
         doc_ref = db.collection("chatbot_logs").document()
         doc_ref.set({
-            "user_id": user_id,
+            # "user_id": user_id,
             "question": question,
             "answer": answer,
             "timestamp": datetime.now(timezone.utc) 
