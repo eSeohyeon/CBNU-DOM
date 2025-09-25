@@ -19,11 +19,28 @@ class _ChecklistHabitViewState extends State<ChecklistHabitView> {
   late GroupButtonController _cleaningFrequencyController;
   late GroupButtonController _soundController;
 
-  final List<String> habitTitleOptions = ['흡연여부', '잠버릇', '청소', '소리'];
-  final List<String> smokingOptions = ['흡연', '비흡연'];
-  final List<String> sleepingHabitOptions = ['없음', '있음'];
-  final List<String> cleaningFrequencyOptions = ['수시로', '한 번에'];
-  final List<String> soundOptions = ['이어폰', '스피커'];
+  static const List<String> habitTitleOptions = ['흡연여부', '잠버릇', '청소', '소리'];
+  static const List<String> smokingOptions = ['흡연', '비흡연'];
+  static const List<String> sleepingHabitOptions = ['없음', '있음'];
+  static const List<String> cleaningFrequencyOptions = ['수시로', '한 번에'];
+  static const List<String> soundOptions = ['이어폰', '스피커'];
+
+  bool validate(){
+    final keysToValidate = [
+      '흡연여부',
+      '잠버릇',
+      '청소',
+      '소리'
+    ];
+
+    for (var key in keysToValidate) {
+      final value = widget.answers[key];
+      if(value == null || (value is String && value.isEmpty)){
+        return false;
+      }
+    }
+    return true; // 모든 항목 유효
+  }
 
   @override
   void initState() {

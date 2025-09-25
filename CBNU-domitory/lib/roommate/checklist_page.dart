@@ -8,6 +8,7 @@ import 'package:untitled/roommate/checklist_pattern_view.dart';
 import 'package:untitled/roommate/checklist_personality_view.dart';
 import 'package:untitled/roommate/checklist_habit_view.dart';
 import 'package:untitled/roommate/checklist_preference_view.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 //import 'package:untitled/tab_view.dart';
 
 
@@ -42,10 +43,37 @@ class _AnswerChecklistPageState extends State<AnswerChecklistPage> {
     '벌레': '',
     '컴퓨터 게임': '',
     '운동': '',
+    '생활관' : ''
   };
   PageController _pageController = PageController();
   int _currentPage = 0;
   final int _totalPages = 4;
+
+  // 체크리스트 항목 유효성 판단할 때 쓰는 글로벌키랑 함수
+  final GlobalKey<State<ChecklistPatternView>> _keyPattern = GlobalKey<State<ChecklistPatternView>>();
+  final GlobalKey<State<ChecklistHabitView>> _keyHabit = GlobalKey<State<ChecklistHabitView>>();
+  final GlobalKey<State<ChecklistPreferenceView>> _keyPreference = GlobalKey<State<ChecklistPreferenceView>>();
+  final GlobalKey<State<ChecklistPersonalityView>> _keyPersonality = GlobalKey<State<ChecklistPersonalityView>>();
+
+  GlobalKey _getCurrentKey() {
+    switch (_currentPage) {
+      case 0: return _keyPattern;
+      case 1: return _keyHabit;
+      case 2: return _keyPreference;
+      case 3: return _keyPersonality;
+      default: return _keyPattern;
+    }
+  }
+
+  void _showToast(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 
 
   @override
@@ -65,10 +93,10 @@ class _AnswerChecklistPageState extends State<AnswerChecklistPage> {
                       controller: _pageController,
                       physics: NeverScrollableScrollPhysics(),
                       children: [
-                        ChecklistPatternView(answers: answers),
-                        ChecklistHabitView(answers: answers),
-                        ChecklistPreferenceView(answers: answers),
-                        ChecklistPersonalityView(answers: answers),
+                        ChecklistPatternView(key: _keyPattern, answers: answers),
+                        ChecklistHabitView(key: _keyHabit, answers: answers),
+                        ChecklistPreferenceView(key: _keyPreference, answers: answers),
+                        ChecklistPersonalityView(key: _keyPersonality, answers: answers),
                       ]
                   ),
                 ),
@@ -94,14 +122,35 @@ class _AnswerChecklistPageState extends State<AnswerChecklistPage> {
                             ),
                           ElevatedButton(
                               onPressed: () {
-                                if(_currentPage < _totalPages - 1){
-                                  _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
-                                  setState(() {
-                                    _currentPage++;
-                                  });
+                                final currentKey = _getCurrentKey();
+                                bool isValid = false;
+
+                                if(currentKey.currentState != null) {
+                                  try {
+                                    isValid = (currentKey.currentState as dynamic).validate();
+                                  } catch (e) {
+                                    isValid = false;
+                                  }
+                                }
+
+                                if (isValid) {
+                                  if(_currentPage < _totalPages - 1){
+                                    _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+                                    setState(() {
+                                      _currentPage++;
+                                    });
+                                  } else {
+                                    print(answers); // 답한거 저장
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNavigationTab(navigatedIndex: 1)));
+                                  }
                                 } else {
-                                  print(answers);
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNavigationTab(navigatedIndex: 1)));
+                                  Fluttertoast.showToast(
+                                      msg: '선택하지 않은 항목이 있습니다',
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      backgroundColor: grey,
+                                      textColor: white, fontSize: 13.sp
+                                  );
                                 }
                               },
                               child: Text('다음 ${_currentPage + 1}/$_totalPages', style: mediumWhite14),

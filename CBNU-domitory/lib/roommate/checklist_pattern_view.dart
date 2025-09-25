@@ -7,7 +7,7 @@ import 'package:untitled/roommate/checklist_group_button.dart';
 
 class ChecklistPatternView extends StatefulWidget {
   final Map<String, dynamic> answers;
-  ChecklistPatternView({super.key, required this.answers});
+  const ChecklistPatternView({super.key, required this.answers});
 
   @override
   State<ChecklistPatternView> createState() => _ChecklistPatternViewState();
@@ -19,11 +19,27 @@ class _ChecklistPatternViewState extends State<ChecklistPatternView> {
   late GroupButtonController _showerTimeController;
   late GroupButtonController _homeFrequencyController;
 
-  //final List<String> patternTitleOptions = ['기상시간', '취침시간', '샤워시각', '본가주기'];
-  final List<String> wakeUpOptions = ['4시', '5시', '6시', '7시', '8시', '9시', '10시'];
-  final List<String> sleepOptions = ['9시', '10시', '11시', '자정', '1시', '2시', '3시'];
-  final List<String> showerOptions = ['아침샤워', '저녁샤워'];
-  final List<String> homeFrequencyOptions = ['매주', '2주이상'];
+  static const List<String> wakeUpOptions = ['4시', '5시', '6시', '7시', '8시', '9시', '10시'];
+  static const List<String> sleepOptions = ['9시', '10시', '11시', '자정', '1시', '2시', '3시'];
+  static const List<String> showerOptions = ['아침샤워', '저녁샤워'];
+  static const List<String> homeFrequencyOptions = ['매주', '2주이상'];
+
+  bool validate(){
+    final keysToValidate = [
+      '기상시간',
+      '취침시간',
+      '샤워시각',
+      '본가주기'
+    ];
+
+    for (var key in keysToValidate) {
+      final value = widget.answers[key];
+      if(value == null || (value is String && value.isEmpty)){
+        return false;
+      }
+    }
+    return true; // 모든 항목 유효
+  }
 
 
   @override
@@ -31,20 +47,21 @@ class _ChecklistPatternViewState extends State<ChecklistPatternView> {
     super.initState();
 
     _wakeUpTimeController = GroupButtonController(
-      selectedIndexes: _getInitialIndex('기상시간', wakeUpOptions),
+      selectedIndexes: _getInitialIndexForList('기상시간', wakeUpOptions),
     );
     _sleepTimeController = GroupButtonController(
-      selectedIndexes: _getInitialIndex('취침시간', sleepOptions),
+      selectedIndexes: _getInitialIndexForList('취침시간', sleepOptions),
     );
     _showerTimeController = GroupButtonController(
-      selectedIndexes: _getInitialIndex('샤워시각', showerOptions),
+      selectedIndex: _getInitialIndex('샤워시각', showerOptions),
     );
     _homeFrequencyController = GroupButtonController(
-      selectedIndexes: _getInitialIndex('본가주기', homeFrequencyOptions),
+      selectedIndex: _getInitialIndex('본가주기', homeFrequencyOptions),
     );
   }
 
-  List<int> _getInitialIndex(String key, List<String> options) {
+  // 기상시간, 취침시간 버튼 초기화
+  List<int> _getInitialIndexForList(String key, List<String> options) {
     final value = widget.answers[key];
 
     if(value is String && value.isNotEmpty) {
@@ -57,6 +74,16 @@ class _ChecklistPatternViewState extends State<ChecklistPatternView> {
     }
 
     return [];
+  }
+
+  // 샤워시각, 본가주기 버튼 초기화
+  int? _getInitialIndex(String key, List<String> options) {
+    final value = widget.answers[key];
+    if (value != null && value != '') {
+      final index = options.indexOf(value);
+      return index >= 0 ? index : null;
+    }
+    return null;
   }
 
   @override

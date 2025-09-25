@@ -70,6 +70,80 @@ class _RoommatePageState extends State<RoommatePage> {
     });
   }
 
+  Widget _setFilterAgain() { // 조건 설정하고 조건에 맞는 사용자 없을 때 띄우는 팝업
+    return AlertDialog(
+      backgroundColor: white,
+      content: Container(
+          padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 12.h),
+          decoration: BoxDecoration(
+              color: white,
+              borderRadius: BorderRadius.circular(10.0)
+          ),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('현재 조건에 맞는 사용자가 없습니다.', style: boldBlack16),
+                SizedBox(height: 4.h),
+                Text('조건을 재설정 하시겠습니까?', style: mediumGrey13, textAlign: TextAlign.center),
+                SizedBox(height: 20.h),
+                Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context, true);
+                              /*final result = await showBarModalBottomSheet(
+                                  context: context,
+                                  builder: (BuildContext context) => AddFilterModal(addedFilters: _addedFilters),
+                                  isDismissible: false,
+                                  enableDrag: false
+                              );
+                              if(result != null) {
+                                setState(() {
+                                  _addedFilters = result;
+                                  _isFilterAdded = _addedFilters.isNotEmpty;
+                                  print(result);
+                                });
+                              }*/
+                            },
+                            child: Text('조건 재설정하기', style: mediumWhite14),
+                            style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                backgroundColor: black,
+                                overlayColor: Colors.transparent,
+                                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
+                            )
+                        ),
+                      ),
+                      SizedBox(height: 4.h),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context, false);
+                            },
+                            child: Text('닫기', style: mediumBlack14),
+                            style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                backgroundColor: grey_button,
+                                overlayColor: Colors.transparent,
+                                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
+                            )
+                        ),
+                      )
+                    ]
+                )
+              ]
+          )
+      ),
+    );
+  }
+
   Widget _buildEmptyFilterContainer() {
     return InkWell(
       onTap: () async {
@@ -385,6 +459,7 @@ class _RoommatePageState extends State<RoommatePage> {
                           TextButton(
                               onPressed: () {
                                 // 추천 방식 설명창
+                                
                               },
                               child: Text('추천 방식이 궁금하신가요?', style: mediumGrey13)
                           ),
@@ -477,5 +552,72 @@ class RecommendItem extends StatelessWidget {
     );
   }
 }
+
+class SetFilterAgain extends StatelessWidget {
+  const SetFilterAgain({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: white,
+      content: Container(
+          padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 12.h),
+          decoration: BoxDecoration(
+              color: white,
+              borderRadius: BorderRadius.circular(10.0)
+          ),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('현재 조건에 맞는 사용자가 없습니다.', style: boldBlack16),
+                SizedBox(height: 4.h),
+                Text('조건을 재설정 하시겠습니까?', style: mediumGrey13, textAlign: TextAlign.center),
+                SizedBox(height: 20.h),
+                Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () {
+
+                            },
+                            child: Text('조건 재설정하기', style: mediumWhite14),
+                            style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                backgroundColor: black,
+                                overlayColor: Colors.transparent,
+                                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
+                            )
+                        ),
+                      ),
+                      SizedBox(height: 4.h),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text('닫기', style: mediumBlack14),
+                            style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                backgroundColor: grey_button,
+                                overlayColor: Colors.transparent,
+                                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
+                            )
+                        ),
+                      )
+                    ]
+                )
+              ]
+          )
+      ),
+    );
+  }
+}
+
 
 
