@@ -102,6 +102,8 @@ class _HomePageState extends State<HomePage> {
       ]);
     } catch (e) {
       debugPrint('Error in _onRefresh: $e');
+
+      if (!mounted) return;
       setState(() {
         _isAnyLoadingError = true;
       });
@@ -122,11 +124,14 @@ class _HomePageState extends State<HomePage> {
       }
     } catch (e) {
       debugPrint("Failed to get weather data: $e");
+
+      if (!mounted) return;
       setState(() {
         _isAnyLoadingError = true;
       });
     }
 
+    if(!mounted) return;
     setState(() {
       _isWeatherLoading = false;
     });
@@ -147,6 +152,7 @@ class _HomePageState extends State<HomePage> {
         _todayMenu.add('본관 주말 식단 없음');
         _todayMenu.add('본관 주말 식단 없음');
 
+        if (!mounted) return;
         setState(() {
           _isMealLoading = false;
         });
@@ -165,6 +171,8 @@ class _HomePageState extends State<HomePage> {
         _todayMenu.add('');
         _todayMenu.add('');
         _todayMenu.add('');
+
+        if (!mounted) return;
         setState(() {
           _isAnyLoadingError = true;
           _isMealLoading = false;
@@ -178,6 +186,8 @@ class _HomePageState extends State<HomePage> {
         _todayMenu.add('식단 데이터가 없습니다.');
         _todayMenu.add('식단 데이터가 없습니다.');
         _todayMenu.add('식단 데이터가 없습니다.');
+
+        if (!mounted) return;
         setState(() {
           _isMealLoading = false;
         });
@@ -188,6 +198,8 @@ class _HomePageState extends State<HomePage> {
         _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
         _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
         _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
+
+        if (!mounted) return;
         setState(() {
           _isMealLoading = false;
         });
@@ -196,6 +208,8 @@ class _HomePageState extends State<HomePage> {
         _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
         _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
         _todayMenu.add('등록된 식단이 없습니다.\n홈페이지를 확인해주세요.');
+
+        if (!mounted) return;
         setState(() {
           _isMealLoading = false;
         });
@@ -221,10 +235,14 @@ class _HomePageState extends State<HomePage> {
       _todayMenu.add('');
       _todayMenu.add('');
       _todayMenu.add('');
+
+      if (!mounted) return;
       setState(() {
         _isAnyLoadingError = true;
       });
     }
+
+    if (!mounted) return;
     setState(() {
       _isMealLoading = false;
     });
@@ -286,6 +304,8 @@ class _HomePageState extends State<HomePage> {
             date: '',
             link: ''
         ));
+
+        if (!mounted) return;
         setState(() {
           _isAnyLoadingError = true;
         });
@@ -304,11 +324,14 @@ class _HomePageState extends State<HomePage> {
           date: '',
           link: ''
       ));
+
+      if (!mounted) return;
       setState(() {
         _isAnyLoadingError = true;
       });
     }
 
+    if (!mounted) return;
     setState(() {
       _isNoticeLoading = false;
     });
@@ -802,15 +825,25 @@ class BestPostCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0), side: BorderSide(color: grey_seperating_line, width: 1.0)),
         elevation: 0,
         child: Padding(
-            padding: EdgeInsets.only(left: 12.w, right: 16.w, top: 12.h, bottom: 14.h),
+            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
             child: Column(
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.account_box_rounded, color: Colors.teal, size: 36),
-                        SizedBox(width: 4.w),
-                        Expanded(child: Text(post.writer, style: mediumBlack14)),
-                        Text('${post.date} ${post.time}', style: mediumGrey13)
+                        Container(
+                          width: 28.w,
+                          height: 28.h,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: Image.asset(
+                                'assets/profile_agriculture.png',
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 6.w),
+                        Expanded(child: Text(post.writer, style: boldBlack14)),
+                        Text('${post.date} ${post.time}', style: mediumGrey14)
                       ]
                   ),
                   SizedBox(height: 16.h),

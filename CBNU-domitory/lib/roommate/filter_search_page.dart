@@ -195,7 +195,7 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
                   return InkWell(child: RoommateListItem(_roommates[index]), onTap: (){
                     showBarModalBottomSheet(
                       context: context,
-                      builder: (BuildContext context) => RoommateDetailModal(user: _roommates[index]),
+                      builder: (BuildContext context) => RoommateDetailModal(isMine: false, user: _roommates[index]),
                     );
                   });
                 },

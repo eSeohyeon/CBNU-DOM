@@ -7,7 +7,7 @@ import 'package:untitled/themes/colors.dart';
 
 class ChecklistPersonalityView extends StatefulWidget {
   final Map<String, dynamic> answers;
-  ChecklistPersonalityView({super.key, required this.answers});
+  const ChecklistPersonalityView({super.key, required this.answers});
 
   @override
   State<ChecklistPersonalityView> createState() => _ChecklistPersonalityViewState();
@@ -20,16 +20,35 @@ class _ChecklistPersonalityViewState extends State<ChecklistPersonalityView> {
   late GroupButtonController _mbtiPJController;
   late GroupButtonController _computerGameController;
   late GroupButtonController _exerciseController;
-  late GroupButtonController _neverYieldController;
+  late GroupButtonController _dormTypeController;
 
-  final List<String> mbtiTitleOptions = ['EI', 'NS', 'TF', 'Pj'];
-  final List<String> mbtiEIOptions = ['E', 'I'];
-  final List<String> mbtiNSOptions = ['N', 'S'];
-  final List<String> mbtiTFOptions = ['T', 'F'];
-  final List<String> mbtiPJOptions = ['P', 'J'];
-  final List<String> computerGameOptions = ['안 함', '중간', '좋아함'];
-  final List<String> exerciseOptions = ['안 함', '중간', '좋아함'];
-  final List<String> neverYieldOptions = ['기상시간', '취침시간', '샤워시각', '흡연여부', '잠버릇', '청소', '더위', '추위', '실내취식', '실내통화', '친구초대'];
+  static const List<String> mbtiEIOptions = ['E', 'I'];
+  static const List<String> mbtiNSOptions = ['N', 'S'];
+  static const List<String> mbtiTFOptions = ['T', 'F'];
+  static const List<String> mbtiPJOptions = ['P', 'J'];
+  static const List<String> computerGameOptions = ['안 함', '중간', '좋아함'];
+  static const List<String> exerciseOptions = ['안 함', '중간', '좋아함'];
+  static const List<String> dormTypeOptions = ['정의관', '진리관', '개척관', '계영원', '명덕관', '신민관', '지선관', '인의관', '예지관', '양현재(남)', '양현재(여)'];
+
+  bool validate(){
+    final keysToValidate = [
+      'MBTI_EI',
+      'MBTI_NS',
+      'MBTI_TF',
+      'MBTI_PJ',
+      '컴퓨터게임',
+      '운동',
+      '생활관'
+    ];
+
+    for (var key in keysToValidate) {
+      final value = widget.answers[key];
+      if(value == null || (value is String && value.isEmpty)){
+        return false;
+      }
+    }
+    return true; // 모든 항목 유효
+  }
 
   @override
   void initState() {
@@ -53,8 +72,8 @@ class _ChecklistPersonalityViewState extends State<ChecklistPersonalityView> {
     _exerciseController = GroupButtonController(
       selectedIndex: _getInitialIndex('운동', exerciseOptions),
     );
-    _neverYieldController = GroupButtonController(
-      selectedIndex: _getInitialIndex('이것만은 양보 못 해', neverYieldOptions)
+    _dormTypeController = GroupButtonController(
+      selectedIndex: _getInitialIndex('생활관', dormTypeOptions),
     );
   }
 
@@ -74,7 +93,8 @@ class _ChecklistPersonalityViewState extends State<ChecklistPersonalityView> {
     _mbtiTFController.dispose();
     _mbtiPJController.dispose();
     _computerGameController.dispose();
-    _neverYieldController.dispose();
+    _exerciseController.dispose();
+    _dormTypeController.dispose();
     super.dispose();
   }
 
@@ -172,28 +192,22 @@ class _ChecklistPersonalityViewState extends State<ChecklistPersonalityView> {
                 options: GroupButtonOptions(spacing: 8),
               ),
               SizedBox(height: 36.h),
-              Text('이것만은 양보 못해', style: mediumBlack16),
-              Row(
-                  children: [
-                    Icon(Icons.help_outline_rounded, color: grey, size: 20),
-                    SizedBox(width: 4.w),
-                    Expanded(child: Text('룸메이트 추천 시, 반드시 고려되었으면 하는 항목 택1', style: mediumGrey13))
-                  ]
-              ),
+              Text('생활관', style: mediumBlack16),
               SizedBox(height: 10.h),
               GroupButton(
-                buttons: neverYieldOptions,
-                controller : _neverYieldController,
+                buttons: dormTypeOptions,
+                controller : _dormTypeController,
                 onSelected: (val, i, selected){
                   setState(() {
-                    widget.answers['이것만은 양보 못해'] = val;
+                    widget.answers['생활관'] = val;
                   });
                 },
                 buttonBuilder: (selected, value, context) {
                   return checklistGroupButton(selected, value);
                 },
-                options: GroupButtonOptions(spacing: 8, groupRunAlignment: GroupRunAlignment.start, mainGroupAlignment: MainGroupAlignment.start),
+                options: GroupButtonOptions(spacing: 8, mainGroupAlignment: MainGroupAlignment.start),
               ),
+              SizedBox(height: 36.h),
             ]
         )
     );
