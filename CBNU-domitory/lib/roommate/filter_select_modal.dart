@@ -30,7 +30,7 @@ class _FilterSelectModalState extends State<FilterSelectModal> with TickerProvid
           Padding(
             padding: EdgeInsets.only(right: 6.w),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 5.h),
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
               decoration: BoxDecoration(
                 color: black,
                 borderRadius: BorderRadius.circular(10.0),

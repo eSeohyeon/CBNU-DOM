@@ -139,7 +139,7 @@ class _RoommateDetailModalState extends State<RoommateDetailModal> with TickerPr
 }
 
 class GridTab extends StatelessWidget {
-  Map<String, String> checklist_item;
+  Map<String, dynamic> checklist_item;
   GridTab({super.key, required this.checklist_item});
 
   @override
@@ -151,13 +151,19 @@ class GridTab extends StatelessWidget {
       itemCount: items.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          mainAxisExtent: 32.h,
-          crossAxisSpacing: 4.w,
+          mainAxisExtent: 36.h,
+          crossAxisSpacing: 6.w,
           mainAxisSpacing: 4.h,
           childAspectRatio: 0.5
       ),
       itemBuilder: (context, index) {
         final item = items[index];
+        String valueToDisplay;
+        if(item.value is List<String>) {
+          valueToDisplay = (item.value as List<String>).join(', ');
+        } else {
+          valueToDisplay = item.value.toString();
+        }
         return Container(
             decoration: BoxDecoration(
                 color: white
@@ -166,7 +172,7 @@ class GridTab extends StatelessWidget {
                 children: [
                   Text(item.key, style: mediumBlack14),
                   SizedBox(width: 10.w),
-                  Text(item.value, style: mediumGrey14)
+                  Expanded(child: Text(valueToDisplay, style: mediumGrey14, softWrap: true, maxLines: 2, overflow: TextOverflow.visible))
                 ]
             )
         );

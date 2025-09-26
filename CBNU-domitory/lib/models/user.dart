@@ -5,7 +5,7 @@ class User {
   final String yearEnrolled; // 임시로
   final String birthYear; // 임시로
   final bool isSmoking;
-  final List<Map<String, String>> checklist;
+  final List<Map<String, dynamic>> checklist;
   final double dormScore;
 
   final String dormitory; // 임시로,

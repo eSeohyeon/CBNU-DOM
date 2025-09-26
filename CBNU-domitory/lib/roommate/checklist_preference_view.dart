@@ -16,8 +16,7 @@ class ChecklistPreferenceView extends StatefulWidget {
 class _ChecklistPreferenceViewState extends State<ChecklistPreferenceView> {
   static const List<String> hotOptions = ['안 탐', '많이 탐'];
   static const List<String> coldOptions = ['안 탐', '많이 탐'];
-  static const List<String> sleepingEarOptions = ['밝음', '어두움'];
-  static const List<String> bugOptions = ['극혐', '중간', '세스코'];
+  static const List<String> bugOptions = ['극혐', '못 잡음', '중간', '잡음', '잘 잡음'];
   static const List<String> smellOptions = ['싫어요', '과자만', '상관 없음'];
   static const List<String> callInRoomOptions = ['싫어요','짧게만', '상관 없음'];
   static const List<String> inviteFriendOptions = ['싫어요', '사전 허락', '상관 없음'];
@@ -28,13 +27,11 @@ class _ChecklistPreferenceViewState extends State<ChecklistPreferenceView> {
   late GroupButtonController _smellController;
   late GroupButtonController _callInRoomController;
   late GroupButtonController _inviteFriendController;
-  late GroupButtonController _sleepingEarController;
 
   bool validate(){
     final keysToValidate = [
       '더위',
       '추위',
-      '잠귀',
       '벌레',
       '실내취식',
       '실내통화',
@@ -72,9 +69,6 @@ class _ChecklistPreferenceViewState extends State<ChecklistPreferenceView> {
     _bugController = GroupButtonController(
       selectedIndex: _getInitialIndex('벌레', bugOptions),
     );
-    _sleepingEarController = GroupButtonController(
-      selectedIndex: _getInitialIndex('잠귀', sleepingEarOptions)
-    );
   }
 
   int? _getInitialIndex(String key, List<String> options) {
@@ -94,7 +88,6 @@ class _ChecklistPreferenceViewState extends State<ChecklistPreferenceView> {
     _callInRoomController.dispose();
     _inviteFriendController.dispose();
     _bugController.dispose();
-    _sleepingEarController.dispose();
     super.dispose();
   }
 
@@ -137,22 +130,6 @@ class _ChecklistPreferenceViewState extends State<ChecklistPreferenceView> {
                 },
                 options: GroupButtonOptions(spacing: 8),
               ),SizedBox(height: 36.h),
-              Text('잠귀', style: mediumBlack16),
-              SizedBox(height: 10.h),
-              GroupButton(
-                buttons: sleepingEarOptions,
-                controller : _sleepingEarController,
-                onSelected: (val, i, selected){
-                  setState(() {
-                    widget.answers['잠귀'] = val;
-                  });
-                },
-                buttonBuilder: (selected, value, context) {
-                  return checklistGroupButton(selected, value);
-                },
-                options: GroupButtonOptions(spacing: 8),
-              ),
-              SizedBox(height: 36.h),
               Text('실내취식', style: mediumBlack16),
               SizedBox(height: 10.h),
               GroupButton(

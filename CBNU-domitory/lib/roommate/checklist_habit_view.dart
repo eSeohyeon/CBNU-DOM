@@ -18,10 +18,12 @@ class _ChecklistHabitViewState extends State<ChecklistHabitView> {
   late GroupButtonController _sleepingHabitController;
   late GroupButtonController _cleaningFrequencyController;
   late GroupButtonController _soundController;
+  late GroupButtonController _sleepingEarController;
 
   static const List<String> habitTitleOptions = ['흡연여부', '잠버릇', '청소', '소리'];
   static const List<String> smokingOptions = ['흡연', '비흡연'];
   static const List<String> sleepingHabitOptions = ['없음', '있음'];
+  static const List<String> sleepingEarOptions = ['밝음', '어두움'];
   static const List<String> cleaningFrequencyOptions = ['수시로', '한 번에'];
   static const List<String> soundOptions = ['이어폰', '스피커'];
 
@@ -30,7 +32,8 @@ class _ChecklistHabitViewState extends State<ChecklistHabitView> {
       '흡연여부',
       '잠버릇',
       '청소',
-      '소리'
+      '소리',
+      '잠귀'
     ];
 
     for (var key in keysToValidate) {
@@ -57,6 +60,9 @@ class _ChecklistHabitViewState extends State<ChecklistHabitView> {
     _soundController = GroupButtonController(
       selectedIndex: _getInitialIndex('소리', soundOptions),
     );
+    _sleepingEarController = GroupButtonController(
+      selectedIndex: _getInitialIndex('잠귀', sleepingEarOptions),
+    );
   }
 
   int? _getInitialIndex(String key, List<String> options) {
@@ -74,6 +80,7 @@ class _ChecklistHabitViewState extends State<ChecklistHabitView> {
     _sleepingHabitController.dispose();
     _cleaningFrequencyController.dispose();
     _soundController.dispose();
+    _sleepingEarController.dispose();
     super.dispose();
   }
 
@@ -109,6 +116,22 @@ class _ChecklistHabitViewState extends State<ChecklistHabitView> {
                 onSelected: (val, i, selected){
                   setState(() {
                     widget.answers['잠버릇'] = val;
+                  });
+                },
+                buttonBuilder: (selected, value, context) {
+                  return checklistGroupButton(selected, value);
+                },
+                options: GroupButtonOptions(spacing: 8),
+              ),
+              SizedBox(height: 36.h),
+              Text('잠귀', style: mediumBlack16),
+              SizedBox(height: 10.h),
+              GroupButton(
+                buttons: sleepingEarOptions,
+                controller : _sleepingEarController,
+                onSelected: (val, i, selected){
+                  setState(() {
+                    widget.answers['잠귀'] = val;
                   });
                 },
                 buttonBuilder: (selected, value, context) {
