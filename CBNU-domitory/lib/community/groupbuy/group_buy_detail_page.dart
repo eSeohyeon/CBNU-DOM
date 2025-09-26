@@ -3,7 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/common/grey_filled_text_field.dart';
 import 'package:untitled/common/popup_dialog.dart';
+import 'package:untitled/community/groupbuy/group_buy_create_page.dart';
+import 'package:untitled/community/report.dart';
 import 'package:untitled/message/chatting_page.dart';
+import 'package:untitled/message/group_chat.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,7 +28,6 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
   bool _isRegisteringComment = false;
   bool _isStudent = false;
 
-  // 대댓글 작성을 위한 상태 변수
   String? _replyingToCommentId;
   String? _replyingToAuthorNickname;
 
@@ -39,7 +41,8 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
     try {
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final userDoc =
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       final role = userDoc.data()?['role'];
       if (mounted && role == '재학생') {
         setState(() {
@@ -56,54 +59,6 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
     _commentController.dispose();
     _commentFocusNode.dispose();
     super.dispose();
-  }
-
-  // --- 1:1 쪽지 보내기 (채팅방 생성 및 이동) ---
-  Future<void> _startDirectMessage() async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('로그인이 필요합니다.')));
-      return;
-    }
-    if (!_isStudent) {
-      showDialog(context: context, builder: (context) => const PopupDialog(), barrierDismissible: false);
-      return;
-    }
-
-    final currentUserDoc = await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).get();
-    final currentUserNickname = currentUserDoc.data()?['nickname'] ?? '이름 없음';
-
-    final otherUserUid = widget.post.basePost.authorUid;
-    final otherUserNickname = widget.post.basePost.writer;
-
-    // 나와 상대방의 UID를 정렬하여 고유한 채팅방 ID 생성
-    List<String> participants = [currentUser.uid, otherUserUid];
-    participants.sort();
-    String chatRoomId = participants.join('_');
-
-    // 채팅방 정보 설정 (없으면 생성, 있으면 업데이트)
-    await FirebaseFirestore.instance.collection('chat_rooms').doc(chatRoomId).set({
-      'type': 'group_buy', // 쪽지 출처 타입 지정
-      'participants': [currentUser.uid, otherUserUid],
-      'participants_info': {
-        currentUser.uid: currentUserNickname,
-        otherUserUid: otherUserNickname,
-      },
-      'lastMessage': '',
-      'lastMessageTimestamp': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
-
-    // 채팅 페이지로 이동
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChattingPage(
-          chatRoomId: chatRoomId,
-          otherUserId: otherUserUid,
-          otherUserNickname: otherUserNickname,
-        ),
-      ),
-    );
   }
 
   // --- 댓글 또는 대댓글 추가 함수 ---
@@ -132,7 +87,8 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
     setState(() => _isRegisteringComment = true);
 
     try {
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final userDoc =
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       final nickname = userDoc.data()?['nickname'] ?? '이름 없음';
       final commentData = {
         'contents': _commentController.text.trim(),
@@ -166,7 +122,7 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
         SnackBar(content: Text('댓글 등록에 실패했습니다: ${e.toString()}')),
       );
     } finally {
-      if(mounted) {
+      if (mounted) {
         setState(() => _isRegisteringComment = false);
       }
     }
@@ -233,7 +189,8 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
   Future<void> _deletePost() async {
     await _showDeleteConfirmationDialog(
       title: '게시글 삭제',
-      content: '이 게시글을 정말 삭제하시겠습니까? 모든 댓글과 참여 정보가 함께 삭제되며, 되돌릴 수 없습니다.',
+      content:
+      '이 게시글을 정말 삭제하시겠습니까? 모든 댓글과 참여 정보가 함께 삭제되며, 되돌릴 수 없습니다.',
       onDelete: () async {
         try {
           final postRef = FirebaseFirestore.instance
@@ -243,7 +200,8 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
           final commentsSnapshot = await postRef.collection('comments').get();
           WriteBatch batch = FirebaseFirestore.instance.batch();
           for (final commentDoc in commentsSnapshot.docs) {
-            final repliesSnapshot = await commentDoc.reference.collection('replies').get();
+            final repliesSnapshot =
+            await commentDoc.reference.collection('replies').get();
             for (final replyDoc in repliesSnapshot.docs) {
               batch.delete(replyDoc.reference);
             }
@@ -267,7 +225,6 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
     );
   }
 
-
   // --- 댓글 삭제 함수 ---
   Future<void> _deleteComment(String commentId) async {
     await _showDeleteConfirmationDialog(
@@ -279,17 +236,18 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
               .collection('group_buy_posts')
               .doc(widget.post.basePost.postId);
 
-          // 1. 대댓글(replies) 서브컬렉션의 모든 문서 삭제
-          final repliesSnapshot = await postRef.collection('comments').doc(commentId).collection('replies').get();
+          final repliesSnapshot = await postRef
+              .collection('comments')
+              .doc(commentId)
+              .collection('replies')
+              .get();
           WriteBatch batch = FirebaseFirestore.instance.batch();
           for (var doc in repliesSnapshot.docs) {
             batch.delete(doc.reference);
           }
           await batch.commit();
 
-          // 2. 상위 댓글 문서 삭제
           await postRef.collection('comments').doc(commentId).delete();
-
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('댓글 삭제에 실패했습니다: $e')),
@@ -298,7 +256,6 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
       },
     );
   }
-
 
   // --- 대댓글 삭제 함수 ---
   Future<void> _deleteReply(String commentId, String replyId) async {
@@ -324,6 +281,68 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
     );
   }
 
+  // --- 좋아요 기능 ---
+  Future<void> _toggleLike() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('로그인이 필요합니다.')));
+      return;
+    }
+    if (!_isStudent) {
+      showDialog(
+          context: context,
+          builder: (context) => const PopupDialog(),
+          barrierDismissible: false);
+      return;
+    }
+
+    final postRef = FirebaseFirestore.instance
+        .collection('group_buy_posts')
+        .doc(widget.post.basePost.postId);
+
+    try {
+      final DocumentSnapshot postDoc = await postRef.get();
+      final postData = postDoc.data() as Map<String, dynamic>?;
+      final List<String> likes =
+      List<String>.from(postData?['likes'] ?? []);
+
+      if (likes.contains(user.uid)) {
+        // 좋아요 취소
+        await postRef.update({
+          'likes': FieldValue.arrayRemove([user.uid]),
+          'likeCount': FieldValue.increment(-1),
+        });
+      } else {
+        // 좋아요
+        await postRef.update({
+          'likes': FieldValue.arrayUnion([user.uid]),
+          'likeCount': FieldValue.increment(1),
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('좋아요 처리에 실패했습니다: $e')));
+    }
+  }
+
+  // --- URL 실행 함수 ---
+  Future<void> _launchUrl(String urlString) async {
+    String formattedUrl = urlString;
+    if (!urlString.startsWith('http://') && !urlString.startsWith('https://')) {
+      formattedUrl = 'https://$urlString';
+    }
+
+    final Uri url = Uri.parse(formattedUrl);
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('링크를 열 수 없습니다: $formattedUrl')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -341,19 +360,32 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert_rounded, color: black, size: 24),
                 onSelected: (value) {
-                  if (value == 'delete') {
+                  if (value == 'edit') {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                GroupBuyCreatePage(existingPost: widget.post)));
+                  } else if (value == 'delete') {
                     _deletePost();
-                  } else if (value == 'dm') {
-                    _startDirectMessage();
-                  }
-                  else if (value == 'report') {
-                    // TODO: Implement report functionality
-                    print('Report button clicked');
+                  } else if (value == 'report') {
+                    showDialog(
+                      context: context,
+                      builder: (context) => ReportDialog(
+                          post: widget.post.basePost,
+                          postType: 'group_buy_posts'),
+                    );
                   }
                 },
                 itemBuilder: (BuildContext context) {
                   List<PopupMenuEntry<String>> items = [];
                   if (isMyPost) {
+                    items.add(
+                      const PopupMenuItem<String>(
+                        value: 'edit',
+                        child: Text('수정'),
+                      ),
+                    );
                     items.add(
                       const PopupMenuItem<String>(
                         value: 'delete',
@@ -363,14 +395,8 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                   } else {
                     items.add(
                       const PopupMenuItem<String>(
-                        value: 'dm',
-                        child: Text('1:1 쪽지'),
-                      ),
-                    );
-                    items.add(
-                      const PopupMenuItem<String>(
                         value: 'report',
-                        child: Text('신고'),
+                        child: Text('신고하기'),
                       ),
                     );
                   }
@@ -387,8 +413,10 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding( // 게시글 내용
-                              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                          Padding(
+                            // 게시글 내용
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20.w, vertical: 10.h),
                               child: Column(children: [
                                 Row(children: [
                                   SizedBox(
@@ -400,8 +428,10 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Text(widget.post.basePost.writer, style: boldBlack14),
-                                        Text('${widget.post.basePost.date} ${widget.post.basePost.time}',
+                                        Text(widget.post.basePost.writer,
+                                            style: boldBlack14),
+                                        Text(
+                                            '${widget.post.basePost.date} ${widget.post.basePost.time}',
                                             style: mediumGrey13)
                                       ])
                                 ]),
@@ -411,26 +441,30 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                                   height: 200.h,
                                   decoration: BoxDecoration(
                                       color: Colors.grey[200],
-                                      borderRadius: BorderRadius.circular(10)
-                                  ),
+                                      borderRadius: BorderRadius.circular(10)),
                                   child: widget.post.itemImagePath.isNotEmpty
                                       ? ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
                                     child: Image.network(
                                       widget.post.itemImagePath,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                      const Icon(Icons.error),
                                     ),
                                   )
-                                      : Icon(Icons.image_not_supported, color: Colors.grey[400]),
+                                      : Icon(Icons.image_not_supported,
+                                      color: Colors.grey[400]),
                                 ),
                                 SizedBox(height: 16.h),
                                 Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                     children: [
                                       Expanded(
                                         child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                             children: [
                                               Text(widget.post.basePost.title,
                                                   style: mediumBlack16),
@@ -443,7 +477,8 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                                                     style: mediumGrey14),
                                               SizedBox(height: 10.h),
                                               Row(children: [
-                                                const Icon(Icons.person, color: grey, size: 20),
+                                                const Icon(Icons.person,
+                                                    color: grey, size: 20),
                                                 SizedBox(width: 4.w),
                                                 Text(
                                                     '${widget.post.currentParticipants}/${widget.post.maxParticipants}',
@@ -453,101 +488,105 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                                       ),
                                       Row(
                                         children: [
-                                          if(widget.post.itemUrl.isNotEmpty)
+                                          if (widget.post.itemUrl.isNotEmpty)
                                             Container(
-                                              width: 36.w,
-                                              height: 36.h,
-                                              decoration: BoxDecoration(
-                                                color: grey_seperating_line,
-                                                borderRadius: BorderRadius.circular(15)
-                                              ),
-                                              child: IconButton(
-                                                icon: const Icon(Icons.open_in_new_rounded,
-                                                    color: black, size: 24),
-                                                onPressed: () {
-                                                  launchUrl(Uri.parse(
-                                                      widget.post.itemUrl));
-                                                }
-                                            )), SizedBox(width: 6.w),
+                                                width: 36.w,
+                                                height: 36.h,
+                                                decoration: BoxDecoration(
+                                                    color: grey_seperating_line,
+                                                    borderRadius:
+                                                    BorderRadius.circular(15)),
+                                                child: IconButton(
+                                                    icon: const Icon(
+                                                        Icons.open_in_new_rounded,
+                                                        color: black,
+                                                        size: 24),
+                                                    onPressed: () =>
+                                                        _launchUrl(widget.post.itemUrl))),
+                                          SizedBox(width: 6.w),
                                           Container(
                                               width: 36.w,
                                               height: 35.h,
                                               decoration: BoxDecoration(
-                                                  color: _isStudent ? black : black40,
-                                                  borderRadius: BorderRadius.circular(15)
-                                              ),
+                                                  color: isMyPost
+                                                      ? grey_button_greyBG
+                                                      : (_isStudent
+                                                      ? black
+                                                      : black40),
+                                                  borderRadius:
+                                                  BorderRadius.circular(15)),
                                               child: IconButton(
-                                                  icon: const Icon(Icons.chat_bubble_outline_rounded, //////////// 공동구매 채팅 참여 버튼
-                                                      color: white, size: 24),
-                                                  onPressed: () {
-                                                    _isStudent ?
-                                                    showDialog(
+                                                  icon: const Icon(
+                                                      Icons
+                                                          .chat_bubble_outline_rounded,
+                                                      color: white,
+                                                      size: 24),
+                                                  onPressed: isMyPost
+                                                      ? null
+                                                      : () {
+                                                    _isStudent
+                                                        ? showDialog(
                                                         context: context,
-                                                        builder: (context) => AlertDialog(
-                                                          backgroundColor: white,
-                                                          content: Container(
-                                                              padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 12.h),
-                                                              decoration: BoxDecoration(
-                                                                  color: white,
-                                                                  borderRadius: BorderRadius.circular(10.0)
+                                                        builder:
+                                                            (context) =>
+                                                            AlertDialog(
+                                                              backgroundColor:
+                                                              white,
+                                                              content:
+                                                              Container(
+                                                                padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 12.h),
+                                                                decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0)),
+                                                                child: Column(
+                                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                                    mainAxisSize: MainAxisSize.min,
+                                                                    children: [
+                                                                      Text('공동구매 채팅에\n참여하시겠습니까?', style: boldBlack16, textAlign: TextAlign.center),
+                                                                      SizedBox(height: 16.h),
+                                                                      Column(mainAxisSize: MainAxisSize.min, children: [
+                                                                        SizedBox(
+                                                                          width: double.infinity,
+                                                                          child: ElevatedButton(
+                                                                              onPressed: () => GroupChatService.joinGroupChatAndNavigate(
+                                                                                context: context,
+                                                                                post: widget.post,
+                                                                                isStudent: _isStudent,
+                                                                              ),
+                                                                              child: Text('참여하기', style: mediumWhite14),
+                                                                              style: ElevatedButton.styleFrom(
+                                                                                  elevation: 0,
+                                                                                  backgroundColor: black,
+                                                                                  overlayColor: Colors.transparent,
+                                                                                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                                                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)))),
+                                                                        ),
+                                                                        SizedBox(height: 8.h),
+                                                                        SizedBox(
+                                                                          width: double.infinity,
+                                                                          child: ElevatedButton(
+                                                                              onPressed: () {
+                                                                                Navigator.pop(context);
+                                                                              },
+                                                                              child: Text('닫기', style: mediumBlack14),
+                                                                              style: ElevatedButton.styleFrom(
+                                                                                  elevation: 0,
+                                                                                  backgroundColor: grey_button,
+                                                                                  overlayColor: Colors.transparent,
+                                                                                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                                                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)))),
+                                                                        )
+                                                                      ])
+                                                                    ]),
                                                               ),
-                                                              child: Column(
-                                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                                  mainAxisSize: MainAxisSize.min,
-                                                                  children: [
-                                                                    Text('공동구매 채팅에\n참여하시겠습니까?', style: boldBlack16, textAlign: TextAlign.center,),
-                                                                    SizedBox(height: 16.h),
-                                                                    Column(
-                                                                        mainAxisSize: MainAxisSize.min,
-                                                                        children: [
-                                                                          SizedBox(
-                                                                            width: double.infinity,
-                                                                            child: ElevatedButton(
-                                                                                onPressed: () {
-                                                                                  // TODO: 공동구매 참여 로직 구현
-                                                                                },
-                                                                                child: Text('참여하기', style: mediumWhite14),
-                                                                                style: ElevatedButton.styleFrom(
-                                                                                    elevation: 0,
-                                                                                    backgroundColor: black,
-                                                                                    overlayColor: Colors.transparent,
-                                                                                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                                                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
-                                                                                )
-                                                                            ),
-                                                                          ),
-                                                                          SizedBox(height: 8.h),
-                                                                          SizedBox(
-                                                                            width: double.infinity,
-                                                                            child: ElevatedButton(
-                                                                                onPressed: () {
-                                                                                  Navigator.pop(context);
-                                                                                },
-                                                                                child: Text('닫기', style: mediumBlack14),
-                                                                                style: ElevatedButton.styleFrom(
-                                                                                    elevation: 0,
-                                                                                    backgroundColor: grey_button,
-                                                                                    overlayColor: Colors.transparent,
-                                                                                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                                                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
-                                                                                )
-                                                                            ),
-                                                                          )
-                                                                        ]
-                                                                    )
-                                                                  ]
-                                                              )
-                                                          ),
-                                                        )
-                                                    ) :
-                                                        showDialog(
-                                                            context: context,
-                                                            builder: (context) => PopupDialog(),
-                                                          barrierDismissible: false
-                                                        );
-                                                  }
-                                              )),
-                                        ]
+                                                            ))
+                                                        : showDialog(
+                                                        context: context,
+                                                        builder:
+                                                            (context) =>
+                                                            PopupDialog(),
+                                                        barrierDismissible:
+                                                        false);
+                                                  })),
+                                        ],
                                       ),
                                     ]),
                                 SizedBox(height: 24.h),
@@ -557,13 +596,49 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                                       style: mediumBlack14),
                                 ),
                                 SizedBox(height: 24.h),
+                                // --- 좋아요 버튼 및 카운트 ---
+                                StreamBuilder<DocumentSnapshot>(
+                                  stream: FirebaseFirestore.instance
+                                      .collection('group_buy_posts')
+                                      .doc(widget.post.basePost.postId)
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    final data = snapshot.data!.data()
+                                    as Map<String, dynamic>?;
+                                    final likes =
+                                    List<String>.from(data?['likes'] ?? []);
+                                    final isLiked =
+                                    likes.contains(currentUserUid);
+                                    final likeCount = data?['likeCount'] ?? 0;
+
+                                    return Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(
+                                            isLiked
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
+                                            color: isLiked ? Colors.red : grey,
+                                          ),
+                                          onPressed: _toggleLike,
+                                        ),
+                                        Text('$likeCount'),
+                                      ],
+                                    );
+                                  },
+                                )
                               ])),
-                          Container( // 구분선
+                          Container(
+                            // 구분선
                               width: double.infinity,
                               height: 1.h,
                               color: grey_seperating_line),
                           SizedBox(height: 16.h),
-                          // --- 댓글 섹션 (StreamBuilder로 변경) ---
+                          // --- 댓글 섹션 ---
                           StreamBuilder<QuerySnapshot>(
                             stream: FirebaseFirestore.instance
                                 .collection('group_buy_posts')
@@ -572,32 +647,36 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                                 .orderBy('createdAt', descending: false)
                                 .snapshots(),
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const Center(child: Padding(
-                                  padding: EdgeInsets.all(16.0),
-                                  child: CircularProgressIndicator(),
-                                ));
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(16.0),
+                                      child: CircularProgressIndicator(),
+                                    ));
                               }
                               if (snapshot.hasError) {
-                                return const Center(child: Text('댓글을 불러오는데 실패했습니다.'));
+                                return const Center(
+                                    child: Text('댓글을 불러오는데 실패했습니다.'));
                               }
-                              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                              if (!snapshot.hasData ||
+                                  snapshot.data!.docs.isEmpty) {
                                 return Padding(
                                   padding: EdgeInsets.symmetric(vertical: 20.h),
                                   child: Column(
                                     children: [
                                       Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 18.w),
-                                        child: Row(
-                                            children: [
-                                              Text('댓글', style: boldBlack14),
-                                              SizedBox(width: 4.w),
-                                              Text('0', style: mediumGrey14)
-                                            ]
-                                        ),
+                                        padding:
+                                        EdgeInsets.symmetric(horizontal: 18.w),
+                                        child: Row(children: [
+                                          Text('댓글', style: boldBlack14),
+                                          SizedBox(width: 4.w),
+                                          Text('0', style: mediumGrey14)
+                                        ]),
                                       ),
                                       SizedBox(height: 20.h),
-                                      Icon(Icons.comments_disabled_rounded, size: 56, color: grey_seperating_line),
+                                      Icon(Icons.comments_disabled_rounded,
+                                          size: 56, color: grey_seperating_line),
                                       SizedBox(height: 6.h),
                                       Text('댓글이 없습니다.', style: mediumGrey14),
                                     ],
@@ -608,41 +687,49 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                               final comments = snapshot.data!.docs;
 
                               return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w, vertical: 10.h),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 2.w),
+                                      padding:
+                                      EdgeInsets.symmetric(horizontal: 2.w),
                                       child: Row(
                                         children: [
                                           Text('댓글', style: boldBlack14),
                                           SizedBox(width: 4.w),
                                           FutureBuilder<int>(
-                                            // Create a future that calculates the total number of comments and replies
                                             future: () async {
                                               int totalCount = comments.length;
-                                              // Asynchronously fetch the count of replies for each comment
                                               for (final commentDoc in comments) {
-                                                final replySnapshot = await FirebaseFirestore.instance
-                                                    .collection('group_buy_posts')
-                                                    .doc(widget.post.basePost.postId)
+                                                final replySnapshot =
+                                                await FirebaseFirestore
+                                                    .instance
+                                                    .collection(
+                                                    'group_buy_posts')
+                                                    .doc(widget.post.basePost
+                                                    .postId)
                                                     .collection('comments')
                                                     .doc(commentDoc.id)
                                                     .collection('replies')
-                                                    .count() // Use count() for efficiency
+                                                    .count()
                                                     .get();
-                                                totalCount += replySnapshot.count ?? 0;
+                                                totalCount +=
+                                                    replySnapshot.count ?? 0;
                                               }
                                               return totalCount;
                                             }(),
                                             builder: (context, countSnapshot) {
-                                              // While counting replies, show the top-level comment count as a placeholder
-                                              if (countSnapshot.connectionState == ConnectionState.waiting || !countSnapshot.hasData || countSnapshot.hasError) {
-                                                return Text('${comments.length}', style: mediumGrey14);
+                                              if (countSnapshot.connectionState ==
+                                                  ConnectionState.waiting ||
+                                                  !countSnapshot.hasData ||
+                                                  countSnapshot.hasError) {
+                                                return Text('${comments.length}',
+                                                    style: mediumGrey14);
                                               }
-                                              // Once counting is complete, show the total count
-                                              return Text('${countSnapshot.data}', style: mediumGrey14);
+                                              return Text('${countSnapshot.data}',
+                                                  style: mediumGrey14);
                                             },
                                           )
                                         ],
@@ -663,7 +750,10 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                                           onDeleteReply: _deleteReply,
                                         );
                                       },
-                                      separatorBuilder: (context, index) => Divider(height: 1, color: grey_seperating_line),
+                                      separatorBuilder: (context, index) =>
+                                          Divider(
+                                              height: 1,
+                                              color: grey_seperating_line),
                                     ),
                                   ],
                                 ),
@@ -673,63 +763,73 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                         ])),
               ),
               // --- 댓글 입력창 ---
-              //if (_isStudent)
-                Column(
-                  children: [
-                    if (_replyingToCommentId != null)
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                        color: Colors.grey[200],
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("'@${_replyingToAuthorNickname ?? ''}'님에게 답글 남기는 중...", style: mediumGrey13),
-                            InkWell(
-                              onTap: _cancelReplying,
-                              child: Icon(Icons.close, size: 16, color: grey),
-                            )
-                          ],
-                        ),
+              Column(
+                children: [
+                  if (_replyingToCommentId != null)
+                    Container(
+                      padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                      color: Colors.grey[200],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                              "'@${_replyingToAuthorNickname ?? ''}'님에게 답글 남기는 중...",
+                              style: mediumGrey13),
+                          InkWell(
+                            onTap: _cancelReplying,
+                            child: Icon(Icons.close, size: 16, color: grey),
+                          )
+                        ],
                       ),
-                    Padding(
-                        padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 10.h, top: 10.h),
-                        child: Row(
-                            children: [
-                              Expanded(
-                                  child: GreyFilledTextField(
-                                      controller: _commentController,
-                                      focusNode: _commentFocusNode,
-                                      name: _isStudent ? '댓글을 입력하세요' : '재학생 인증이 필요합니다',
-                                      inputType: TextInputType.text
-                                  )
-                              ),
-                              SizedBox(width: 4.w),
-                              InkWell(
-                                  onTap: _isStudent ?
-                                  _isRegisteringComment ? null : _submitComment : () { showDialog(context: context, builder: (context) => PopupDialog(), barrierDismissible: false); },
-                                  borderRadius: BorderRadius.circular(18.0),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(3.0),
-                                    child: Container(
-                                        decoration: BoxDecoration(color: _isStudent ? black : black40, borderRadius: BorderRadius.circular(20)),
-                                        child: Padding(
-                                            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-                                            child: _isRegisteringComment
-                                                ? const SizedBox(width: 28, height: 28, child: CircularProgressIndicator(color: white, strokeWidth: 2))
-                                                : const Icon(
-                                                Icons.send_rounded,
-                                                color: white,
-                                                size: 28
-                                            )
-                                        )
-                                    ),
-                                  )
-                              )
-                            ]
-                        )
                     ),
-                  ],
-                )
+                  Padding(
+                      padding: EdgeInsets.only(
+                          left: 16.w, right: 16.w, bottom: 10.h, top: 10.h),
+                      child: Row(children: [
+                        Expanded(
+                            child: GreyFilledTextField(
+                                controller: _commentController,
+                                focusNode: _commentFocusNode,
+                                name: _isStudent
+                                    ? '댓글을 입력하세요'
+                                    : '재학생 인증이 필요합니다',
+                                inputType: TextInputType.text)),
+                        SizedBox(width: 4.w),
+                        InkWell(
+                            onTap: _isStudent
+                                ? _isRegisteringComment
+                                ? null
+                                : _submitComment
+                                : () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => PopupDialog(),
+                                  barrierDismissible: false);
+                            },
+                            borderRadius: BorderRadius.circular(18.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(3.0),
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                      color: _isStudent ? black : black40,
+                                      borderRadius: BorderRadius.circular(20)),
+                                  child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10.w, vertical: 8.h),
+                                      child: _isRegisteringComment
+                                          ? const SizedBox(
+                                          width: 28,
+                                          height: 28,
+                                          child: CircularProgressIndicator(
+                                              color: white,
+                                              strokeWidth: 2))
+                                          : const Icon(Icons.send_rounded,
+                                          color: white, size: 28))),
+                            ))
+                      ])),
+                ],
+              )
             ],
           ),
         ));
@@ -766,40 +866,40 @@ class CommentsItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                  children: [
-                    SizedBox(
-                        width: 28.w,
-                        height: 28.h,
-                        child: Image.asset('assets/profile_man.png') // TODO: 사용자 프로필 이미지로 교체
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(authorNickname, style: boldBlack14),
-                    SizedBox(width: 8.w),
-                    Text(getTimeAgo(timestamp), style: mediumGrey14),
-                    const Spacer(),
-                    if (currentUserUid == authorUid)
-                      SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: PopupMenuButton<String>(
-                          padding: EdgeInsets.zero,
-                          icon: Icon(Icons.more_vert, size: 16, color: grey),
-                          onSelected: (value) {
-                            if (value == 'delete') {
-                              onDelete(commentDoc.id);
-                            }
-                          },
-                          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                            const PopupMenuItem<String>(
-                              value: 'delete',
-                              child: Text('삭제'),
-                            ),
-                          ],
+              Row(children: [
+                SizedBox(
+                    width: 28.w,
+                    height: 28.h,
+                    child: Image.asset(
+                        'assets/profile_man.png') // TODO: 사용자 프로필 이미지로 교체
+                ),
+                SizedBox(width: 8.w),
+                Text(authorNickname, style: boldBlack14),
+                SizedBox(width: 8.w),
+                Text(getTimeAgo(timestamp), style: mediumGrey14),
+                const Spacer(),
+                if (currentUserUid == authorUid)
+                  SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: PopupMenuButton<String>(
+                      padding: EdgeInsets.zero,
+                      icon: Icon(Icons.more_vert, size: 16, color: grey),
+                      onSelected: (value) {
+                        if (value == 'delete') {
+                          onDelete(commentDoc.id);
+                        }
+                      },
+                      itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<String>>[
+                        const PopupMenuItem<String>(
+                          value: 'delete',
+                          child: Text('삭제'),
                         ),
-                      ),
-                  ]
-              ),
+                      ],
+                    ),
+                  ),
+              ]),
               SizedBox(height: 8.h),
               Padding(
                 padding: EdgeInsets.only(left: 36.w),
@@ -844,9 +944,7 @@ class CommentsItem extends StatelessWidget {
                   );
                 },
               ),
-            ]
-        )
-    );
+            ]));
   }
 }
 
@@ -855,12 +953,11 @@ class SubCommentItem extends StatelessWidget {
   final DocumentSnapshot replyDoc;
   final String commentId;
   final Function(String, String) onDelete;
-  const SubCommentItem({
-    super.key,
-    required this.replyDoc,
-    required this.commentId,
-    required this.onDelete
-  });
+  const SubCommentItem(
+      {super.key,
+        required this.replyDoc,
+        required this.commentId,
+        required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -875,73 +972,67 @@ class SubCommentItem extends StatelessWidget {
       padding: EdgeInsets.only(top: 4.h, bottom: 4.h),
       child: Container(
           decoration: BoxDecoration(
-              color: background,
-              borderRadius: BorderRadius.circular(10)
-          ),
+              color: background, borderRadius: BorderRadius.circular(10)),
           child: Padding(
               padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                        children: [
-                          SizedBox(
-                              width: 28.w,
-                              height: 28.h,
-                              child: Image.asset('assets/profile_man.png') // TODO: 사용자 프로필 이미지
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(authorNickname, style: boldBlack14),
-                          SizedBox(width: 8.w),
-                          Text(getTimeAgo(timestamp), style: mediumGrey14),
-                          const Spacer(),
-                          if (currentUserUid == authorUid)
-                            SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: PopupMenuButton<String>(
-                                padding: EdgeInsets.zero,
-                                icon: Icon(Icons.more_vert, size: 16, color: grey),
-                                onSelected: (value) {
-                                  if (value == 'delete') {
-                                    onDelete(commentId, replyDoc.id);
-                                  }
-                                },
-                                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                  const PopupMenuItem<String>(
-                                    value: 'delete',
-                                    child: Text('삭제'),
-                                  ),
-                                ],
+                    Row(children: [
+                      SizedBox(
+                          width: 28.w,
+                          height: 28.h,
+                          child: Image.asset(
+                              'assets/profile_man.png') // TODO: 사용자 프로필 이미지
+                      ),
+                      SizedBox(width: 8.w),
+                      Text(authorNickname, style: boldBlack14),
+                      SizedBox(width: 8.w),
+                      Text(getTimeAgo(timestamp), style: mediumGrey14),
+                      const Spacer(),
+                      if (currentUserUid == authorUid)
+                        SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: PopupMenuButton<String>(
+                            padding: EdgeInsets.zero,
+                            icon: Icon(Icons.more_vert, size: 16, color: grey),
+                            onSelected: (value) {
+                              if (value == 'delete') {
+                                onDelete(commentId, replyDoc.id);
+                              }
+                            },
+                            itemBuilder: (BuildContext context) =>
+                            <PopupMenuEntry<String>>[
+                              const PopupMenuItem<String>(
+                                value: 'delete',
+                                child: Text('삭제'),
                               ),
-                            ),
-                        ]
-                    ),
+                            ],
+                          ),
+                        ),
+                    ]),
                     SizedBox(height: 8.h),
                     Padding(
                       padding: EdgeInsets.only(left: 36.w),
                       child: Text(contents, style: mediumBlack14),
                     )
-                  ]
-              )
-          )
-      ),
+                  ]))),
     );
   }
 }
 
-
 String getTimeAgo(DateTime dateTime) {
   Duration diff = DateTime.now().difference(dateTime);
 
-  if(diff.inMinutes<1){
+  if (diff.inMinutes < 1) {
     return '방금 전';
-  } else if(diff.inMinutes<60) {
+  } else if (diff.inMinutes < 60) {
     return '${diff.inMinutes}분 전';
-  } else if(diff.inHours<24) {
+  } else if (diff.inHours < 24) {
     return '${diff.inHours}시간 전';
-  } else if(diff.inDays<14) {
+  } else if (diff.inDays < 14) {
     return '${diff.inDays}일 전';
   } else {
     return DateFormat('yy/MM/dd').format(dateTime);
