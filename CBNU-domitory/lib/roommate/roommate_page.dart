@@ -14,6 +14,7 @@ import 'package:untitled/models/checklist_map.dart';
 import 'package:untitled/roommate/checklist_page.dart';
 import 'package:untitled/roommate/checklist_group_button.dart';
 import 'package:untitled/models/similarity.dart';
+import 'package:untitled/roommate/roommate_help.dart';
 
 class RoommatePage extends StatefulWidget {
   const RoommatePage({super.key});
@@ -416,7 +417,10 @@ class _RoommatePageState extends State<RoommatePage> {
                                 InkWell(
                                   borderRadius: BorderRadius.circular(10.0),
                                   onTap: () {
-                                    // 내 체크리스트 보기
+                                    showBarModalBottomSheet(
+                                      context: context,
+                                      builder: (BuildContext context) => RoommateDetailModal(user: _me!, isMine: true),
+                                    );
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -459,7 +463,7 @@ class _RoommatePageState extends State<RoommatePage> {
                           TextButton(
                               onPressed: () {
                                 // 추천 방식 설명창
-                                
+                                showDialog(context: context, builder: (context) => RoommateHelpDialog());
                               },
                               child: Text('추천 방식이 궁금하신가요?', style: mediumGrey13)
                           ),
@@ -499,7 +503,7 @@ class RecommendItem extends StatelessWidget {
                     onTap: () {
                       showBarModalBottomSheet(
                         context: context,
-                        builder: (BuildContext context) => RoommateDetailModal(user: user),
+                        builder: (BuildContext context) => RoommateDetailModal(user: user, isMine: false),
                       );
                     },
                     borderRadius: BorderRadius.circular(10.0),

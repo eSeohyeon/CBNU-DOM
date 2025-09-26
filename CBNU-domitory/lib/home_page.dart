@@ -802,15 +802,25 @@ class BestPostCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0), side: BorderSide(color: grey_seperating_line, width: 1.0)),
         elevation: 0,
         child: Padding(
-            padding: EdgeInsets.only(left: 12.w, right: 16.w, top: 12.h, bottom: 14.h),
+            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
             child: Column(
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.account_box_rounded, color: Colors.teal, size: 36),
-                        SizedBox(width: 4.w),
-                        Expanded(child: Text(post.writer, style: mediumBlack14)),
-                        Text('${post.date} ${post.time}', style: mediumGrey13)
+                        Container(
+                          width: 28.w,
+                          height: 28.h,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: Image.asset(
+                                'assets/profile_agriculture.png',
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 6.w),
+                        Expanded(child: Text(post.writer, style: boldBlack14)),
+                        Text('${post.date} ${post.time}', style: mediumGrey14)
                       ]
                   ),
                   SizedBox(height: 16.h),

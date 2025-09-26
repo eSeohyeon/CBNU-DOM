@@ -9,7 +9,8 @@ import 'package:untitled/themes/styles.dart';
 
 class RoommateDetailModal extends StatefulWidget {
   User user;
-  RoommateDetailModal({super.key, required this.user});
+  bool isMine;
+  RoommateDetailModal({super.key, required this.user, required this.isMine});
 
   @override
   State<RoommateDetailModal> createState() => _RoommateDetailModalState();
@@ -69,7 +70,7 @@ class _RoommateDetailModalState extends State<RoommateDetailModal> with TickerPr
                         ),
                         Text(widget.user.name, style: mediumBlack16, maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, softWrap: false),
                         SizedBox(height: 2.h),
-                        Text('예지관 | ${widget.user.yearEnrolled}학번 | 03년생 | ${widget.user.department}', style: mediumGrey14, textAlign: TextAlign.center),
+                        Text('${checklistMap[4]['생활관']} | ${widget.user.yearEnrolled}학번 | ${widget.user.birthYear}년생 | ${widget.user.department}', style: mediumGrey14, textAlign: TextAlign.center),
                         SizedBox(height: 20.h),
                         TabBar(
                             controller: _tabController,
@@ -113,14 +114,20 @@ class _RoommateDetailModalState extends State<RoommateDetailModal> with TickerPr
                       width: double.infinity,
                       height: 48.h,
                       child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if(widget.isMine) {
+                              Navigator.pop(context); // 내 정보 보기일 떄
+                            } else {
+                               // 다른 사람의 정보 보기일 때 - 1:1 대화하기
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: black,
                               overlayColor: Colors.transparent,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28.0)),
                               elevation: 0
                           ),
-                          child: Text('1:1 대화하기', style: boldWhite15)
+                          child: widget.isMine ? Text('닫기', style: boldWhite15) : Text('1:1 대화하기', style: boldWhite15)
                       ),
                     )
                 )

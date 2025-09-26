@@ -29,6 +29,6 @@ final List<Map<String, String>> checklistMap = [
   {//취미/기타
     '컴퓨터게임' : '좋아함',
     '운동' : '좋아함',
-    '준비중' : '없음'
+    '생활관' : '정의관'
   }
 ];
