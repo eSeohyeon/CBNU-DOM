@@ -28,4 +28,16 @@ Widget filterGroupButton(bool selected, String value) {
   );
 }
 
+Widget similarityGroupButton(String value) {
+  return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+      decoration: BoxDecoration(
+          color: grey_button,
+          borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Text(value, style: mediumBlack14)
+  );
+}
+
+
 

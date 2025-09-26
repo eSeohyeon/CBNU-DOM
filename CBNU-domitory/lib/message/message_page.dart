@@ -180,13 +180,21 @@ class MessageListTab extends StatelessWidget {
               final doc = chatDocs[index];
               final data = doc.data() as Map<String, dynamic>;
               final participants = List<String>.from(data['participants'] ?? []);
-              final otherUserId = participants.firstWhere((id) => id != currentUserUid, orElse: () => '');
-              final participantsInfo = data['participants_info'] as Map<String, dynamic>? ?? {};
-              final otherUserNickname = participantsInfo[otherUserId] ?? '상대방';
+
+              String chatRoomName;
+              String otherUserId = '';
+
+              if (chatType == 'group_buy') {
+                chatRoomName = data['groupTitle'] ?? '공동구매 채팅';
+              } else {
+                otherUserId = participants.firstWhere((id) => id != currentUserUid, orElse: () => '');
+                final participantsInfo = data['participants_info'] as Map<String, dynamic>? ?? {};
+                chatRoomName = participantsInfo[otherUserId] ?? '상대방';
+              }
 
               final chatItem = ChatItem(
                 chatId: doc.id,
-                senderId: otherUserNickname, // 목록에는 상대방 닉네임 표시
+                senderId: chatRoomName, // 채팅방 이름으로 설정
                 latestContent: data['lastMessage'] ?? '',
                 latestTimestamp: (data['lastMessageTimestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
               );
@@ -195,7 +203,7 @@ class MessageListTab extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => ChattingPage(
                       chatRoomId: doc.id,
                       otherUserId: otherUserId,
-                      otherUserNickname: otherUserNickname,
+                      otherUserNickname: chatRoomName,
                     )));
                   },
                   child: ChatListItem(chatItem: chatItem));},
@@ -209,4 +217,3 @@ class MessageListTab extends StatelessWidget {
     );
   }
 }
-

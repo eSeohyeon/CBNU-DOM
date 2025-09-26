@@ -14,13 +14,13 @@ class ChecklistPreferenceView extends StatefulWidget {
 }
 
 class _ChecklistPreferenceViewState extends State<ChecklistPreferenceView> {
-  final List<String> hotOptions = ['안 탐', '많이 탐'];
-  final List<String> coldOptions = ['안 탐', '많이 탐'];
-  final List<String> sleepingEarOptions = ['밝음', '어두움'];
-  final List<String> bugOptions = ['극혐', '중간', '세스코'];
-  final List<String> smellOptions = ['싫어요', '과자만', '상관 없음'];
-  final List<String> callInRoomOptions = ['싫어요','짧게만', '상관 없음'];
-  final List<String> inviteFriendOptions = ['싫어요', '사전 허락', '상관 없음'];
+  static const List<String> hotOptions = ['안 탐', '많이 탐'];
+  static const List<String> coldOptions = ['안 탐', '많이 탐'];
+  static const List<String> sleepingEarOptions = ['밝음', '어두움'];
+  static const List<String> bugOptions = ['극혐', '중간', '세스코'];
+  static const List<String> smellOptions = ['싫어요', '과자만', '상관 없음'];
+  static const List<String> callInRoomOptions = ['싫어요','짧게만', '상관 없음'];
+  static const List<String> inviteFriendOptions = ['싫어요', '사전 허락', '상관 없음'];
 
   late GroupButtonController _hotController;
   late GroupButtonController _coldController;
@@ -29,6 +29,26 @@ class _ChecklistPreferenceViewState extends State<ChecklistPreferenceView> {
   late GroupButtonController _callInRoomController;
   late GroupButtonController _inviteFriendController;
   late GroupButtonController _sleepingEarController;
+
+  bool validate(){
+    final keysToValidate = [
+      '더위',
+      '추위',
+      '잠귀',
+      '벌레',
+      '실내취식',
+      '실내통화',
+      '친구초대'
+    ];
+
+    for (var key in keysToValidate) {
+      final value = widget.answers[key];
+      if(value == null || (value is String && value.isEmpty)){
+        return false;
+      }
+    }
+    return true; // 모든 항목 유효
+  }
 
   @override
   void initState() {
