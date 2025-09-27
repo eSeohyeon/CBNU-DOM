@@ -99,37 +99,52 @@ class _ChecklistPreferenceViewState extends State<ChecklistPreferenceView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 12.h),
-              Text('더위', style: mediumBlack16),
-              SizedBox(height: 10.h),
-              GroupButton(
-                buttons: hotOptions,
-                controller : _hotController,
-                onSelected: (val, i, selected){
-                  setState(() {
-                    widget.answers['더위'] = val;
-                  });
-                },
-                buttonBuilder: (selected, value, context) {
-                  return checklistGroupButton(selected, value);
-                },
-                options: GroupButtonOptions(spacing: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('더위', style: mediumBlack16),
+                      SizedBox(height: 10.h),
+                      GroupButton(
+                        buttons: hotOptions,
+                        controller : _hotController,
+                        onSelected: (val, i, selected){
+                          setState(() {
+                            widget.answers['더위'] = val;
+                          });
+                        },
+                        buttonBuilder: (selected, value, context) {
+                          return checklistGroupButton(selected, value);
+                        },
+                        options: GroupButtonOptions(spacing: 8),
+                      )
+                    ]
+                  ),
+                  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('추위', style: mediumBlack16),
+                        SizedBox(height: 10.h),
+                        GroupButton(
+                          buttons: coldOptions,
+                          controller : _coldController,
+                          onSelected: (val, i, selected){
+                            setState(() {
+                              widget.answers['추위'] = val;
+                            });
+                          },
+                          buttonBuilder: (selected, value, context) {
+                            return checklistGroupButton(selected, value);
+                          },
+                          options: GroupButtonOptions(spacing: 8),
+                        ),
+                      ]
+                  ),
+                ]
               ),
               SizedBox(height: 36.h),
-              Text('추위', style: mediumBlack16),
-              SizedBox(height: 10.h),
-              GroupButton(
-                buttons: coldOptions,
-                controller : _coldController,
-                onSelected: (val, i, selected){
-                  setState(() {
-                    widget.answers['추위'] = val;
-                  });
-                },
-                buttonBuilder: (selected, value, context) {
-                  return checklistGroupButton(selected, value);
-                },
-                options: GroupButtonOptions(spacing: 8),
-              ),SizedBox(height: 36.h),
               Text('실내취식', style: mediumBlack16),
               SizedBox(height: 10.h),
               GroupButton(

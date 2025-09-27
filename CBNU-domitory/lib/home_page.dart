@@ -36,14 +36,13 @@ class _HomePageState extends State<HomePage> {
   String _selectedDorm = '본관';
   String _currentDate = '';
   final List<String> dorms = ['본관', '양성재', '양진재'];
-  final List<String> circleButtons = ['챗봇', '세탁카드', '환산점수', '홈페이지', '공구쪽지', '룸메쪽지'];
+  final List<String> circleButtons = ['챗봇', '세탁카드', '환산점수', '홈페이지', '개신누리'];
   final List<Image> circleButtonImages = [
     Image.asset('assets/chatbot.png'),
     Image.asset('assets/washer.png'),
     Image.asset('assets/ranking.png'),
     Image.asset('assets/web.png'),
-    Image.asset('assets/shopping_bags.png'),
-    Image.asset('assets/two_speech_bubles.png'),
+    Image.asset('assets/school.png')
   ];
   List<String> _todayMenu = [];
   WeatherData? _currentWeather;
@@ -468,7 +467,6 @@ class _HomePageState extends State<HomePage> {
                                             borderRadius: BorderRadius.circular(30.0),
                                             onTap: () {
                                               if(index == 0){
-                                                print('chatbot');
                                                 Navigator.push(context, MaterialPageRoute(builder: (context) => ChatbotPage()));
                                               } else if(index==1){
                                                 print('세탁카드');
@@ -476,10 +474,8 @@ class _HomePageState extends State<HomePage> {
                                                 Navigator.push(context, MaterialPageRoute(builder: (context) => DormScoreRanking()));
                                               } else if(index==3){
                                                 launchUrl(Uri.parse('https://dorm.chungbuk.ac.kr/home/main.php'));
-                                              } else if(index==4){
-                                                print('공구쪽지');
-                                              } else if(index==5) {
-                                                print('룸메쪽지');
+                                              } else if(index == 4) {
+                                                launchUrl(Uri.parse('https://eis.cbnu.ac.kr'));
                                               }
                                             },
                                             child: Padding(

@@ -92,13 +92,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     return Scaffold(
       backgroundColor: background,
       appBar: AppBar(
-        title: Text('비밀번호 변경', style: boldBlack18),
+        title: Text('비밀번호 변경', style: mediumBlack16),
         backgroundColor: background,
         surfaceTintColor: background,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        titleSpacing: 0,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
