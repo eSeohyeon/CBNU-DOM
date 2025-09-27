@@ -18,7 +18,7 @@ class MessagePage extends StatefulWidget {
 
 class _MessagePageState extends State<MessagePage> with TickerProviderStateMixin {
   late TabController _tabController;
-  bool _isStudent = false;
+  bool _isStudent = true;
   bool _isLoading = true;
 
   @override

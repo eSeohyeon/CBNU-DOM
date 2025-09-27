@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/models/post.dart';
 import 'package:untitled/themes/styles.dart';
+import 'package:untitled/themes/colors.dart';
 
 class ReportDialog extends StatefulWidget {
   final Post post;
@@ -97,7 +98,8 @@ class _ReportDialogState extends State<ReportDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('게시물 신고'),
+      title: Text('게시물 신고', style: boldBlack16),
+      backgroundColor: white,
       content: SizedBox(
         width: double.maxFinite,
         child: SingleChildScrollView(
@@ -114,6 +116,8 @@ class _ReportDialogState extends State<ReportDialog> {
                       _reportReasons[reason] = value!;
                     });
                   },
+                  dense: true,
+                  activeColor: black,
                   controlAffinity: ListTileControlAffinity.leading,
                   contentPadding: EdgeInsets.zero,
                 );
@@ -126,7 +130,18 @@ class _ReportDialogState extends State<ReportDialog> {
                 maxLines: 3,
                 decoration: const InputDecoration(
                   hintText: '자세한 내용을 입력해주세요.',
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: grey_outline_inputtext),
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: black),
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: grey_outline_inputtext),
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
                 ),
               ),
             ],
@@ -136,16 +151,19 @@ class _ReportDialogState extends State<ReportDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text('취소'),
+          child: Text('취소', style: mediumBlack14),
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _submitReport,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: black,
+          ),
           child: _isLoading
               ? const SizedBox(
               width: 20,
               height: 20,
               child: CircularProgressIndicator(strokeWidth: 2))
-              : const Text('신고하기'),
+              : Text('신고하기', style: mediumWhite14),
         ),
       ],
     );

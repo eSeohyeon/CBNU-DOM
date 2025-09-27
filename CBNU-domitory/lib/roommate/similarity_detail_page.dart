@@ -14,21 +14,16 @@ class SimilarityDetailPage extends StatefulWidget {
 class _SimilarityDetailPageState extends State<SimilarityDetailPage> {
   final List<Map<String, dynamic>> _similarities = const [
     {"name": "흡연여부", "similarity": 0.95},
-    {"name": "잠버릇", "similarity": 0.90},
-    {"name": "청소", "similarity": 0.88},
-    {"name": "소리", "similarity": 0.85},
-    {"name": "기상시간", "similarity": 0.83},
-    {"name": "취침시간", "similarity": 0.80},
-    {"name": "샤워시각", "similarity": 0.78}, // 테스트용
-    {"name": "본가주기", "similarity": 0.76},
-    {"name": "더위", "similarity": 0.74},
-    {"name": "추위", "similarity": 0.72},
-    {"name": "향 민감도", "similarity": 0.70},
-    {"name": "실내통화", "similarity": 0.68},
-    {"name": "친구초대", "similarity": 0.65},
-    {"name": "벌레", "similarity": 0.62},
-    {"name": "컴퓨터 게임", "similarity": 0.60},
-    {"name": "운동", "similarity": 0.58},
+    {"name": "취침시간", "similarity": 0.90},
+    {"name": "기상시간", "similarity": 0.88},
+    {"name": "청소", "similarity": 0.85},
+    {"name": "더위", "similarity": 0.83},
+    {"name": "추위", "similarity": 0.80},
+    {"name": "소리", "similarity": 0.78}, // 테스트용
+    {"name": "흡연여부", "similarity": 0.76},
+    {"name": "실내통화", "similarity": 0.74},
+    {"name": "친구초대", "similarity": 0.72},
+    {"name": "실내취식", "similarity": 0.70},
   ]; // 유사도 데이터
   List<Color> colors = []; // 바 색상 리스트
 
@@ -71,7 +66,7 @@ class _SimilarityDetailPageState extends State<SimilarityDetailPage> {
                   children: [
                     Icon(Icons.help_outline_rounded, color: grey, size: 20),
                     SizedBox(width: 4.w),
-                    Expanded(child: Text('체크리스트의 모든 항목에 대한 유사도를 표시하고 있어요.', style: mediumGrey13))
+                    Expanded(child: Text('추천점수에 영향을 주는 모든 항목의 유사도를 표시해요.', style: mediumGrey13))
                   ]
                 ),
               ),

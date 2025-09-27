@@ -104,13 +104,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       backgroundColor: background,
       appBar: AppBar(
-        title: Text('정보 수정', style: boldBlack18),
+        title: Text('정보 수정', style: mediumBlack16),
         backgroundColor: background,
         surfaceTintColor: background,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        titleSpacing: 0,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

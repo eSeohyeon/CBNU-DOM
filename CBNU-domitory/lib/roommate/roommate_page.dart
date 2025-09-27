@@ -15,6 +15,7 @@ import 'package:untitled/roommate/checklist_page.dart';
 import 'package:untitled/roommate/checklist_group_button.dart';
 import 'package:untitled/models/similarity.dart';
 import 'package:untitled/roommate/roommate_help.dart';
+import 'package:untitled/roommate/similarity_detail_page.dart';
 
 class RoommatePage extends StatefulWidget {
   const RoommatePage({super.key});
@@ -278,12 +279,41 @@ class _RoommatePageState extends State<RoommatePage> {
   // 인원수 부족할 때 슬라이더
   Widget _buildNoEnoughCarousel() {
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
         decoration: BoxDecoration(
-          color: white,
-          borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(15.0),
+            color: white
         ),
-        child: Text('zzz')
+        child: Column(
+            children: [
+              Image.asset('assets/roommate_not_enough.png', width: 150.w, height: 150.h),
+              Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('룸메이트 추천 불가', style: boldBlack16),
+                    SizedBox(height: 6.h),
+                    Text('현재 같은 생활관에 등록된 학생 수가 적어서 추천이 어려워요', style: mediumBlack14, softWrap: true,),
+                    SizedBox(height: 1.h),
+                    Text('직접 검색을 통해 더 빠르게 룸메이트를 만날 수 있습니다', style: mediumGrey14, softWrap: true,),
+                    SizedBox(height: 16.h),
+                    ElevatedButton(
+                      child: Text('직접 검색하기', style: mediumBlack14),
+                      style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor: grey_button_greyBG,
+                          overlayColor: Colors.transparent,
+                          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
+                      ),
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => FilterSearchPage()));
+                      },
+                    )
+                  ]
+              ),
+            ]
+        )
     );
   }
 
@@ -546,6 +576,9 @@ class RecommendItem extends StatelessWidget {
                     buttons: similar_factors,
                     buttonBuilder: (selected, value, context) {
                       return similarityGroupButton(value);
+                    },
+                    onSelected: (val, i, selected) {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => SimilarityDetailPage()));
                     },
                     options: GroupButtonOptions(spacing: 4,
                         mainGroupAlignment: MainGroupAlignment.start),

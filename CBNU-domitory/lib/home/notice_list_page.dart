@@ -19,7 +19,6 @@ class _NoticeListPageState extends State<NoticeListPage> {
   int _currentPage = 1;
   bool _isLoading = false;
   bool _hasMore = true;
-  bool exclude_pinned = false;
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -37,6 +36,7 @@ class _NoticeListPageState extends State<NoticeListPage> {
   }
 
   Future<void> _fetchNotices() async {
+    if (_isLoading || !_hasMore) return;
     setState(() => _isLoading = true);
     final url = Uri.parse(
         'https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20039&mod=&page=$_currentPage&scode=00000002&listCnt=20');
@@ -47,13 +47,14 @@ class _NoticeListPageState extends State<NoticeListPage> {
         final document = parser.parse(response.body);
         final rows = document.querySelectorAll('#contentBody > form > div.containerIn > table > tbody > tr');
 
-        if (rows.isEmpty) {
+        if(rows.isEmpty && _currentPage == 1) {
           _hasMore = false;
         }
 
+        int addedCount = 0;
         for (var row in rows) {
           final is_pinned = row.classes.contains('brd_notice'); // 고정 공지 UI에서 분리해야함.
-          if (exclude_pinned && is_pinned) continue;
+          if(is_pinned) continue;
 
           final cells = row.querySelectorAll('td');
           if (cells.length >= 4) {
@@ -71,10 +72,16 @@ class _NoticeListPageState extends State<NoticeListPage> {
               date: date,
               link: link,
             ));
+            addedCount++;
           }
         }
-        _currentPage++;
-        exclude_pinned = true;
+        if(addedCount == 0 && _currentPage>1){
+          _hasMore = false;
+        } else if(addedCount >0) {
+          _currentPage++;
+        } else {
+          _hasMore = false;
+        }
       }
     } catch (e) {
       debugPrint("Failed to get data: $e");
