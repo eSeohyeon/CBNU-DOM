@@ -119,6 +119,7 @@ class _SearchPageState extends State<SearchPage> {
                     DropdownMenuItem(value: 'title', child: Text('제목')),
                     DropdownMenuItem(value: 'nickname', child: Text('닉네임')),
                   ],
+                  dropdownColor: white, // 드롭다운 배경색
                   onChanged: (value) {
                     setState(() {
                       _searchOption = value!;

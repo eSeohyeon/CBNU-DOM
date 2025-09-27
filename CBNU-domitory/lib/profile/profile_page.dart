@@ -110,11 +110,8 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         backgroundColor: background,
         surfaceTintColor: background,
-        title: Text('내 정보', style: boldBlack18),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        title: Text('내 정보', style: mediumBlack16),
+        titleSpacing: 0,
       ),
       body: ListView(
         children: [
@@ -266,6 +263,7 @@ class _StudentVerificationDialogState
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('재학생 인증'),
+      backgroundColor: white,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -293,24 +291,30 @@ class _StudentVerificationDialogState
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: _pickImage,
-            icon: const Icon(Icons.photo_library_outlined),
-            label: const Text('이미지 첨부'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: grey_button_greyBG,
+            ),
+            icon: Icon(Icons.photo_library_outlined, color: black),
+            label: Text('이미지 첨부', style: mediumBlack14),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: _isUploading ? null : () => Navigator.of(context).pop(),
-          child: const Text('취소'),
+          child: Text('취소', style: mediumBlack14),
         ),
         ElevatedButton(
           onPressed: _isUploading ? null : _uploadVerificationImage,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: black
+          ),
           child: _isUploading
               ? const SizedBox(
               width: 20,
               height: 20,
               child: CircularProgressIndicator(strokeWidth: 2))
-              : const Text('업로드'),
+              : Text('업로드', style: mediumWhite14),
         ),
       ],
     );
