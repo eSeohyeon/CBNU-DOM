@@ -26,8 +26,8 @@ class _ChecklistPersonalityViewState extends State<ChecklistPersonalityView> {
   static const List<String> mbtiNSOptions = ['N', 'S'];
   static const List<String> mbtiTFOptions = ['T', 'F'];
   static const List<String> mbtiPJOptions = ['P', 'J'];
-  static const List<String> computerGameOptions = ['안 함', '중간', '좋아함'];
-  static const List<String> exerciseOptions = ['안 함', '중간', '좋아함'];
+  static const List<String> computerGameOptions = ['안함', '중간', '좋아함'];
+  static const List<String> exerciseOptions = ['안함', '중간', '좋아함'];
   static const List<String> dormTypeOptions = ['정의관', '진리관', '개척관', '계영원', '명덕관', '신민관', '지선관', '인의관', '예지관', '양현재(남)', '양현재(여)'];
 
   bool validate(){

@@ -39,8 +39,8 @@ class _RoommatePageState extends State<RoommatePage> {
   void initState(){
     super.initState();
 
-    _me = User(profilePath: 'assets/profile_man.png', name: '까르보나라', department: '자연과학대학', yearEnrolled: '23', isSmoking: true, checklist: checklistMap);
-    User item = User(profilePath: 'assets/profile_man.png', name: '두부두부두루치기', department: '전자정보대학', yearEnrolled: '25', isSmoking: true, checklist: checklistMap);
+    _me = User(profilePath: 'assets/profile_pharmacy.png', name: '까르보나라', department: '자연과학대학', yearEnrolled: '23', isSmoking: true, checklist: checklistMap);
+    User item = User(profilePath: 'assets/profile_pharmacy.png', name: '두부두부두루치기', department: '전자정보대학', yearEnrolled: '25', isSmoking: true, checklist: checklistMap);
     for (int i = 0; i<4; i++){
       _recommendedUsers.add(item);
     }

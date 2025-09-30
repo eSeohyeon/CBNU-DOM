@@ -20,12 +20,11 @@ class _ChecklistHabitViewState extends State<ChecklistHabitView> {
   late GroupButtonController _soundController;
   late GroupButtonController _sleepingEarController;
 
-  static const List<String> habitTitleOptions = ['흡연여부', '잠버릇', '청소', '소리'];
   static const List<String> smokingOptions = ['흡연', '비흡연'];
-  static const List<String> sleepingHabitOptions = ['없음', '있음'];
-  static const List<String> sleepingEarOptions = ['밝음', '어두움'];
-  static const List<String> cleaningFrequencyOptions = ['수시로', '한 번에'];
-  static const List<String> soundOptions = ['이어폰', '스피커'];
+  static const List<String> sleepingHabitOptions = ['없음', '이갈이', '잠꼬대', '코골이'];
+  static const List<String> sleepingEarOptions = ['어두움', '중간', '밝음'];
+  static const List<String> cleaningFrequencyOptions = ['그때그때', '중간', '한번에'];
+  static const List<String> soundOptions = ['이어폰', '스피커', '유동적'];
 
   bool validate(){
     final keysToValidate = [
