@@ -18,15 +18,15 @@ class AddFilterModal extends StatefulWidget {
 class _AddFilterModalState extends State<AddFilterModal> {
   final List<Map<String, String>> _addedFilters = [];
 
-  static const List<String> _smokingOptions = ['비흡연', '흡연'];
-  static const List<String> _cleaningFrequencyOptions = ['수시로', '한 번에'];
-  static const List<String> _sleepingHabitOptions = ['없음', '있음'];
-  static const List<String> _soundOptions = ['이어폰', '스피커'];
-  static const List<String> _sleepingEarOptions = ['밝음', '어두움'];
-  static const List<String> _callInRoomOptions = ['싫어요', '짧게만', '상관 없음'];
-  static const List<String> _smellOptions = ['싫어요', '과자류만', '상관 없음'];
-  static const List<String> _inviteFriendOptions = ['싫어요', '사전 허락', '상관 없음'];
-  static const List<String> _bugOptions = ['싫어요', '세스코'];
+  static const List<String> _smokingOptions = ['흡연', '비흡연'];
+  static const List<String> _cleaningFrequencyOptions = ['그때그때', '중간', '한번에'];
+  static const List<String> _sleepingHabitOptions = ['없음', '이갈이', '잠꼬대', '코골이'];
+  static const List<String> _soundOptions = ['이어폰', '스피커', '유동적'];
+  static const List<String> _sleepingEarOptions = ['어두움', '중간', '밝음'];
+  static const List<String> _callInRoomOptions = ['상관X', '싫어요', '짧은것만'];
+  static const List<String> _smellOptions = ['싫어요', '냄새만안나면', '과자류는O', '상관X'];
+  static const List<String> _inviteFriendOptions = ['상관X', '싫어요', '사전허락'];
+  static const List<String> _bugOptions = ['극혐', '못잡음', '중간', '잡음', '잘잡음'];
   late GroupButtonController _smokingController;
   late GroupButtonController _cleaningFrequencyController;
   late GroupButtonController _sleepingHabitController;
