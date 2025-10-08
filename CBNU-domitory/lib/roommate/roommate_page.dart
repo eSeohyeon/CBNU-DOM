@@ -16,6 +16,7 @@ import 'package:untitled/roommate/checklist_group_button.dart';
 import 'package:untitled/models/similarity.dart';
 import 'package:untitled/roommate/roommate_help.dart';
 import 'package:untitled/roommate/similarity_detail_page.dart';
+import 'package:untitled/roommate/rating_dialog.dart';
 
 class RoommatePage extends StatefulWidget {
   const RoommatePage({super.key});
@@ -398,6 +399,7 @@ class _RoommatePageState extends State<RoommatePage> {
                                               child: Icon(Icons.refresh_rounded, color: black, size: 20)
                                           ),
                                           onTap: () {
+                                            showDialog(context: context, builder: (context) => RatingDialog(), barrierDismissible: false); // 임시 테스트용
                                             _clearAllFilters();
                                           }
                                       ),
