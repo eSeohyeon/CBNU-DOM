@@ -62,7 +62,7 @@ class _RoommateDetailModalState extends State<RoommateDetailModal> with TickerPr
                                 border: Border.all(color: grey_seperating_line, width: 1.0)
                             ),
                             child: CircleAvatar(
-                              backgroundImage: AssetImage(widget.user.profilePath),
+                              backgroundImage: AssetImage(widget.user.profilePath), //backgroundImage: AssetImage(widget.user.profilePath),
                             )
                         ),
                         SizedBox(

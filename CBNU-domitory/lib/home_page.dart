@@ -16,12 +16,14 @@ import 'package:html/parser.dart' as parser;
 import 'package:untitled/home/weather_service.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'package:untitled/home/menu_detail_page.dart';
 import 'package:untitled/home/notice_detail_page.dart';
 import 'package:untitled/home/notice_list_page.dart';
 import 'package:untitled/home/dorm_score_ranking.dart';
 import 'package:untitled/home/chatbot_page.dart';
+import 'package:untitled/home/laundry_card_modal.dart';
 
 
 
@@ -240,6 +242,7 @@ class _HomePageState extends State<HomePage> {
         _isAnyLoadingError = true;
       });
     }
+
 
     if (!mounted) return;
     setState(() {
@@ -463,13 +466,16 @@ class _HomePageState extends State<HomePage> {
                                   padding: EdgeInsets.symmetric(horizontal: 10.w),
                                   child: Column(
                                       children: [
-                                        InkWell(
+                                        InkWell( // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  원 버튼
                                             borderRadius: BorderRadius.circular(30.0),
                                             onTap: () {
                                               if(index == 0){
                                                 Navigator.push(context, MaterialPageRoute(builder: (context) => ChatbotPage()));
                                               } else if(index==1){
-                                                print('세탁카드');
+                                                showBarModalBottomSheet(
+                                                  context: context,
+                                                  builder: (BuildContext context) => LaundryCardModal(),
+                                                );
                                               } else if(index==2){
                                                 Navigator.push(context, MaterialPageRoute(builder: (context) => DormScoreRanking()));
                                               } else if(index==3){

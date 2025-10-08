@@ -23,7 +23,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
 
   final List<Map<String, String>> _messages = [];
 
-  //테스트 빨래는 어떻게 해?
+  //테스트 방 배정은 어떻게 해?
   String _question = '';
   String _answer = '';
 

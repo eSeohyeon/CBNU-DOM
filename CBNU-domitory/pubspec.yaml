@@ -48,6 +48,7 @@ dependencies:
   flutter_downloader: ^1.12.0
   permission_handler: ^12.0.1
   path_provider: ^2.1.5
+  flutter_rating_bar: ^4.0.1 # 별점UI
 
 
 dev_dependencies:

@@ -21,8 +21,8 @@ class _ChecklistPatternViewState extends State<ChecklistPatternView> {
 
   static const List<String> wakeUpOptions = ['4시', '5시', '6시', '7시', '8시', '9시', '10시'];
   static const List<String> sleepOptions = ['9시', '10시', '11시', '자정', '1시', '2시', '3시'];
-  static const List<String> showerOptions = ['아침샤워', '저녁샤워'];
-  static const List<String> homeFrequencyOptions = ['매주', '2주이상'];
+  static const List<String> showerOptions = ['아침', '저녁', '유동적'];
+  static const List<String> homeFrequencyOptions = ['매주', '2주', '매달', '방학'];
 
   bool validate(){
     final keysToValidate = [
