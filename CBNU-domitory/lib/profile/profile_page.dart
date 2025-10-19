@@ -1,5 +1,3 @@
-// lib/profile/profile_page.dart
-
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -91,19 +89,35 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // --- 👇 재학생 인증 팝업을 띄우는 함수 ---
   void _verifyStudent(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => const _StudentVerificationDialog(),
-    ).then((_) => _loadUserData()); // 팝업이 닫힌 후 사용자 정보 새로고침
+    ).then((_) => _loadUserData());
   }
 
   @override
   Widget build(BuildContext context) {
-    // isVerified 필드를 확인하여 인증 상태 텍스트를 결정합니다.
     final bool isVerified = _userData?['isVerified'] ?? false;
-    final verificationStatusText = isVerified ? '인증 완료' : '미인증';
+    // 'role' 필드를 사용하여 상태 텍스트 결정 (기존 isVerified 대신)
+    final String role = _userData?['role'] ?? '미인증자';
+    String verificationStatusText;
+    Color verificationStatusColor;
+
+    switch (role) {
+      case '재학생':
+        verificationStatusText = '인증 완료';
+        verificationStatusColor = Colors.blue;
+        break;
+      case '인증 대기자':
+        verificationStatusText = '인증 대기중';
+        verificationStatusColor = Colors.orange;
+        break;
+      default: // '미인증자' 포함
+        verificationStatusText = '미인증';
+        verificationStatusColor = Colors.grey;
+    }
+
 
     return Scaffold(
       backgroundColor: background,
@@ -156,20 +170,21 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           ListTile(
             leading: Icon(Icons.verified_user_outlined,
-                color: isVerified ? Colors.blue : Colors.grey),
+                color: verificationStatusColor), // 상태에 따른 색상 적용
             title: Text('재학생 인증', style: mediumBlack16),
-            // --- 👇 인증 상태에 따라 다른 텍스트를 보여줍니다. ---
             trailing: Text(
-              verificationStatusText,
-              style: TextStyle(color: isVerified ? Colors.blue : Colors.grey),
+              verificationStatusText, // 상태 텍스트
+              style: TextStyle(color: verificationStatusColor), // 상태 색상
             ),
-            onTap: () => _verifyStudent(context),
+            // 인증 완료 상태가 아니면 인증 시도 가능
+            onTap: (role != '재학생') ? () => _verifyStudent(context) : null,
           ),
           ListTile(
             leading: const Icon(Icons.logout),
             title: Text('로그아웃', style: mediumBlack16),
             onTap: () => _signOut(context),
           ),
+
           ListTile(
             leading: const Icon(Icons.delete_forever, color: Colors.red),
             title: Text('계정 탈퇴',
@@ -182,7 +197,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-// --- 👇 재학생 인증 팝업을 위한 새로운 위젯 ---
+// _StudentVerificationDialog 클래스 (변경 없음)
 class _StudentVerificationDialog extends StatefulWidget {
   const _StudentVerificationDialog();
 
@@ -227,19 +242,18 @@ class _StudentVerificationDialogState
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw Exception('로그인 정보 없음');
 
-      // 1. Firebase Storage에 이미지 업로드
       final ref = FirebaseStorage.instance
           .ref()
           .child('student_verification_images')
-          .child('${user.uid}.jpg');
+          .child('${user.uid}.jpg'); // 파일명에 확장자 추가
       await ref.putFile(_imageFile!);
       final downloadUrl = await ref.getDownloadURL();
 
-      // 2. Firestore에 이미지 URL과 인증 상태, 역할 업데이트 (수정된 부분)
+      // Firestore 업데이트 시 'role' 필드 추가/수정
       await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
         'studentIdImageUrl': downloadUrl,
-        'isVerified': false, // 관리자 승인을 위해 false로 설정
-        'role': '인증 대기자', // 역할을 '인증 대기자'로 명시적으로 변경
+        'isVerified': false, // 관리자 승인 대기 상태
+        'role': '인증 대기자', // 역할 업데이트
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -284,7 +298,7 @@ class _StudentVerificationDialogState
           ),
           const SizedBox(height: 16),
           Text(
-            '재학생 신분 인증 가능한 것들을 첨부해주세요.',
+            '합격증 또는 학생증(모바일 학생증 포함) 이미지를 첨부해주세요.', // 안내 문구 수정
             textAlign: TextAlign.center,
             style: mediumGrey14,
           ),
@@ -307,13 +321,13 @@ class _StudentVerificationDialogState
         ElevatedButton(
           onPressed: _isUploading ? null : _uploadVerificationImage,
           style: ElevatedButton.styleFrom(
-            backgroundColor: black
+              backgroundColor: black
           ),
           child: _isUploading
               ? const SizedBox(
               width: 20,
               height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2))
+              child: CircularProgressIndicator(strokeWidth: 2, color: white)) // 로딩 색상 변경
               : Text('업로드', style: mediumWhite14),
         ),
       ],
@@ -321,7 +335,7 @@ class _StudentVerificationDialogState
   }
 }
 
-// _PasswordConfirmDialog 위젯은 이전과 동일하게 유지
+
 class _PasswordConfirmDialog extends StatefulWidget {
   @override
   __PasswordConfirmDialogState createState() => __PasswordConfirmDialogState();
@@ -355,6 +369,7 @@ class __PasswordConfirmDialogState extends State<_PasswordConfirmDialog> {
         email: user.email!,
         password: _passwordController.text.trim(),
       );
+
       await user.reauthenticateWithCredential(credential);
       await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
       await user.delete();
@@ -398,6 +413,7 @@ class __PasswordConfirmDialogState extends State<_PasswordConfirmDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('계정 탈퇴'),
+      backgroundColor: white, // 배경색 추가
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -426,19 +442,20 @@ class __PasswordConfirmDialogState extends State<_PasswordConfirmDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text('취소'),
+          child: Text('취소', style: mediumBlack14),
         ),
-        _isLoading
-            ? const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12.0),
-          child: SizedBox(
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            foregroundColor: white,
+          ),
+          onPressed: _isLoading ? null : _handleDeleteAccount,
+          child: _isLoading
+              ? const SizedBox(
               width: 20,
               height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2)),
-        )
-            : TextButton(
-          onPressed: _handleDeleteAccount,
-          child: const Text('탈퇴', style: TextStyle(color: Colors.red)),
+              child: CircularProgressIndicator(strokeWidth: 2, color: white))
+              : const Text('탈퇴'),
         ),
       ],
     );
