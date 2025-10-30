@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/community/free/free_detail_page.dart';
 import 'package:untitled/community/groupbuy/group_buy_detail_page.dart';
+import 'package:untitled/home/laundry_page.dart';
 import 'package:untitled/profile/profile_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/themes/styles.dart';
@@ -472,10 +473,7 @@ class _HomePageState extends State<HomePage> {
                                               if(index == 0){
                                                 Navigator.push(context, MaterialPageRoute(builder: (context) => ChatbotPage()));
                                               } else if(index==1){
-                                                showBarModalBottomSheet(
-                                                  context: context,
-                                                  builder: (BuildContext context) => LaundryCardModal(),
-                                                );
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => LaundryPage()));
                                               } else if(index==2){
                                                 Navigator.push(context, MaterialPageRoute(builder: (context) => DormScoreRanking()));
                                               } else if(index==3){
