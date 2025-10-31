@@ -49,7 +49,10 @@ dependencies:
   permission_handler: ^12.0.1
   path_provider: ^2.1.5
   flutter_rating_bar: ^4.0.1 # 별점UI
-
+  # flutter_nfc_kit: ^3.3.3
+  # ndef: ^0.3.4
+  nfc_manager: ^3.2.0
+  circular_countdown_timer: ^0.2.4 # 세탁 타이머
 
 dev_dependencies:
   flutter_test:
