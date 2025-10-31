@@ -10,7 +10,7 @@ class StartPage extends StatelessWidget {
   const StartPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { // 전사
     return Scaffold(
       backgroundColor: white,
       body: SafeArea(
@@ -19,13 +19,14 @@ class StartPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container( // 이미지 넣을 건데, 아직 뭐 넣을지 안 ㅏ정함.
-                width: 150.w,
-                height: 150.h,
-                color: grey
+                width: 120.w,
+                height: 130.h,
+                child: Image.asset('assets/start_temp.png')
               ),
+              SizedBox(height: 12.h),
               Text('기숙사 생활의 필수 앱', style: boldBlack20),
-              SizedBox(height: 4.h),
-              Text('지금 당장 시작해보세요!', style: mediumBlack16)
+              SizedBox(height: 2.h),
+              Text('지금 바로 시작해보세요!', style: mediumBlack16)
             ]
           ),
         )
