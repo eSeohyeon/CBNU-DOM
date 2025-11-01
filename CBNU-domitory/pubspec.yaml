@@ -55,6 +55,7 @@ dependencies:
   circular_countdown_timer: ^0.2.4 # 세탁 타이머
   flutter_local_notifications: ^19.5.0 # 세탁 타이머 푸쉬 알림
   timezone: ^0.10.1 # 세탁타이머 푸쉬알림
+  shared_preferences: ^2.5.3 # 세탁타이머 화면 닫아도 유지
 
 dev_dependencies:
   flutter_test:

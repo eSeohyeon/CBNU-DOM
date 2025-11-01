@@ -135,10 +135,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (!isUser) ...[
-                          CircleAvatar(
-                            radius: 20,
-                            backgroundColor: grey_button_greyBG,
-                            child: Image.asset('assets/profile6.png'),
+                          SizedBox(
+                            width: 30.w,
+                            height: 30.h,
+                            child: CircleAvatar(backgroundImage: AssetImage('assets/profile3.png'))
                           ),
                           SizedBox(width: 8.w),
                         ],

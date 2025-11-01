@@ -831,15 +831,12 @@ class BestPostCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          width: 28.w,
-                          height: 28.h,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: Image.asset(
-                                'assets/profile4.png',
-                            ),
-                          ),
+                        SizedBox(
+                          width: 30.w,
+                          height: 30.h,
+                          child: CircleAvatar(
+                            backgroundImage: AssetImage('assets/profile8.png'),
+                          )
                         ),
                         SizedBox(width: 6.w),
                         Expanded(child: Text(post.writer, style: boldBlack14)),

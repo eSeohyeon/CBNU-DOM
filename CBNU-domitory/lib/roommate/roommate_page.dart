@@ -546,8 +546,13 @@ class RecommendItem extends StatelessWidget {
                           children: [
                             Row(
                                 children: [
-                                  Image.asset('assets/profile4.png', width: 50.w,
-                                      height: 50.h),
+                                  SizedBox(
+                                    width: 50.w,
+                                    height: 50.h,
+                                    child: CircleAvatar(
+                                      backgroundImage: AssetImage(user.profilePath),
+                                    ),
+                                  ),
                                   SizedBox(width: 8.w),
                                   Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
