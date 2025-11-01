@@ -138,7 +138,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
                           CircleAvatar(
                             radius: 20,
                             backgroundColor: grey_button_greyBG,
-                            child: Image.asset('assets/profile_man.png'),
+                            child: Image.asset('assets/profile6.png'),
                           ),
                           SizedBox(width: 8.w),
                         ],

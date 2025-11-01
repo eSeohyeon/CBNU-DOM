@@ -29,9 +29,9 @@ class _DormScoreRankingState extends State<DormScoreRanking> {
     _scrollController.addListener(_scrollListener);
 
     final List<User> _allUsers = [];
-    _allUsers.add(User(profilePath: 'assets/profile_man.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 95));
+    _allUsers.add(User(profilePath: 'assets/profile1.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 95));
     for(int i=0; i<20; i++){
-      _allUsers.add(User(profilePath: 'assets/profile_man.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 95));
+      _allUsers.add(User(profilePath: 'assets/profile1.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 95));
     }
 
     _ranking.addAll(_allUsers.take(_loadedItemCount));
@@ -75,12 +75,12 @@ class _DormScoreRankingState extends State<DormScoreRanking> {
 
     final int newItemsCount = 10;
     final List<User> newItems = [
-      User(profilePath: 'assets/profile_man.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 9),
-      User(profilePath: 'assets/profile_man.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 9),
-      User(profilePath: 'assets/profile_man.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 9),
-      User(profilePath: 'assets/profile_man.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 9),
-      User(profilePath: 'assets/profile_man.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 9),
-      User(profilePath: 'assets/profile_man.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 9),
+      User(profilePath: 'assets/profile1.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 9),
+      User(profilePath: 'assets/profile1.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 9),
+      User(profilePath: 'assets/profile1.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 9),
+      User(profilePath: 'assets/profile1.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 9),
+      User(profilePath: 'assets/profile1.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 9),
+      User(profilePath: 'assets/profile1.png', name: '두부두부두루치기', department: '전정대', yearEnrolled: '25학번', isSmoking: false, checklist: [], dormScore: 9),
     ];
 
     setState(() {

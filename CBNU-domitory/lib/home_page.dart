@@ -837,7 +837,7 @@ class BestPostCard extends StatelessWidget {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10.0),
                             child: Image.asset(
-                                'assets/profile_agriculture.png',
+                                'assets/profile4.png',
                             ),
                           ),
                         ),
