@@ -21,7 +21,7 @@ class ChatListItem extends StatelessWidget {
           CircleAvatar(
             radius: 24,
             backgroundColor: white,
-            child: Image.asset('assets/profile_man.png')
+            child: Image.asset('assets/profile1.png')
           ),
           SizedBox(width: 10.w),
           Expanded(

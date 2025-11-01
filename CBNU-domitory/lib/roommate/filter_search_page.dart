@@ -62,7 +62,7 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
         department: '전정대',
         yearEnrolled: '25',
         birthYear: '07',
-        profilePath: 'assets/profile_man.png',
+        profilePath: 'assets/profile1.png',
         isSmoking: true,
         checklist: checklistMap
       ));
@@ -72,7 +72,7 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
           department: '인문대',
           yearEnrolled: '25',
           birthYear: '07',
-          profilePath: 'assets/profile_man.png',
+          profilePath: 'assets/profile2.png',
           isSmoking: true,
           checklist: checklistMap
       ));
@@ -82,7 +82,7 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
           department: '사과대',
           yearEnrolled: '21',
           birthYear: '02',
-          profilePath: 'assets/profile_man.png',
+          profilePath: 'assets/profile3.png',
           isSmoking: false,
           checklist: checklistMap
       ));
@@ -92,7 +92,7 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
           department: '공대',
           yearEnrolled: '24',
           birthYear: '06',
-          profilePath: 'assets/profile_man.png',
+          profilePath: 'assets/profile4.png',
           isSmoking: false,
           checklist: checklistMap
       ));
@@ -102,7 +102,7 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
           department: '경영대',
           yearEnrolled: '24',
           birthYear: '05',
-          profilePath: 'assets/profile_man.png',
+          profilePath: 'assets/profile5.png',
           isSmoking: false,
           checklist: checklistMap
       ));
@@ -215,9 +215,12 @@ Widget RoommateListItem (User user) {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CircleAvatar(
-          radius: 24.0,
-          child: Image.asset(user.profilePath),
+        SizedBox(
+          width: 50.w,
+          height: 50.h,
+          child: CircleAvatar(
+            backgroundImage: AssetImage(user.profilePath),
+          ),
         ),
         SizedBox(width: 12.w),
         Column(
