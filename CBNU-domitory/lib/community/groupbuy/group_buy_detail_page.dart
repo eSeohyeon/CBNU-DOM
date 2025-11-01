@@ -422,7 +422,7 @@ class _GroupBuyPostDetailPageState extends State<GroupBuyPostDetailPage> {
                                   SizedBox(
                                       width: 36.w,
                                       height: 36.h,
-                                      child: Image.asset('assets/profile_man.png')),
+                                      child: Image.asset('assets/profile11.png')),
                                   SizedBox(width: 6.w),
                                   Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -871,7 +871,7 @@ class CommentsItem extends StatelessWidget {
                     width: 28.w,
                     height: 28.h,
                     child: Image.asset(
-                        'assets/profile_man.png') // TODO: 사용자 프로필 이미지로 교체
+                        'assets/profile8.png') // TODO: 사용자 프로필 이미지로 교체
                 ),
                 SizedBox(width: 8.w),
                 Text(authorNickname, style: boldBlack14),
@@ -984,7 +984,7 @@ class SubCommentItem extends StatelessWidget {
                           width: 28.w,
                           height: 28.h,
                           child: Image.asset(
-                              'assets/profile_man.png') // TODO: 사용자 프로필 이미지
+                              'assets/profile3.png') // TODO: 사용자 프로필 이미지
                       ),
                       SizedBox(width: 8.w),
                       Text(authorNickname, style: boldBlack14),
