@@ -30,6 +30,7 @@ const Map<String, List<String>> collegeToDepartments = {
   '의과대': ['의예과', '의학과'],
   '간호대': ['간호'],
   '창의융합':['자율전공학부', '바이오헬스학부'],
+  '미대':['조형예술학과', '디자인학과'],
 };
 const Map<String, String> collegeProfileImages = {
   '인문대': 'assets/profile_france.png',
@@ -46,6 +47,7 @@ const Map<String, String> collegeProfileImages = {
   '의과대': 'assets/profile_doctor.png',
   '간호대': 'assets/profile_nurse.png',
   '창의융합': 'assets/profile_agriculture.png',
+  '미대': 'assets/profile_art.png',
 };
 
 class FilterSearchPage extends StatefulWidget {
