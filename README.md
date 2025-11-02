@@ -15,6 +15,36 @@
 &nbsp;
 &nbsp;
 
+## 팀원 소개
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Maybess" target="_blank">
+        <img src="CBNU-domitory/assets/git_profile_back.jpg" width="100px" alt="팀장(BackEnd)">
+        </a>
+        <br><sub><b>팀장(BackEnd) : 이민기</b></sub>
+      </td>
+    <td align="center">
+      <a href="https://github.com/Kim-ahhyeon" target="_blank">
+        <img src="CBNU-domitory/assets/git_profile_AI.jpg" width="100px" alt="팀원(AI)">
+        </a>
+        <br><sub><b>팀원(AI) : 김아현</b></sub>
+      </td>
+    <td align="center">
+      <a href="https://github.com/eSeohyeon" target="_blank">
+        <img src="CBNU-domitory/assets/git_profile_front.jpg" width="100px" alt="팀원(FrontEnd)">
+        </a>
+        <br><sub><b>팀원(FrontEnd) : 이서현</b></sub>
+      </td>
+  </tr>
+</table>
+
+
+&nbsp;
+&nbsp;
+&nbsp;
+
 
 ## ⚙️ 개발 환경
 <div align=left>
