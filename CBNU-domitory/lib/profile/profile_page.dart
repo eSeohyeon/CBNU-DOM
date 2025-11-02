@@ -10,6 +10,9 @@ import 'package:untitled/profile/edit_profile_page.dart';
 import 'package:untitled/start/start_page.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
+import 'package:untitled/roommate/filter_search_page.dart';
+
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -103,6 +106,22 @@ class _ProfilePageState extends State<ProfilePage> {
     final String role = _userData?['role'] ?? '미인증자';
     String verificationStatusText;
     Color verificationStatusColor;
+    // 사용자의 학과
+    final userDepartment = _userData!['department'] ?? '';
+
+    // 학과 → 단과대 매핑
+    String? matchedCollege;
+    collegeToDepartments.forEach((college, departments) {
+      if (departments.contains(userDepartment)) {
+        matchedCollege = college;
+      }
+    });
+
+    // 단과대 이미지 적용 (없으면 기본 아이콘)
+    final profileImagePath = matchedCollege != null
+        ? (collegeProfileImages[matchedCollege!] ?? '')
+        : '';
+
 
     switch (role) {
       case '재학생':
@@ -137,8 +156,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 ? const Text('사용자 정보를 불러올 수 없습니다.')
                 : Row(
               children: [
-                Icon(Icons.account_circle,
-                    size: 60.w, color: Colors.grey[400]),
+                CircleAvatar(
+                  radius: 30.w, // 기존 60.w와 동일
+                  backgroundImage: profileImagePath.isNotEmpty
+                      ? AssetImage(profileImagePath)
+                      : null,
+          
+                ),
                 SizedBox(width: 16.w),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
