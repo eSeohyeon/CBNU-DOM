@@ -9,7 +9,9 @@ import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:untitled/roommate/roommate_detail_modal.dart';
 import 'package:untitled/roommate/filter_search_page.dart';
-import 'package:untitled/models/user.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth; // 충돌 방지용 수정//
+import 'package:untitled/models/user.dart' as model;                // 충돌 방지용 수정//
+
 import 'package:untitled/models/checklist_map.dart';
 import 'package:untitled/roommate/checklist_page.dart';
 import 'package:untitled/roommate/checklist_group_button.dart';
@@ -17,6 +19,11 @@ import 'package:untitled/models/similarity.dart';
 import 'package:untitled/roommate/roommate_help.dart';
 import 'package:untitled/roommate/similarity_detail_page.dart';
 import 'package:untitled/roommate/rating_dialog.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class RoommatePage extends StatefulWidget {
   const RoommatePage({super.key});
@@ -26,31 +33,321 @@ class RoommatePage extends StatefulWidget {
 }
 
 class _RoommatePageState extends State<RoommatePage> {
-  final bool _isStudent = true; // 재학생 인증
+  bool? _isStudent; // 재학생 인증
   bool _isMatched = false; // 매칭 완료 여부
-  bool _isAnswered = true; // 체크리스트 작성
+  bool _isAnswered = false; // 체크리스트 작성
   bool _isNotEnough = false; // 생활관 인원수 부족
   bool _isFilterAdded = false; // 추가조건 설정
-  List<User> _recommendedUsers = [];
+  List<model.User> _recommendedUsers = [];
   List<Similarity> _recommendedUsersSimilarity = [];
   List<Map<String, String>> _addedFilters = [];
-  User? _me;
+  model.User? _me;
+
+  List<model.User> _allRecommendedUsers = []; // 추가
+  List<Similarity> _allRecommendedUsersSimilarity = []; // 추가
+
 
   @override
   void initState(){
     super.initState();
-
-    _me = User(profilePath: 'assets/profile_doctor.png', name: '까르보나라', department: '자연과학대학', yearEnrolled: '23', isSmoking: true, checklist: checklistMap);
-    User item = User(profilePath: 'assets/profile_computer.png', name: '두부두부두루치기', department: '전자정보대학', yearEnrolled: '25', isSmoking: true, checklist: checklistMap);
-    for (int i = 0; i<4; i++){
-      _recommendedUsers.add(item);
-    }
-    _recommendedUsersSimilarity.add(Similarity(similarity: 97.8, similar_factors: ['기상시간', '취침시간', '더위', '잠버릇', '친구초대']));
-    _recommendedUsersSimilarity.add(Similarity(similarity: 80.1, similar_factors: ['기상시간', '실내취식', '추위', '잠버릇', '친구초대']));
-    _recommendedUsersSimilarity.add(Similarity(similarity: 77.3, similar_factors: ['기상시간', '취침시간', '더위', '잠버릇', '친구초대']));
-    _recommendedUsersSimilarity.add(Similarity(similarity: 64.5, similar_factors: ['기상시간', '취침시간', '더위', '잠버릇', '친구초대']));
-    _recommendedUsersSimilarity.add(Similarity(similarity: 58.1, similar_factors: ['기상시간', '취침시간', '더위', '잠버릇', '친구초대']));
+    _loadMeAndRecommendations();
   }
+
+  // ---------------- Firestore에서 내 정보 가져오기 ----------------
+  Future<void> _loadMeAndRecommendations() async {
+    final currentUser = firebase_auth.FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    // Firestore에서 현재 사용자 정보 가져오기
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).get();
+    final checklistDoc = await FirebaseFirestore.instance
+        .collection('checklists')
+        .doc(currentUser.uid)
+        .get(const GetOptions(source: Source.server));
+
+    final checklistData = checklistDoc.data()?['checklist'] as Map<String, dynamic>? ?? {};
+    final checklistMap = (checklistData is Map<String, dynamic>) ? checklistData : <String, dynamic>{};
+
+    final smokingStatus = checklistData['생활습관']?['흡연여부'] as String? ?? '비흡연';
+    final isSmoking = smokingStatus == '흡연';
+
+    _me = model.User(
+      id: userDoc.id,
+      profilePath: userDoc.data()?['profilePath'] ?? 'assets/profile_pharmacy.png',
+      nickname: userDoc.data()?['nickname'] ?? '이름없음',
+      department: userDoc.data()?['department'] ?? '',
+      enrollYear: userDoc.data()?['enrollYear'] ?? '',
+      birthYear: userDoc.data()?['birthYear'] ?? '', // 추가
+      isSmoking: isSmoking,
+      checklist: Map<String, dynamic>.from(checklistDoc.data()?['checklist'] ?? {}),
+      dormitory: (checklistDoc.data()?['checklist']?['취미/기타']?['생활관']) ?? '',
+    );
+
+    _isStudent = userDoc.data()?['isVerified'] ?? false;
+    // 체크리스트 작성 여부
+    _isAnswered = _me!.checklist.isNotEmpty;
+
+    // 생활관 인원수 체크
+    // 전체 체크리스트 가져오기
+    final allChecklistDocs = await FirebaseFirestore.instance
+        .collection('checklists')
+        .get();
+
+    // 같은 생활관 사용자만 필터링
+    final dormUsers = allChecklistDocs.docs.where((doc) {
+      final checklist = doc.data()['checklist'] as Map<String, dynamic>?;
+      final dorm = checklist?['취미/기타']?['생활관'] as String?;
+      return dorm == _me!.dormitory;
+    }).toList();
+
+    _isNotEnough = dormUsers.length < 5;
+
+
+    // 추천 사용자 불러오기
+    if (_isAnswered) {
+      if (!_isNotEnough) {
+        await _fetchRecommendedUsers();
+      } else {
+        _recommendedUsers.clear();
+        _recommendedUsersSimilarity.clear();
+      }
+    }
+    print(_me!.checklist);  // 체크리스트 데이터 확인
+    print(_isAnswered);     // true/false 확인
+
+    setState(() {});
+  
+  }
+// ---------------- 추천 사용자 API 호출 ----------------
+Future<void> _fetchRecommendedUsers() async {
+  final response = await http.post(
+    Uri.parse('http://10.0.2.2:8001/recommend'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'user_id': _me!.id,
+      'method': _addedFilters.isEmpty ? 'ai' : 'filter',
+      'filters': _addedFilters.isEmpty ? null : _addedFilters,
+    }),
+  );
+
+  print(jsonEncode({
+    'user_id': _me!.id,
+    'method': _addedFilters.isEmpty ? 'ai' : 'filter',
+    'filters': _addedFilters.isEmpty ? null : _addedFilters,
+  }));
+
+
+  // 상태 코드 확인
+  print('statusCode: ${response.statusCode}');
+
+  // 400일 때 body 확인
+  if (response.statusCode != 200) {
+    try {
+      final errorData = jsonDecode(response.body);
+      print('Error Detail: ${errorData['detail']}');
+    } catch (e) {
+      print('Error parsing response body: ${response.body}');
+    }
+  } else {
+    final data = jsonDecode(response.body);
+    print('Success: ${data}');
+  }
+
+
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    if (data['status'] == 'success') {
+      _recommendedUsers.clear();
+      _recommendedUsersSimilarity.clear();
+
+      for (var rec in data['recommendations']) {
+        final recMap = rec as Map<String, dynamic>;
+        final candidateId = recMap['candidate_id'].toString().trim();
+
+        // 본인 제외
+        if (candidateId == _me!.id.toString().trim()) continue;
+
+        final fullInfo = recMap['full_info'] as Map<String, dynamic>?;
+
+        // fullInfo 자체가 없거나 checklist 없는 경우 제외
+        if (fullInfo == null || !fullInfo.containsKey('checklist')) continue;
+
+        final checklistData = fullInfo['checklist'];
+
+        // 체크리스트 비어있는 사용자 제외
+        if (checklistData == null || 
+            (checklistData is List && checklistData.isEmpty) || 
+            (checklistData is Map && checklistData.isEmpty)) continue;
+
+
+        final smokingStatus = checklistData['생활습관']?['흡연여부'] as String? ?? '비흡연';
+        final isSmoking = smokingStatus == '흡연';
+
+
+        // 학과 → 단과대 매핑
+        String getCollegeImage(String department) {
+          String? matchedCollege;
+          collegeToDepartments.forEach((college, departments) {
+            if (departments.contains(department)) {
+              matchedCollege = college;
+            }
+          });
+          return matchedCollege != null
+              ? (collegeProfileImages[matchedCollege!] ?? collegeProfileImages['default']!)
+              : collegeProfileImages['default']!;
+        }
+        // ✅ 통과한 사용자만 추가
+        _recommendedUsers.add(
+          model.User(
+            id: candidateId,
+            profilePath: getCollegeImage(fullInfo['department'] ?? ''),
+            nickname: fullInfo['nickname'] ?? 'Unknown',
+            department: fullInfo['department'] ?? '',
+            enrollYear: fullInfo['enrollYear'] ?? '',
+            birthYear: fullInfo['birthYear'] ?? '',
+            isSmoking: isSmoking,
+            dormitory: (fullInfo['checklist']?['취미/기타']?['생활관']) ?? '',
+            checklist: Map<String, dynamic>.from(checklistData),
+          )
+        );
+
+        final similarityScoresDynamic = recMap['similarity_scores'];
+        final similarityScores = similarityScoresDynamic != null
+            ? Map<String, double>.from(similarityScoresDynamic.map((key, value) => MapEntry(key, (value as num).toDouble())))
+            : {};
+
+        
+        final top_features = List<String>.from(recMap['top_features'] ?? []);
+        final score = (recMap['score'] is num) ? (recMap['score'] as num).toDouble() : 0.0;
+        final similarity_scores = (recMap['similarity_scores'] is Map<String, dynamic>)
+            ? Map<String, double>.from((recMap['similarity_scores'] as Map<String, dynamic>).map((key, value) => MapEntry(key, (value as num).toDouble())))
+            : <String, double>{};
+
+
+        // similarity도 안전하게 처리
+        _recommendedUsersSimilarity.add(
+          Similarity(
+            score: score,
+            top_features: top_features,
+            similarity_scores: similarity_scores,
+          ),
+        );
+      }
+
+      _allRecommendedUsers = [..._recommendedUsers];
+      _allRecommendedUsersSimilarity = [..._recommendedUsersSimilarity];
+
+
+      print(data['recommendations']);  // 실제 추천 데이터 확인
+      print(_recommendedUsers.length); // 몇 명 추천되는지 확인
+
+      for (var u in _recommendedUsers) {
+        print('추천 사용자: ${u.nickname}, ${u.department}, ${u.enrollYear}');
+      }
+      setState(() {});
+
+    }
+  }
+
+
+  
+  
+
+
+  setState(() {});
+}
+
+
+
+
+bool _checkFilter(Map<String, dynamic> checklist, String key, String value) {
+  for (final entry in checklist.entries) {
+    final entryKey = entry.key.toString().trim();
+    final entryValue = entry.value;
+
+    // 🔍 현재 탐색 중인 키 로그
+    print("탐색 중 key: '$entryKey' → value: '$entryValue' (${entryValue.runtimeType})");
+
+    // 값이 Map이면 재귀 탐색
+    if (entryValue is Map<String, dynamic>) {
+      if (_checkFilter(entryValue, key, value)) return true;
+    } 
+    // 값이 List이면 요소들 중에 일치하는 값 있는지 검사
+    else if (entryValue is List) {
+      for (var item in entryValue) {
+        final itemStr = item.toString().trim();
+        if (entryKey == key && itemStr == value.trim()) {
+          print("리스트 매칭 성공: $entryKey = $itemStr");
+          return true;
+        }
+      }
+    } 
+    // 값이 문자열이면 직접 비교
+    else {
+      if (entryKey == key && entryValue.toString().trim() == value.trim()) {
+        print("문자열 매칭 성공: $entryKey = ${entryValue.toString()}");
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+
+
+
+
+void _applyFilters(List<Map<String, String>> filters) {
+
+  
+
+
+  _addedFilters = filters;
+  _isFilterAdded = filters.isNotEmpty;
+
+  print("필터 데이터 구조 확인: $_addedFilters");
+  print("필터 데이터 구조 확인: $_addedFilters");
+  print("필터 데이터 구조 확인: $_addedFilters");
+  print("필터 데이터 구조 확인: $_addedFilters");
+
+  final filteredUsers = <model.User>[];
+  final filteredSimilarities = <Similarity>[];
+
+  for (int i = 0; i < _allRecommendedUsers.length; i++) {
+    final user = _allRecommendedUsers[i];
+    final similarity = _allRecommendedUsersSimilarity[i];
+
+    if (user.id == _me!.id || user.checklist.isEmpty) continue;
+
+    bool match = true;
+    for (var filter in _addedFilters) {
+      final key = filter.keys.first;
+      final value = filter.values.first;
+
+      final check = _checkFilter(user.checklist, key, value);
+      print("유저 ${user.nickname} 필터 '$key:$value' 결과 → $check");
+      if (!_checkFilter(user.checklist, key, value)) {
+        match = false;
+        break;
+      }
+    }
+
+    if (match) {
+      filteredUsers.add(user);
+      filteredSimilarities.add(similarity);
+    }
+  }
+
+  setState(() {
+    _recommendedUsers = filteredUsers;
+    _recommendedUsersSimilarity = filteredSimilarities;
+  });
+
+  
+}
+
+
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -65,12 +362,17 @@ class _RoommatePageState extends State<RoommatePage> {
     });
   }
 
-  void _clearAllFilters() {
+  void _clearAllFilters() async {
     setState(() {
       _addedFilters.clear();
       _isFilterAdded = false;
+      _recommendedUsers = [..._allRecommendedUsers];
+      _recommendedUsersSimilarity = [..._allRecommendedUsersSimilarity];
       // 추천 목록에 적용된 필터 완전해제
     });
+
+    await _fetchRecommendedUsers();
+
   }
 
   Widget _setFilterAgain() { // 조건 설정하고 조건에 맞는 사용자 없을 때 띄우는 팝업
@@ -157,11 +459,7 @@ class _RoommatePageState extends State<RoommatePage> {
             enableDrag: false
         );
         if(result != null) {
-          setState(() {
-            _addedFilters = result;
-            _isFilterAdded = _addedFilters.isNotEmpty;
-            print(result);
-          });
+          _applyFilters(result); // 추가
         }
       },
       child: Container(
@@ -267,9 +565,21 @@ class _RoommatePageState extends State<RoommatePage> {
                       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
                   ),
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AnswerChecklistPage()));
-                  },
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AnswerChecklistPage())
+                    );
+
+                    if(result == true) {
+                      // Firestore에서 최신 체크리스트 가져오기
+                      await _loadMeAndRecommendations();
+                      setState(() {
+                        _isAnswered = _me!.checklist.isNotEmpty;
+                      });
+                    }
+                  }
+
                 ),
               ),
             ]
@@ -287,29 +597,32 @@ class _RoommatePageState extends State<RoommatePage> {
             color: white
         ),
         child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center, // ✅ 중앙 정렬
             children: [
               Image.asset('assets/roommate_not_enough.png', width: 150.w, height: 150.h),
               Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text('룸메이트 추천 불가', style: boldBlack16),
+                    Text('룸메이트 추천 불가', style: boldBlack16, textAlign: TextAlign.center),
                     SizedBox(height: 6.h),
-                    Text('현재 같은 생활관에 등록된 학생 수가 적어서 추천이 어려워요', style: mediumBlack14, softWrap: true,),
+                    Text('현재 같은 생활관에 등록된 학생 수가 적어서 추천이 어려워요', style: mediumBlack14, softWrap: true),
                     SizedBox(height: 1.h),
-                    Text('직접 검색을 통해 더 빠르게 룸메이트를 만날 수 있습니다', style: mediumGrey14, softWrap: true,),
+                    Text('직접 검색을 통해 더 빠르게 룸메이트를 만날 수 있습니다', style: mediumGrey14, softWrap: true),
                     SizedBox(height: 16.h),
-                    ElevatedButton(
+                    Center(
+                      child: ElevatedButton(
                       child: Text('직접 검색하기', style: mediumBlack14),
                       style: ElevatedButton.styleFrom(
                           elevation: 0,
                           backgroundColor: grey_button_greyBG,
                           overlayColor: Colors.transparent,
                           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0),),
                       ),
                       onPressed: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => FilterSearchPage()));
                       },
+                    )
                     )
                   ]
               ),
@@ -321,15 +634,19 @@ class _RoommatePageState extends State<RoommatePage> {
   /////////////////////////////////////////////////////////////////////////////////////////////
   // UI
   /////////////////////////////////////////////////////////////////////////////////////////////
+
   @override
   Widget build(BuildContext context) {
+    if (_isStudent == null) {
+      return Center(child: CircularProgressIndicator()); // 데이터 로딩 중
+    }
     return Scaffold(
         backgroundColor: background,
         body: SafeArea(
             child: SingleChildScrollView(
                 child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
-                    child: !_isStudent ? _buildNonStudentScreen() : !_isAnswered ? _buildNoChecklistScreen() :
+                    child: !_isStudent! ? _buildNonStudentScreen() : !_isAnswered ? _buildNoChecklistScreen() : _isNotEnough ? _buildNoEnoughCarousel() :
                     Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -356,8 +673,9 @@ class _RoommatePageState extends State<RoommatePage> {
                                     itemCount: _recommendedUsers.length,
                                     itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => RecommendItem(
                                       user: _recommendedUsers[itemIndex],
-                                      similarity: _recommendedUsersSimilarity[itemIndex].similarity,
-                                      similar_factors: _recommendedUsersSimilarity[itemIndex].similar_factors,
+                                      score: _recommendedUsersSimilarity[itemIndex].score,
+                                      top_features: _recommendedUsersSimilarity[itemIndex].top_features,
+                                      similarity_scores: _recommendedUsersSimilarity[itemIndex].similarity_scores,
                                     ),
                                     options: CarouselOptions(
                                       height: 200.h,
@@ -399,7 +717,6 @@ class _RoommatePageState extends State<RoommatePage> {
                                               child: Icon(Icons.refresh_rounded, color: black, size: 20)
                                           ),
                                           onTap: () {
-                                            showDialog(context: context, builder: (context) => RatingDialog(), barrierDismissible: false); // 임시 테스트용
                                             _clearAllFilters();
                                           }
                                       ),
@@ -449,6 +766,7 @@ class _RoommatePageState extends State<RoommatePage> {
                                 InkWell(
                                   borderRadius: BorderRadius.circular(10.0),
                                   onTap: () {
+                                    if (_me == null) return; // _me가 null이면 아무 동작 안 함
                                     showBarModalBottomSheet(
                                       context: context,
                                       builder: (BuildContext context) => RoommateDetailModal(user: _me!, isMine: true),
@@ -511,12 +829,24 @@ class _RoommatePageState extends State<RoommatePage> {
 
 // 추천 룸메이트 목록 아이템
 class RecommendItem extends StatelessWidget {
-  final User user;
-  final double similarity;
-  final List<String> similar_factors;
+  final model.User user;
+  final double score;
+  final List<String> top_features;
+  final Map<String, dynamic>? similarity_scores;
 
   const RecommendItem(
-      {super.key, required this.user, required this.similarity, required this.similar_factors});
+      {super.key, required this.user, required this.score, required this.top_features, this.similarity_scores});
+
+  Map<String, dynamic> _buildRecommendationData() {
+    Map<String, double> scoreMap = {
+      for (var factor in top_features) factor: score / 100
+    };
+
+    return {
+      "top_features": top_features,
+      "similarity_scores": similarity_scores ?? {},
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -546,19 +876,16 @@ class RecommendItem extends StatelessWidget {
                           children: [
                             Row(
                                 children: [
-                                  SizedBox(
-                                    width: 50.w,
-                                    height: 50.h,
-                                    child: CircleAvatar(
-                                      backgroundImage: AssetImage(user.profilePath),
-                                    ),
+                                  CircleAvatar(
+                                    radius: 25.w,
+                                    backgroundImage: AssetImage(user.profilePath),
                                   ),
                                   SizedBox(width: 8.w),
                                   Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(user.name, style: mediumBlack14),
-                                        Text('${user.department} | ${user.yearEnrolled}학번',
+                                        Text(user.nickname, style: mediumBlack14),
+                                        Text('${user.department} | ${user.enrollYear}학번',
                                             style: mediumGrey13)
                                       ]
                                   ),
@@ -575,17 +902,17 @@ class RecommendItem extends StatelessWidget {
                       children: [
                         Text('추천점수', style: mediumGrey14),
                         SizedBox(width: 8.w),
-                        Text('$similarity점', style: boldBlack20)
+                        Text('$score점', style: boldBlack20)
                       ]
                   ),
                   SizedBox(height: 6.h),
                   GroupButton(
-                    buttons: similar_factors,
+                    buttons: top_features,
                     buttonBuilder: (selected, value, context) {
                       return similarityGroupButton(value);
                     },
                     onSelected: (val, i, selected) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => SimilarityDetailPage()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => SimilarityDetailPage(recommendationData: _buildRecommendationData(),),),);
                     },
                     options: GroupButtonOptions(spacing: 4,
                         mainGroupAlignment: MainGroupAlignment.start),
@@ -662,6 +989,7 @@ class SetFilterAgain extends StatelessWidget {
     );
   }
 }
+
 
 
 
