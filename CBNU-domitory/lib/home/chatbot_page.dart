@@ -136,10 +136,15 @@ class _ChatbotPageState extends State<ChatbotPage> {
                       children: [
                         if (!isUser) ...[
                           SizedBox(
-                            width: 30.w,
-                            height: 30.h,
-                            child: CircleAvatar(backgroundImage: AssetImage('assets/profile_teacher.png'))
+                            width: 50.w,
+                            height: 50.h,
+                            child: Image.asset(
+                              'assets/woowang_chat_bot.png',
+                              fit: BoxFit.contain,
+                            ),
                           ),
+
+                          
                           SizedBox(width: 8.w),
                         ],
                         if (isUser) ...[
