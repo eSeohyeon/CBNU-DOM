@@ -1,0 +1,5 @@
+{
+    "input_dim":125, 
+    "hidden_dim":62, 
+    "latent_dim":7
+}
