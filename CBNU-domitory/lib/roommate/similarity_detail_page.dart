@@ -5,30 +5,22 @@ import 'package:untitled/themes/styles.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class SimilarityDetailPage extends StatefulWidget {
-  const SimilarityDetailPage({super.key});
+  final Map<String, dynamic> recommendationData; // ✅ 실제 데이터 받기
+
+  const SimilarityDetailPage({super.key, required this.recommendationData});
+
 
   @override
   State<SimilarityDetailPage> createState() => _SimilarityDetailPageState();
 }
 
 class _SimilarityDetailPageState extends State<SimilarityDetailPage> {
-  final List<Map<String, dynamic>> _similarities = const [
-    {"name": "흡연여부", "similarity": 0.95},
-    {"name": "취침시간", "similarity": 0.90},
-    {"name": "기상시간", "similarity": 0.88},
-    {"name": "청소", "similarity": 0.85},
-    {"name": "더위", "similarity": 0.83},
-    {"name": "추위", "similarity": 0.80},
-    {"name": "소리", "similarity": 0.78}, // 테스트용
-    {"name": "흡연여부", "similarity": 0.76},
-    {"name": "실내통화", "similarity": 0.74},
-    {"name": "친구초대", "similarity": 0.72},
-    {"name": "실내취식", "similarity": 0.70},
-  ]; // 유사도 데이터
+  List <Map<String, dynamic>> _similarities =[];
+   // 유사도 데이터
   List<Color> colors = []; // 바 색상 리스트
 
   // 바 색상 자동 생성
-  List<Color> generatedGradientColors(Color start, Color end, int steps){
+  List<Color> _generatedGradientColors(Color start, Color end, int steps){
     return List.generate(
       steps,
         (index) {
@@ -38,10 +30,39 @@ class _SimilarityDetailPageState extends State<SimilarityDetailPage> {
     );
   }
 
+
+  void _parseSimilarityData() {
+    final data = widget.recommendationData;
+
+    // 예시 데이터 구조:
+    // {
+    //   "top_features": ["취침시간", "기상시간", "더위", "벌레", "샤워시간"],
+    //   "similarity_scores": {"취침시간": 0.87, "기상시간": 0.91, "더위": 0.83, "벌레": 0.72, "샤워시간": 0.89}
+    // }
+
+    final scores = Map<String, dynamic>.from(data['similarity_scores'] ?? {});
+
+    _similarities = scores.entries.map((e) {
+      return {
+        "name": e.key,
+        "similarity": (e.value ?? 0.0).toDouble(),
+      };
+    }).toList()
+        ..sort((a, b) => (b['similarity'] as double).compareTo(a['similarity'] as double));
+
+
+    colors = _generatedGradientColors(
+      Colors.blue.shade500,
+      Colors.green.shade200,
+      _similarities.length,
+    );
+  }
+
+
   @override
   void initState() {
     super.initState();
-    colors = generatedGradientColors(Colors.blue.shade500, Colors.green.shade200, _similarities.length);
+    _parseSimilarityData();
   }
 
   @override
