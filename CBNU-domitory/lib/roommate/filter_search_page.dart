@@ -46,7 +46,7 @@ const Map<String, String> collegeProfileImages = {
   '약학대': 'assets/profile_pharmacy.png',
   '의과대': 'assets/profile_doctor.png',
   '간호대': 'assets/profile_nurse.png',
-  '창의융합': 'assets/profile_agriculture.png',
+  '창의융합': 'assets/profile_open_major.png',
   '미대': 'assets/profile_art.png',
 };
 
