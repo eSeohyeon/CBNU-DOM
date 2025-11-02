@@ -428,7 +428,7 @@ class _FreePostDetailPageState extends State<FreePostDetailPage> {
                                 SizedBox(
                                     width: 36.w,
                                     height: 36.h,
-                                    child: CircleAvatar(backgroundImage: AssetImage('assets/profile6.png'))),
+                                    child: CircleAvatar(backgroundImage: AssetImage('assets/profile_nurse.png'))),
                                 SizedBox(width: 6.w),
                                 Column(
                                     crossAxisAlignment:
@@ -713,7 +713,7 @@ class CommentsItem extends StatelessWidget {
                 SizedBox(
                     width: 28.w,
                     height: 28.h,
-                    child: CircleAvatar(backgroundImage: AssetImage('assets/profile7.png'))),
+                    child: CircleAvatar(backgroundImage: AssetImage('assets/profile_vet.png'))),
                 SizedBox(width: 8.w),
                 Text(authorNickname, style: boldBlack14),
                 SizedBox(width: 8.w),
@@ -820,7 +820,7 @@ class SubCommentItem extends StatelessWidget {
                       SizedBox(
                           width: 28.w,
                           height: 28.h,
-                          child: CircleAvatar(backgroundImage: AssetImage('assets/profile7.png'))),
+                          child: CircleAvatar(backgroundImage: AssetImage('assets/profile_vet.png'))),
                       SizedBox(width: 8.w),
                       Text(authorNickname, style: boldBlack14),
                       SizedBox(width: 8.w),
