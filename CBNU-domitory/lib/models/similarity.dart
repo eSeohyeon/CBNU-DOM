@@ -1,6 +1,11 @@
 class Similarity {
-  final double similarity;
-  final List<String> similar_factors;
+  final double score; // 전체 점수
+  final List<String> top_features; // 상위 항목들
+  final Map<String, double> similarity_scores; // 각 항목별 유사도
 
-  Similarity({required this.similarity, required this.similar_factors});
+  Similarity({
+    required this.score,
+    required this.top_features,
+    required this.similarity_scores,
+  });
 }
