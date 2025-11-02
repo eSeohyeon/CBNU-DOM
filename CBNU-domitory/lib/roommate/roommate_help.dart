@@ -31,7 +31,7 @@ class RoommateHelpDialog extends StatelessWidget {
                 SizedBox(height: 20.h),
                 Text('3. 점수 감점 항목', style: boldBlack16),
                 SizedBox(height: 6.h),
-                Text(' : 겹치면 불편한 항목에 대해서 감점하여 최종적으로 추천 점수를 산출했어요.\n해당하는 항목은 다음과 같아요\n\n- 샤워시간 : 같은 시간대에 샤워 시, -0.5점\n- 잠귀/잠버릇 : 한 쪽이 잠귀가 밝고 다른 한 쪽이 잠버릇이 있는 경우, -0.7점\n- 벌레 : 둘 다 민감한 경우, -0.7점', style: mediumBlack14),
+                Text(' : 겹치면 불편한 항목에 대해서 감점하여 최종적으로 추천 점수를 산출했어요.\n해당하는 항목은 다음과 같아요\n\n- 샤워시간 : 같은 시간대에 샤워 시, -0.3점\n- 잠귀/잠버릇 : 한 쪽이 잠귀가 밝고 다른 한 쪽이 잠버릇이 있는 경우, -0.5점\n- 벌레 : 둘 다 민감한 경우, -0.5점', style: mediumBlack14),
                 SizedBox(height: 20.h),
                 Text('4. 추가조건 설정', style: boldBlack16),
                 SizedBox(height: 6.h),
