@@ -126,7 +126,7 @@ class _DormScoreCalculateState extends State<DormScoreCalculate> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("${_calculatedDormScore}", style: boldBlack28.copyWith(fontSize: 48.sp)),
+                        Text("${_calculatedDormScore.toStringAsFixed(1)}", style: boldBlack28.copyWith(fontSize: 48.sp)),
                         Text('점', style: boldBlack20.copyWith(fontSize: 32.sp))
                       ]
                     ),
@@ -207,7 +207,7 @@ class _DormScoreCalculateState extends State<DormScoreCalculate> {
                 child: ElevatedButton(
                   onPressed: () {
                     // 저장 로직
-                    Navigator.pop(context);
+                    Navigator.pop(context, _calculatedDormScore);
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: black, padding: EdgeInsets.only(top: 6.h, bottom: 6.h), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)), elevation: 2,),
                   child: Text('저장하기', style: mediumWhite16),
