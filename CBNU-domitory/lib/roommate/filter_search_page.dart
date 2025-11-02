@@ -62,7 +62,7 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
         department: '전정대',
         yearEnrolled: '25',
         birthYear: '07',
-        profilePath: 'assets/profile1.png',
+        profilePath: 'assets/profile_economy.png',
         isSmoking: true,
         checklist: checklistMap
       ));
@@ -72,7 +72,7 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
           department: '인문대',
           yearEnrolled: '25',
           birthYear: '07',
-          profilePath: 'assets/profile2.png',
+          profilePath: 'assets/profile_business.png',
           isSmoking: true,
           checklist: checklistMap
       ));
@@ -82,7 +82,7 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
           department: '사과대',
           yearEnrolled: '21',
           birthYear: '02',
-          profilePath: 'assets/profile3.png',
+          profilePath: 'assets/profile_teacher.png',
           isSmoking: false,
           checklist: checklistMap
       ));
@@ -92,7 +92,7 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
           department: '공대',
           yearEnrolled: '24',
           birthYear: '06',
-          profilePath: 'assets/profile4.png',
+          profilePath: 'assets/profile_vet.png',
           isSmoking: false,
           checklist: checklistMap
       ));
@@ -102,7 +102,7 @@ class _FilterSearchPageState extends State<FilterSearchPage> {
           department: '경영대',
           yearEnrolled: '24',
           birthYear: '05',
-          profilePath: 'assets/profile5.png',
+          profilePath: 'assets/profile_computer.png',
           isSmoking: false,
           checklist: checklistMap
       ));

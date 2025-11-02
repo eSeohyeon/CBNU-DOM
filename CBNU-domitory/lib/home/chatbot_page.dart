@@ -138,7 +138,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
                           SizedBox(
                             width: 30.w,
                             height: 30.h,
-                            child: CircleAvatar(backgroundImage: AssetImage('assets/profile3.png'))
+                            child: CircleAvatar(backgroundImage: AssetImage('assets/profile_teacher.png'))
                           ),
                           SizedBox(width: 8.w),
                         ],

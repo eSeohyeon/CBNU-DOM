@@ -835,7 +835,7 @@ class BestPostCard extends StatelessWidget {
                           width: 30.w,
                           height: 30.h,
                           child: CircleAvatar(
-                            backgroundImage: AssetImage('assets/profile8.png'),
+                            backgroundImage: AssetImage('assets/profile_doctor.png'),
                           )
                         ),
                         SizedBox(width: 6.w),
