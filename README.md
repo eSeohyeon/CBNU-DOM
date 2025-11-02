@@ -20,17 +20,23 @@
 <table>
   <tr>
     <td align="center">
-      <img src="CBNU-domitory/assets/git_profile_back.jpg" width="100px" alt="팀장(BackEnd)">
-      <br><sub><b>팀장(BackEnd) : 이민기</b></sub>
-    </td>
+      <a href="https://github.com/Maybess" target="_blank">
+        <img src="CBNU-domitory/assets/git_profile_back.jpg" width="100px" alt="팀장(BackEnd)">
+        </a>
+        <br><sub><b>팀장(BackEnd) : 이민기</b></sub>
+      </td>
     <td align="center">
-      <img src="CBNU-domitory/assets/git_profile_AI.jpg" width="100px" alt="팀원(AI)">
-      <br><sub><b>팀원(AI) : 김아현</b></sub>
-    </td>
+      <a href="https://github.com/Kim-ahhyeon" target="_blank">
+        <img src="CBNU-domitory/assets/git_profile_AI.jpg" width="100px" alt="팀원(AI)">
+        </a>
+        <br><sub><b>팀원(AI) : 김아현</b></sub>
+      </td>
     <td align="center">
-      <img src="CBNU-domitory/assets/git_profile_front.jpg" width="100px" alt="팀원(FrontEnd)">
-      <br><sub><b>팀원(FrontEnd) : 이서현</b></sub>
-    </td>
+      <a href="https://github.com/eSeohyeon" target="_blank">
+        <img src="CBNU-domitory/assets/git_profile_front.jpg" width="100px" alt="팀원(FrontEnd)">
+        </a>
+        <br><sub><b>팀원(FrontEnd) : 이서현</b></sub>
+      </td>
   </tr>
 </table>
 
