@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
-import 'package:group_button/group_button.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled/roommate/checklist_group_button.dart';
 
@@ -14,168 +13,102 @@ class ChecklistHabitView extends StatefulWidget {
 }
 
 class _ChecklistHabitViewState extends State<ChecklistHabitView> {
-  late GroupButtonController _smokingController;
-  late GroupButtonController _sleepingHabitController;
-  late GroupButtonController _cleaningFrequencyController;
-  late GroupButtonController _soundController;
-  late GroupButtonController _sleepingEarController;
-
   static const List<String> smokingOptions = ['흡연', '비흡연'];
   static const List<String> sleepingHabitOptions = ['없음', '이갈이', '잠꼬대', '코골이'];
   static const List<String> sleepingEarOptions = ['어두움', '중간', '밝음'];
-  static const List<String> cleaningFrequencyOptions = ['그때그때', '중간', '한번에'];
+  static const List<String> cleaningOptions = ['그때그때', '중간', '한번에'];
   static const List<String> soundOptions = ['이어폰', '스피커', '유동적'];
-
-  bool validate(){
-    final keysToValidate = [
-      '흡연여부',
-      '잠버릇',
-      '청소',
-      '소리',
-      '잠귀'
-    ];
-
-    for (var key in keysToValidate) {
-      final value = widget.answers[key];
-      if(value == null || (value is String && value.isEmpty)){
-        return false;
-      }
-    }
-    return true; // 모든 항목 유효
-  }
 
   @override
   void initState() {
     super.initState();
-    _smokingController = GroupButtonController(
-      selectedIndex: _getInitialIndex('흡연여부', smokingOptions),
-    );
-    _sleepingHabitController = GroupButtonController(
-      selectedIndex: _getInitialIndex('잠버릇', sleepingHabitOptions),
-    );
-    _cleaningFrequencyController = GroupButtonController(
-      selectedIndex: _getInitialIndex('청소', cleaningFrequencyOptions),
-    );
-    _soundController = GroupButtonController(
-      selectedIndex: _getInitialIndex('소리', soundOptions),
-    );
-    _sleepingEarController = GroupButtonController(
-      selectedIndex: _getInitialIndex('잠귀', sleepingEarOptions),
-    );
+    // 모든 다중 선택 항목 초기화
+    widget.answers['잠버릇'] ??= <String>[];
+    widget.answers['잠귀'] ??= <String>[];
+    widget.answers['청소'] ??= <String>[];
+    widget.answers['소리'] ??= <String>[];
   }
 
-  int? _getInitialIndex(String key, List<String> options) {
-    final value = widget.answers[key];
-    if (value != null && value != '') {
-      final index = options.indexOf(value);
-      return index >= 0 ? index : null;
+  bool validate() {
+    final keysToValidate = [
+      '흡연여부',  // 단일 선택
+      '잠버릇',    // 다중 선택
+      '잠귀',      // 다중 선택
+      '청소',      // 다중 선택
+      '소리'       // 다중 선택
+    ];
+
+    for (var key in keysToValidate) {
+      final value = widget.answers[key];
+      if (value == null) return false;
+      if (value is String && value.isEmpty) return false;
+      if (value is List && value.isEmpty) return false;
     }
-    return null;
+    return true;
   }
 
-  @override
-  void dispose() {
-    _smokingController.dispose();
-    _sleepingHabitController.dispose();
-    _cleaningFrequencyController.dispose();
-    _soundController.dispose();
-    _sleepingEarController.dispose();
-    super.dispose();
+  Widget buildMultiSelect(String title, List<String> options, String key) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: mediumBlack16),
+        SizedBox(height: 10.h),
+        Wrap(
+          spacing: 8.w,
+          children: options.map((option) {
+            final isSelected = widget.answers[key].contains(option);
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (isSelected) {
+                    widget.answers[key].remove(option);
+                  } else {
+                    widget.answers[key].add(option);
+                  }
+                });
+              },
+              child: checklistGroupButton(isSelected, option),
+            );
+          }).toList(),
+        ),
+        SizedBox(height: 36.h),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 12.h),
-              Text('흡연여부', style: mediumBlack16),
-              SizedBox(height: 10.h),
-              GroupButton(
-                buttons: smokingOptions,
-                controller : _smokingController,
-                onSelected: (val, i, selected){
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 단일 선택: 흡연여부
+          Text('흡연여부', style: mediumBlack16),
+          SizedBox(height: 10.h),
+          Wrap(
+            spacing: 8.w,
+            children: smokingOptions.map((option) {
+              final isSelected = widget.answers['흡연여부'] == option;
+              return GestureDetector(
+                onTap: () {
                   setState(() {
-                    widget.answers['흡연여부'] = val;
+                    widget.answers['흡연여부'] = option;
                   });
                 },
-                buttonBuilder: (selected, value, context) {
-                  return checklistGroupButton(selected, value);
-                },
-                options: GroupButtonOptions(spacing: 8),
-              ),
-              SizedBox(height: 36.h),
-              Text('잠버릇', style: mediumBlack16),
-              SizedBox(height: 10.h),
-              GroupButton(
-                buttons: sleepingHabitOptions,
-                controller : _sleepingHabitController,
-                onSelected: (val, i, selected){
-                  setState(() {
-                    widget.answers['잠버릇'] = val;
-                  });
-                },
-                buttonBuilder: (selected, value, context) {
-                  return checklistGroupButton(selected, value);
-                },
-                options: GroupButtonOptions(spacing: 8),
-              ),
-              SizedBox(height: 36.h),
-              Text('잠귀', style: mediumBlack16),
-              SizedBox(height: 10.h),
-              GroupButton(
-                buttons: sleepingEarOptions,
-                controller : _sleepingEarController,
-                onSelected: (val, i, selected){
-                  setState(() {
-                    widget.answers['잠귀'] = val;
-                  });
-                },
-                buttonBuilder: (selected, value, context) {
-                  return checklistGroupButton(selected, value);
-                },
-                options: GroupButtonOptions(spacing: 8),
-              ),
-              SizedBox(height: 36.h),
-              Text('청소', style: mediumBlack16),
-              SizedBox(height: 10.h),
-              GroupButton(
-                buttons: cleaningFrequencyOptions,
-                controller : _cleaningFrequencyController,
-                onSelected: (val, i, selected){
-                  setState(() {
-                    widget.answers['청소'] = val;
-                  });
-                },
-                buttonBuilder: (selected, value, context) {
-                  return checklistGroupButton(selected, value);
-                },
-                options: GroupButtonOptions(spacing: 8),
-              ),
-              SizedBox(height: 36.h),
-              Text('소리', style: mediumBlack16),
-              SizedBox(height: 10.h),
-              GroupButton(
-                  buttons: soundOptions,
-                  controller : _soundController,
-                  onSelected: (val, i, selected){
-                    setState(() {
-                      widget.answers['소리'] = val;
-                    });
-                  },
-                  buttonBuilder: (selected, value, context) {
-                    return checklistGroupButton(selected, value);
-                  },
-                  options: GroupButtonOptions(
-                      spacing: 8
-                  )
-              ),
-              SizedBox(height: 36.h),
-            ]
-        )
+                child: checklistGroupButton(isSelected, option),
+              );
+            }).toList(),
+          ),
+          SizedBox(height: 36.h),
+
+          // 다중 선택 항목
+          buildMultiSelect('잠버릇', sleepingHabitOptions, '잠버릇'),
+          buildMultiSelect('잠귀', sleepingEarOptions, '잠귀'),
+          buildMultiSelect('청소', cleaningOptions, '청소'),
+          buildMultiSelect('소리', soundOptions, '소리'),
+        ],
+      ),
     );
   }
 }
-
