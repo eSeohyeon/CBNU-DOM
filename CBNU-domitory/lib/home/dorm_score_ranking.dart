@@ -16,7 +16,7 @@ class DormScoreRanking extends StatefulWidget {
 }
 
 class _DormScoreRankingState extends State<DormScoreRanking> {
-  bool _isCalculated = true;
+  //bool _isCalculated = true;
   final List<User> _ranking = [];
   User? _currentUserData; // 로그인 사용자 정보
 
@@ -420,7 +420,7 @@ class _DormScoreRankingState extends State<DormScoreRanking> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
                 elevation: 2,
               ),
-              child: Text(_isCalculated ? "다시 계산하기" : "나의 환산점수 계산하기", style: mediumWhite16),
+              child: Text("환산점수 계산하기", style: mediumWhite16),
             ),
           ),
         ),
