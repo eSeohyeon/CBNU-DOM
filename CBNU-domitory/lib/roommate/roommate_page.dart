@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:group_button/group_button.dart';
+import 'package:untitled/profile/profile_page.dart';
 import 'package:untitled/roommate/roommate_add_filter_modal.dart';
 
 import 'package:untitled/themes/colors.dart';
@@ -83,11 +84,13 @@ class _RoommatePageState extends State<RoommatePage> {
       dormitory: (checklistDoc.data()?['checklist']?['취미/기타']?['생활관']) ?? '',
     );
 
+
     _isStudent = userDoc.data()?['isVerified'] ?? false;
     // 체크리스트 작성 여부
     _isAnswered = _me!.checklist.isNotEmpty;
 
-    // 생활관 인원수 체크
+
+    // 생활관 인원수 체크 수의학과
     // 전체 체크리스트 가져오기
     final allChecklistDocs = await FirebaseFirestore.instance
         .collection('checklists')
@@ -532,7 +535,7 @@ void _applyFilters(List<Map<String, String>> filters) {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
                   ),
                   onPressed: () {
-                    // 인증하러 가기~
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfilePage()));
                   },
                 ),
               ),

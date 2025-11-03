@@ -56,6 +56,7 @@ dependencies:
   flutter_local_notifications: ^19.5.0 # 세탁 타이머 푸쉬 알림
   timezone: ^0.10.1 # 세탁타이머 푸쉬알림
   shared_preferences: ^2.5.3 # 세탁타이머 화면 닫아도 유지
+  flutter_launcher_icons: ^0.14.4 # 런처 아이콘
 
 dev_dependencies:
   flutter_test:
@@ -63,10 +64,16 @@ dev_dependencies:
 
   flutter_lints: ^5.0.0
 
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/ic.png"
+
 flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/ic.png
 
   fonts:
     - family: pretendard-semibold

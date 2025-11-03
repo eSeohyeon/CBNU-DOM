@@ -285,7 +285,10 @@ void _applyFilters() {
                           border: Border.all(color: group_button_outline, width: 1.0),
                         ),
                         child: Icon(Icons.refresh_rounded, color: black, size: 20)),
-                    onTap: _clearFilters,
+                    onTap: () {
+                      _clearFilters();
+                      _applyFilters();
+                    }
                   ),
                   SizedBox(width: 8.w),
                   Expanded(
