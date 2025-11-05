@@ -5,91 +5,91 @@ import 'colors.dart';
 // 텍스트 스타일 지정 [두께/색/사이즈]
 
 final boldWhite15 = TextStyle(
-    fontSize: 15.sp,
+    fontSize: 17.sp,
     color: white,
     fontFamily: 'pretendard-semibold',
     fontWeight: FontWeight.w700
 );
 
 final boldBlack14 = TextStyle(
-    fontSize: 14.sp,
+    fontSize: 16.sp,
     color: black,
     fontFamily: 'pretendard-medium',
     fontWeight: FontWeight.w700
 );
 
 final boldBlack20 = TextStyle(
-    fontSize: 20.sp,
+    fontSize: 22.sp,
     color: black,
     fontFamily: 'pretendard-medium',
     fontWeight: FontWeight.w700
 );
 
 final boldBlack24 = TextStyle(
-    fontSize: 24.sp,
+    fontSize: 26.sp,
     color: black,
     fontFamily: 'pretendard-medium',
     fontWeight: FontWeight.w700
 );
 
 final boldBlack28 = TextStyle(
-    fontSize: 28.sp,
+    fontSize: 30.sp,
     color: black,
     fontFamily: 'pretendard-medium',
     fontWeight: FontWeight.w700
 );
 
 final boldBlack18 = TextStyle(
-    fontSize: 18.sp,
+    fontSize: 20.sp,
     color: black,
     fontFamily: 'pretendard-medium',
     fontWeight: FontWeight.w700
 );
 
 final boldBlack16 = TextStyle(
-    fontSize: 16.sp,
+    fontSize: 18.sp,
     color: black,
     fontFamily: 'pretendard-medium',
     fontWeight: FontWeight.w700
 );
 
 final mediumBlack13 = TextStyle(
-    fontSize: 13.sp,
+    fontSize: 15.sp,
     color: black,
     fontFamily: 'pretendard-medium',
     fontWeight: FontWeight.w500
 );
 
 final mediumBlack12 = TextStyle(
-    fontSize: 12.sp,
-    color: black,
-    fontFamily: 'pretendard-medium',
-    fontWeight: FontWeight.w500
-);
-
-final mediumBlack14 = TextStyle(
     fontSize: 14.sp,
     color: black,
     fontFamily: 'pretendard-medium',
     fontWeight: FontWeight.w500
 );
 
-final mediumBlack16 = TextStyle(
+final mediumBlack14 = TextStyle(
     fontSize: 16.sp,
     color: black,
     fontFamily: 'pretendard-medium',
     fontWeight: FontWeight.w500
 );
 
-final mediumBlack18 = TextStyle(
+final mediumBlack16 = TextStyle(
     fontSize: 18.sp,
     color: black,
     fontFamily: 'pretendard-medium',
     fontWeight: FontWeight.w500
 );
 
+final mediumBlack18 = TextStyle(
+    fontSize: 20.sp,
+    color: black,
+    fontFamily: 'pretendard-medium',
+    fontWeight: FontWeight.w500
+);
+
 final mediumGrey12 = TextStyle(
-    fontSize: 12.sp,
+    fontSize: 13.sp,
     color: grey,
 //height: 1.5,
     fontFamily: 'pretendard-medium',
@@ -97,7 +97,7 @@ final mediumGrey12 = TextStyle(
 );
 
 final mediumGrey13 = TextStyle(
-    fontSize: 13.sp,
+    fontSize: 14.sp,
     color: grey,
 //height: 1.5,
     fontFamily: 'pretendard-medium',
@@ -105,7 +105,7 @@ final mediumGrey13 = TextStyle(
 );
 
 final mediumGrey14 = TextStyle(
-    fontSize: 14.sp,
+    fontSize: 15.sp,
     color: grey,
 //height: 1.5,
     fontFamily: 'pretendard-medium',
@@ -113,7 +113,7 @@ final mediumGrey14 = TextStyle(
 );
 
 final mediumWhite14 = TextStyle(
-    fontSize: 14.sp,
+    fontSize: 15.sp,
     color: white,
 //height: 1.5,
     fontFamily: 'pretendard-medium',
@@ -121,7 +121,7 @@ final mediumWhite14 = TextStyle(
 );
 
 final mediumWhite13 = TextStyle(
-    fontSize: 13.sp,
+    fontSize: 14.sp,
     color: white,
 //height: 1.5,
     fontFamily: 'pretendard-medium',
@@ -129,7 +129,7 @@ final mediumWhite13 = TextStyle(
 );
 
 final mediumWhite16 = TextStyle(
-    fontSize: 16.sp,
+    fontSize: 18.sp,
     color: white,
 //height: 1.5,
     fontFamily: 'pretendard-medium',

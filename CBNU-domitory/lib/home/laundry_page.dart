@@ -8,15 +8,10 @@ import 'package:untitled/themes/styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:group_button/group_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lottie/lottie.dart';
 
 import 'package:untitled/laundry/notification_service.dart';
-
-
-/*
-추가할 기능
-2. 백그라운드
-3. 끝 푸쉬알림
-*/
 
 
 class LaundryPage extends StatefulWidget {
@@ -28,18 +23,19 @@ class LaundryPage extends StatefulWidget {
 
 class _LaundryPageState extends State<LaundryPage> {
   bool _isRunning = false;
-  int timer_duration = 0; // 기본 45분
+  int timer_duration = 0;
   late DateTime end_time;
   late GroupButtonController _timerController;
   late CountDownController _countDownController;
-  //final NotificationService _notificationService = NotificationService();
+  final NotificationService _notificationService = NotificationService();
 
   @override
   void initState(){
+    super.initState();
     _timerController = GroupButtonController();
     _countDownController = CountDownController();
-    //_notificationService.init();
-    super.initState();
+    _notificationService.init();
+    _restoreTimer();
   }
 
   @override
@@ -71,7 +67,7 @@ class _LaundryPageState extends State<LaundryPage> {
     }
 
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
         decoration: BoxDecoration(
             color: selected ? black : white,
             borderRadius: BorderRadius.circular(10.0),
@@ -87,6 +83,48 @@ class _LaundryPageState extends State<LaundryPage> {
     );
   }
 
+  Future<void> _startTimer(DateTime end) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('laundry_end_time', end.toIso8601String());
+    await prefs.setInt('laundry_duration', timer_duration);
+
+    _notificationService.showTimerEndNotification(timer_duration);
+
+    setState(() {
+      _isRunning = true;
+    });
+  }
+
+  Future<void> _stopTimer() async {
+    final prefs = await SharedPreferences.getInstance();
+    _notificationService.cancelNotification();
+    await prefs.remove('laundry_end_time');
+    await prefs.remove('laundry_initial_duration');
+
+  }
+
+  Future<void> _restoreTimer() async { // 화면 닫았다 다시 들어와도 타이머 유지되게 함
+    final prefs = await SharedPreferences.getInstance();
+    final endTimeStr = prefs.getString('laundry_end_time');
+    final totalDur = prefs.getInt('laundry_duration') ?? 0;
+
+    if(endTimeStr != null && totalDur > 0){
+      final storedEndTime = DateTime.parse(endTimeStr);
+      final remaining = storedEndTime.difference(DateTime.now()).inSeconds;
+
+      if(remaining > 0) {
+        setState(() {
+          end_time = storedEndTime;
+          //timer_duration = remaining;
+          _isRunning = true;
+        });
+
+      } else {
+        prefs.remove('laundry_end_time');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,43 +136,20 @@ class _LaundryPageState extends State<LaundryPage> {
       ),
       body: SafeArea(
         top: false,
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if(_isRunning)...[
-                  Stack(
-                    alignment: Alignment.center,
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularCountDownTimer(
-                        width: 220.w,
-                        height: 220.h,
-                        duration: timer_duration,
-                        controller: _countDownController,
-                        fillColor: black,
-                        ringColor: grey_outline_inputtext,
-                        strokeWidth: 12.0,
-                        strokeCap: StrokeCap.round,
-                        textStyle: boldBlack24,
-                        textFormat: CountdownTextFormat.HH_MM_SS,
-                        isReverse: true,
-                        isReverseAnimation: true,
-                        onStart: () {
-                          print('Countdown started');
-                        },
-                        onComplete: () {
-                          print('Countdown ended');
-                          setState(() {
-                            _isRunning = false;
-                          });
-                        },
-                      ),
-                      Positioned(
-                        bottom: 72.h,
-                        child: Row(
+                      if(_isRunning)...[
+                        Lottie.asset('assets/lottie_washing.json', width: 220.w, height: 220.h),
+                        SizedBox(height: 10.h),
+                        Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.notifications_rounded, size: 18, color: grey),
@@ -142,121 +157,140 @@ class _LaundryPageState extends State<LaundryPage> {
                               Text(DateFormat('HH:mm').format(end_time), style: mediumGrey13)
                             ]
                         ),
-                      ),
-                    ]
-                  ),
-                  SizedBox(height: 24.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              if(_countDownController.isPaused.value){
-                                _countDownController.resume();
-                                print('countdown resumed');
+                        /*Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            CircularCountDownTimer(
+                              width: 220.w,
+                              height: 220.h,
+                              duration: timer_duration,
+                              controller: _countDownController,
+                              fillColor: black,
+                              ringColor: grey_outline_inputtext,
+                              strokeWidth: 12.0,
+                              strokeCap: StrokeCap.round,
+                              textStyle: boldBlack24,
+                              textFormat: CountdownTextFormat.HH_MM_SS,
+                              isReverse: true,
+                              isReverseAnimation: true,
+                              onStart: () {
+                                print('Countdown started');
+                              },
+                              onComplete: () {
+                                print('Countdown ended');
+                                setState(() {
+                                  _isRunning = false;
+                                });
+                              },
+                            ),
+                            Positioned(
+                              bottom: 72.h,
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.notifications_rounded, size: 18, color: grey),
+                                    SizedBox(width: 6.w),
+                                    Text(DateFormat('HH:mm').format(end_time), style: mediumGrey13)
+                                  ]
+                              ),
+                            ),
+                          ]
+                        ),*/
+                        SizedBox(height: 24.h),
+                        SizedBox(
+                          width: 80.w,
+                          child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _notificationService.cancelNotification();
+                                  _countDownController.reset();
+                                  _isRunning = false;
+                                });
+                              },
+                              child: Text('정지', style: mediumWhite16),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: black,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28.0)),
+                              )
+                          ),
+                        )
+                      ],
+                      if(!_isRunning)...[
+                        Text('시간을 선택해주세요', style: mediumBlack18),
+                        SizedBox(height: 12.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GroupButton(
+                              buttons: [10, 3000, 6000],
+                              controller : _timerController,
+                              onSelected: (val, i, selected){
+                                setState(() {
+                                  timer_duration = val;
+                                });
+                              },
+                              buttonBuilder: (selected, value, context) {
+                                return timerGroupButton(selected, value);
+                              },
+                              options: GroupButtonOptions(spacing: 8),
+                            ),
+                          ]
+                        ),
+                        SizedBox(height: 28.h),
+                        SizedBox(
+                          width: 80.w,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if(_timerController.selectedIndex != null){
+                                end_time = DateTime.now().add(Duration(seconds: timer_duration));
+                                _startTimer(end_time);
                               } else {
-                                _countDownController.pause();
-                                print(_countDownController.isPaused);
-                                print('countdown paused');
+                                Fluttertoast.showToast(
+                                    msg: '시간을 선택해주세요',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    backgroundColor: grey,
+                                    textColor: white, fontSize: 13.sp
+                                );
                               }
-                            });
-                          },
-                          child: Text(_countDownController.isPaused.value ? '재개' : '일시정지' , style: mediumWhite14.copyWith(color: black_semi)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: grey_button_greyBG,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28.0)),
-                          )
-                      ),
-                      SizedBox(width: 12.w),
-                      ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _countDownController.reset();
-                            });
-                          },
-                          child: Text('정지', style: mediumWhite14),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: black,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28.0)),
-                          )
-                      )
-                    ],
-                  )
-                ],
-                if(!_isRunning)...[
-                  Text('시간을 선택해주세요', style: mediumBlack18),
-                  SizedBox(height: 12.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GroupButton(
-                        buttons: [10, 3000, 6000],
-                        controller : _timerController,
-                        onSelected: (val, i, selected){
-                          setState(() {
-                            timer_duration = val;
-                          });
-                        },
-                        buttonBuilder: (selected, value, context) {
-                          return timerGroupButton(selected, value);
-                        },
-                        options: GroupButtonOptions(spacing: 8),
-                      ),
+                            },
+                            child: Text('시작', style: mediumWhite16),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: black,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28.0)),
+                              padding: EdgeInsets.symmetric(vertical: 10.h)
+                            )
+                          ),
+                        )
+                      ],
                     ]
                   ),
-                  SizedBox(height: 28.h),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        if(_timerController.selectedIndex != null){
-                          end_time = DateTime.now().add(Duration(seconds: timer_duration));
-                          //_notificationService.showTimerEndNotification(timer_duration);
-                          print('완료 함수 실행');
-                          _isRunning = true;
-                        } else {
-                          Fluttertoast.showToast(
-                              msg: '시간을 선택해주세요',
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              backgroundColor: grey,
-                              textColor: white, fontSize: 13.sp
-                          );
-                        }
-                      });
-                    },
-                    child: Text('시작', style: mediumWhite14),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: black,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28.0)),
-                    )
-                  )
-                ],
-              ]
-            ),
-          ),
-        ),
-      ),
-      bottomNavigationBar: Padding(
-          padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.w),
-          child: SizedBox(
-            width: double.infinity,
-            height: 45.h,
-            child: ElevatedButton(
-                onPressed: () { showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) => LaundryCardModal(),
-                  isDismissible: true,
-                  enableDrag: false
-                );},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: white,
-                  side: BorderSide(color: grey_outline_inputtext),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28.0)),
-                  elevation: 0
                 ),
-                child: Text('세탁카드 잔액확인', style: mediumBlack16.copyWith(color: black_semi))),
-          )
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 8.h, top: 10.h),
+              child: SizedBox(
+                width: double.infinity,
+                height: 45.h,
+                child: ElevatedButton(
+                    onPressed: () { showModalBottomSheet(
+                        context: context,
+                        builder: (BuildContext context) => LaundryCardModal(),
+                        isDismissible: true,
+                        enableDrag: false
+                    );},
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: white,
+                        side: BorderSide(color: grey_outline_inputtext),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28.0)),
+                        elevation: 0
+                    ),
+                    child: Text('세탁카드 잔액확인', style: mediumBlack16.copyWith(color: black_semi))),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
