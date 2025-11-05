@@ -264,7 +264,7 @@ class _FilterSelectModalState extends State<FilterSelectModal> with TickerProvid
                           for (var group in category.groups){
                             group.controller.unselectAll();
                           }
-                        } // groupbutton 선택 해제 안되는 문제 해결
+                        }
 
                         print(_modalSelectedFilters);
 

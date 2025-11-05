@@ -43,6 +43,7 @@ class _BottomNavigationTabState extends State<BottomNavigationTab> with TickerPr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: white,
       body: Stack(
         children: [
           // 탭 본문 내용

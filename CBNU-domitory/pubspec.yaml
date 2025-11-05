@@ -57,6 +57,7 @@ dependencies:
   timezone: ^0.10.1 # 세탁타이머 푸쉬알림
   shared_preferences: ^2.5.3 # 세탁타이머 화면 닫아도 유지
   flutter_launcher_icons: ^0.14.4 # 런처 아이콘
+  stop_watch_timer:  ^3.2.2
 
 dev_dependencies:
   flutter_test:

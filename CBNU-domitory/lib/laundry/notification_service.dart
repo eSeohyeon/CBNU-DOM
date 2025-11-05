@@ -1,11 +1,15 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
+    tz.initializeTimeZones();
+
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher'); // 앱 아이콘
     const DarwinInitializationSettings initializationSettingsIOS =
@@ -26,6 +30,9 @@ class NotificationService {
         // 알림 탭했을 때
       }
     );
+    if (await Permission.notification.isDenied) {
+      await Permission.notification.request();
+    }
 
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
@@ -37,10 +44,10 @@ class NotificationService {
     );
   }
 
-  Future<void> showTimerEndNotification(int duration) async { // 세탁/건조 종료 알림
-    final now = tz.TZDateTime.now(tz.local);
-    final endTime = now.add(Duration(seconds: duration));
-    print(endTime);
+  Future<void> showTimerEndNotification(DateTime endTime) async { // 세탁/건조 종료 알림
+    final location = tz.getLocation('Asia/Seoul');
+    final tzEndTime = tz.TZDateTime.from(endTime, location);
+    print(tzEndTime);
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
@@ -49,18 +56,19 @@ class NotificationService {
           channelDescription: '세탁 타이머 시작, 완료 알림',
           importance: Importance.max,
           priority: Priority.high,
-          showWhen: false
-          //sound: RawResourceAndroidNotificationSound('alert'),
+          showWhen: false,
+          playSound: true,
+          enableVibration: true
         );
+    const iosDetails = DarwinNotificationDetails();
     const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iosDetails);
 
-    final minutes = (duration / 60).round();
     await flutterLocalNotificationsPlugin.zonedSchedule(
       1,
       '세탁/건조 완료!',
       '세탁/건조가 완료되었습니다. 세탁물을 확인해주세요.',
-      endTime,
+      tzEndTime,
       platformChannelSpecifics,
       matchDateTimeComponents: null,
       androidScheduleMode: AndroidScheduleMode.inexact,
