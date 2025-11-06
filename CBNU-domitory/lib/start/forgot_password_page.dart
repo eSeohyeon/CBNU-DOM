@@ -110,17 +110,20 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : SizedBox(
-          width: double.infinity,
-          height: 45.h,
-          child: ElevatedButton(
-            onPressed: _sendResetEmail,
-            style: btnBlackRound30,
-            child: Text('재설정 이메일 받기', style: mediumWhite16),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 16.w),
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SizedBox(
+            width: double.infinity,
+            height: 45.h,
+            child: ElevatedButton(
+              onPressed: _sendResetEmail,
+              style: btnBlackRound30,
+              child: Text('재설정 이메일 받기', style: mediumWhite16),
+            ),
           ),
         ),
       ),

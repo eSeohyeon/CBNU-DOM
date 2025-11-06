@@ -51,16 +51,19 @@ class NotificationService {
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-          'laundry_timer_channel',
+          'laundry_timer_channel_2',
           '세탁 타이머 알림',
-          channelDescription: '세탁 타이머 시작, 완료 알림',
+          channelDescription: '세탁 타이머 완료 알림',
           importance: Importance.max,
           priority: Priority.high,
           showWhen: false,
           playSound: true,
-          enableVibration: true
+          enableVibration: true,
+          sound: RawResourceAndroidNotificationSound('laundry_alarm'),
         );
-    const iosDetails = DarwinNotificationDetails();
+    const iosDetails = DarwinNotificationDetails(
+      sound: 'laundry_alarm.wav'
+    );
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iosDetails);
 

@@ -60,7 +60,7 @@ class _LaundryPageState extends State<LaundryPage> {
   Widget timerGroupButton(bool selected, int value){
     final duration = durationFormatter(value);
     final String task;
-    if(value == 10){
+    if(value == 2880){
       task = '세탁';
     } else if(value == 3000){
       task = '건조 1회';
@@ -256,7 +256,7 @@ class _LaundryPageState extends State<LaundryPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             GroupButton(
-                              buttons: [10, 3000, 6000],
+                              buttons: [2880, 3000, 6000],
                               controller : _timerController,
                               onSelected: (val, i, selected){
                                 setState(() {
