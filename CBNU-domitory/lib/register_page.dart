@@ -155,20 +155,23 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-          padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
-          child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (_isLoading) CircularProgressIndicator(),
-                if (!_isLoading)
-                  SizedBox(
-                    width: double.infinity,
-                    height: 45.h,
-                    child: ElevatedButton(onPressed: signUp, style: btnBlackRound30, child: Text('회원가입하고 시작하기', style: mediumWhite16)),
-                  )
-              ]
-          )
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 16.w),
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_isLoading) CircularProgressIndicator(),
+                  if (!_isLoading)
+                    SizedBox(
+                      width: double.infinity,
+                      height: 45.h,
+                      child: ElevatedButton(onPressed: signUp, style: btnBlackRound30, child: Text('회원가입하고 시작하기', style: mediumWhite16)),
+                    )
+                ]
+            )
+        ),
       ),
     );
   }

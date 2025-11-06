@@ -17,11 +17,13 @@ class ChatListItem extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: white,
-            child: Image.asset('assets/profile_art.png')
+          SizedBox(
+            width: 42.w,
+            height: 42.h,
+            child: CircleAvatar(
+              backgroundImage: AssetImage('assets/profile_art.png')),
           ),
           SizedBox(width: 10.w),
           Expanded(

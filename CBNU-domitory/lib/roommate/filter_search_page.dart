@@ -378,7 +378,7 @@ Widget RoommateListItem(User user) {
   return Padding(
     padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 24.w),
     child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
           width: 51.w,
@@ -403,19 +403,10 @@ Widget RoommateListItem(User user) {
               ],
             ),
             SizedBox(height: 2.h),
-            RichText(
-              text: TextSpan(
-                style: mediumGrey14,
-                children: [
-                  TextSpan(text: user.dormitory),
-                  TextSpan(text: ' | ', style: TextStyle(letterSpacing: -1.0)), // 간격 줄임
-                  TextSpan(text: '${user.enrollYear}학번'),
-                  TextSpan(text: ' | ', style: TextStyle(letterSpacing: -1.0)),
-                  TextSpan(text: '${user.birthYear}년생'),
-                  TextSpan(text: ' | ', style: TextStyle(letterSpacing: -1.0)),
-                  TextSpan(text: user.department),
-                ],
-              ),
+            Text(
+              '${user.dormitory} | ${user.enrollYear}학번 | ${user.birthYear}년생 | ${user.department}',
+              style: mediumGrey14,
+              overflow: TextOverflow.ellipsis,
             )
           ],
         ),

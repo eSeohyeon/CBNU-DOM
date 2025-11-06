@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:untitled/profile/profile_page.dart';
 import 'package:untitled/themes/colors.dart';
 import 'package:untitled/themes/styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -60,7 +61,7 @@ class _MessagePageState extends State<MessagePage> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(backgroundColor: white, body: Center(child: CircularProgressIndicator()));
     }
 
     return _isStudent ? Scaffold(
@@ -129,7 +130,7 @@ class _MessagePageState extends State<MessagePage> with TickerProviderStateMixin
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))
                           ),
                           onPressed: () {
-                            // TODO: 인증 페이지로 이동
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
                           },
                         ),
                       ),

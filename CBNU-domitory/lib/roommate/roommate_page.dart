@@ -466,8 +466,8 @@ void _applyFilters(List<Map<String, String>> filters) {
         }
       },
       child: Container(
-        width: 110.w,
-        height: 30.h,
+        width: 114.w,
+        height: 34.h,
         padding: EdgeInsets.symmetric(vertical: 4.h),
         decoration: BoxDecoration(
           color: white,
@@ -484,7 +484,7 @@ void _applyFilters(List<Map<String, String>> filters) {
     final value = filter.values.first;
 
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 5.h),
+        padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 7.h),
         decoration: BoxDecoration(
           color: black,
           borderRadius: BorderRadius.circular(10.0),
@@ -717,7 +717,7 @@ void _applyFilters(List<Map<String, String>> filters) {
                                           child: Container(
                                               padding: EdgeInsets.all(6.0),
                                               decoration: BoxDecoration(color: grey_button_greyBG, borderRadius: BorderRadius.circular(10.0)),
-                                              child: Icon(Icons.refresh_rounded, color: black, size: 20)
+                                              child: Icon(Icons.refresh_rounded, color: black, size: 22)
                                           ),
                                           onTap: () {
                                             _clearAllFilters();

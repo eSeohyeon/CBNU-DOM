@@ -18,7 +18,7 @@ Widget checklistGroupButton(bool selected, String value) {
 
 Widget filterGroupButton(bool selected, String value) {
   return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
       decoration: BoxDecoration(
           color: selected ? black : white,
           borderRadius: BorderRadius.circular(10.0),

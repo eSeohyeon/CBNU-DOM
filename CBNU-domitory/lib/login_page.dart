@@ -122,36 +122,39 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-          padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_isLoading)
-                const CircularProgressIndicator()
-              else
-                SizedBox(
-                  width: double.infinity,
-                  height: 45.h,
-                  child: ElevatedButton(
-                    onPressed: signIn,
-                    style: btnBlackRound30,
-                    child: Text('로그인', style: mediumWhite16),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 16.w),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_isLoading)
+                  const CircularProgressIndicator()
+                else
+                  SizedBox(
+                    width: double.infinity,
+                    height: 45.h,
+                    child: ElevatedButton(
+                      onPressed: signIn,
+                      style: btnBlackRound30,
+                      child: Text('로그인', style: mediumWhite16),
+                    ),
                   ),
-                ),
-              SizedBox(height: 2.h),
-              TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                    );
-                  },
-                  style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory),
-                  child: Text('아이디/비밀번호 찾기', style: mediumGrey14)
-              )
-            ],
-          )
+                SizedBox(height: 2.h),
+                TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                      );
+                    },
+                    style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory),
+                    child: Text('아이디/비밀번호 찾기', style: mediumGrey14)
+                )
+              ],
+            )
+        ),
       ),
     );
   }
