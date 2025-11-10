@@ -15,35 +15,39 @@ class ChatListItem extends StatelessWidget {
     String formattedDate = DateFormat('MM/dd').format(chatItem.latestTimestamp);
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 42.w,
-            height: 42.h,
-            child: CircleAvatar(
-              backgroundImage: AssetImage('assets/profile_art.png')),
-          ),
-          SizedBox(width: 10.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(chatItem.senderId, style: boldBlack16),
-                    Text(formattedDate, style: mediumGrey13)
-                  ]
+        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
+        child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 42.w,
+                height: 42.h,
+                child: CircleAvatar(
+                  backgroundColor: grey_button,
+                  backgroundImage: (chatItem.imageUrl != null && chatItem.imageUrl!.isNotEmpty)
+                      ? NetworkImage(chatItem.imageUrl!) // 네트워크 이미지 사용
+                      : AssetImage('assets/profile_art.png') as ImageProvider,
                 ),
-                SizedBox(height: 2.h),
-                Text(chatItem.latestContent, style: mediumBlack14)
-              ]
-            ),
-          )
-        ]
-      )
+              ),
+              SizedBox(width: 10.w),
+              Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(chatItem.senderId, style: boldBlack16),
+                            Text(formattedDate, style: mediumGrey13)
+                          ]
+                      ),
+                      SizedBox(height: 2.h),
+                      Text(chatItem.latestContent, style: mediumBlack14)
+                    ]
+                ),
+              )
+            ]
+        )
     );
   }
 }

@@ -49,6 +49,7 @@ class GroupChatService {
           transaction.set(chatRoomRef, {
             'type': 'group_buy',
             'groupTitle': post.basePost.title, // 상품명으로 채팅방 제목 설정
+            'groupImageUrl': post.itemImagePath, //상품 이미지 가져오기
             'participants': [post.basePost.authorUid, currentUser.uid],
             'participants_info': {
               post.basePost.authorUid: post.basePost.writer,

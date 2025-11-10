@@ -86,7 +86,9 @@ class _RoommatePageState extends State<RoommatePage> {
     );
 
 
-    _isStudent = userDoc.data()?['isVerified'] ?? false;
+    final userData = userDoc.data(); // userDoc.data()를 변수에 저장
+    final String role = userData?['role'] ?? '미인증자'; // role 필드를 읽어옴
+    _isStudent = (role == '재학생'); // role이 '재학생'일 때만 _isStudent를 true로 설정
     // 체크리스트 작성 여부
     _isAnswered = _me!.checklist.isNotEmpty;
 
