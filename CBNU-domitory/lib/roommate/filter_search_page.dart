@@ -388,27 +388,31 @@ Widget RoommateListItem(User user) {
           ),
         ),
         SizedBox(width: 12.w),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('${user.nickname}', style: mediumBlack16),
-                SizedBox(width: 6.w),
-                if (isSmoking)
-                  Image.asset('assets/smoke.png', width: 25.w, height: 25.h)
-                else
-                  SizedBox(width: 20.w, height: 20.h),
-              ],
-            ),
-            SizedBox(height: 2.h),
-            Text(
-              '${user.dormitory} | ${user.enrollYear}학번 | ${user.birthYear}년생 | ${user.department}',
-              style: mediumGrey14,
-              overflow: TextOverflow.ellipsis,
-            )
-          ],
+        SizedBox(
+          width: 0.7.sw,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text('${user.nickname}', style: mediumBlack16),
+                  SizedBox(width: 6.w),
+                  if (isSmoking)
+                    Image.asset('assets/smoke.png', width: 25.w, height: 25.h)
+                  else
+                    SizedBox(width: 20.w, height: 20.h),
+                ],
+              ),
+              SizedBox(height: 2.h),
+              Text(
+                '${user.dormitory} | ${user.enrollYear}학번 | ${user.birthYear}년생 | ${user.department}',
+                style: mediumGrey14,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              )
+            ],
+          ),
         ),
       ],
     ),

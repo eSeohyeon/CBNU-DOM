@@ -851,7 +851,7 @@ void _applyFilters(List<Map<String, String>> filters) {
                               },
                               child: Text('추천 방식이 궁금하신가요?', style: mediumGrey13)
                           ),
-                          SizedBox(height: 44.h)
+                          SizedBox(height: 64.h)
                         ]
                     )
                 )
