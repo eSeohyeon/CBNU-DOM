@@ -184,20 +184,24 @@ class MessageListTab extends StatelessWidget {
 
               String chatRoomName;
               String otherUserId = '';
+              String? imageUrl;
 
               if (chatType == 'group_buy') {
                 chatRoomName = data['groupTitle'] ?? '공동구매 채팅';
+                imageUrl = data['groupImageUrl'] as String?;
               } else {
                 otherUserId = participants.firstWhere((id) => id != currentUserUid, orElse: () => '');
                 final participantsInfo = data['participants_info'] as Map<String, dynamic>? ?? {};
                 chatRoomName = participantsInfo[otherUserId] ?? '상대방';
+                // 해야할일 : 1:1 채팅방의 경우 상대방 프로필 이미지를 가져오는 로직을 추가
+                imageUrl = null;
               }
 
               final chatItem = ChatItem(
                 chatId: doc.id,
                 senderId: chatRoomName, // 채팅방 이름으로 설정
                 latestContent: data['lastMessage'] ?? '',
-                latestTimestamp: (data['lastMessageTimestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+                latestTimestamp: (data['lastMessageTimestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),imageUrl: imageUrl,
               );
               return InkWell(
                   onTap: () {
