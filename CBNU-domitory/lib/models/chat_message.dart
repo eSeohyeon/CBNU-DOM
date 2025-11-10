@@ -29,11 +29,13 @@ class ChatItem {
   final String senderId;
   final String latestContent;
   final DateTime latestTimestamp;
+  final String? imageUrl;
 
   ChatItem({
     required this.chatId,
     required this.senderId,
     required this.latestContent,
     required this.latestTimestamp,
+    this.imageUrl,
   });
 }
