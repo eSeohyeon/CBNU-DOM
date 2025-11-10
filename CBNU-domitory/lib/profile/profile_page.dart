@@ -101,9 +101,33 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isVerified = _userData?['isVerified'] ?? false;
-    // 'role' 필드를 사용하여 상태 텍스트 결정 (기존 isVerified 대신)
-    final String role = _userData?['role'] ?? '미인증자';
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: background,
+        appBar: AppBar(
+          backgroundColor: background,
+          surfaceTintColor: background,
+          title: Text('내 정보', style: mediumBlack16),
+          titleSpacing: 0,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_userData == null) {
+      return Scaffold(
+        backgroundColor: background,
+        appBar: AppBar(
+          backgroundColor: background,
+          surfaceTintColor: background,
+          title: Text('내 정보', style: mediumBlack16),
+          titleSpacing: 0,
+        ),
+        body: const Center(child: Text('사용자 정보를 불러올 수 없습니다.')),
+      );
+    }
+    // 'role' 필드를 사용하여 상태 텍스트 결정
+    final String role = _userData!['role'] ?? '미인증자';
     String verificationStatusText;
     Color verificationStatusColor;
     // 사용자의 학과
@@ -150,18 +174,14 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _userData == null
-                ? const Text('사용자 정보를 불러올 수 없습니다.')
-                : Row(
+            child: Row(
               children: [
                 CircleAvatar(
                   radius: 30.w, // 기존 60.w와 동일
                   backgroundImage: profileImagePath.isNotEmpty
                       ? AssetImage(profileImagePath)
                       : null,
-          
+
                 ),
                 SizedBox(width: 16.w),
                 Column(
@@ -221,7 +241,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-// _StudentVerificationDialog 클래스 (변경 없음)
+// _StudentVerificationDialog 클래스
 class _StudentVerificationDialog extends StatefulWidget {
   const _StudentVerificationDialog();
 
@@ -269,14 +289,13 @@ class _StudentVerificationDialogState
       final ref = FirebaseStorage.instance
           .ref()
           .child('student_verification_images')
-          .child('${user.uid}.jpg'); // 파일명에 확장자 추가
+          .child('${user.uid}.jpg');
       await ref.putFile(_imageFile!);
       final downloadUrl = await ref.getDownloadURL();
 
-      // Firestore 업데이트 시 'role' 필드 추가/수정
+      // Firestore 업데이트 시 'role' 필드만 수정
       await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
         'studentIdImageUrl': downloadUrl,
-        'isVerified': false, // 관리자 승인 대기 상태
         'role': '인증 대기자', // 역할 업데이트
       });
 
@@ -322,7 +341,7 @@ class _StudentVerificationDialogState
           ),
           const SizedBox(height: 16),
           Text(
-            '합격증 또는 학생증(모바일 학생증 포함) 이미지를 첨부해주세요.', // 안내 문구 수정
+            '합격증 또는 학생증(모바일 학생증 포함) 이미지를 첨부해주세요.',
             textAlign: TextAlign.center,
             style: mediumGrey14,
           ),
@@ -351,7 +370,7 @@ class _StudentVerificationDialogState
               ? const SizedBox(
               width: 20,
               height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2, color: white)) // 로딩 색상 변경
+              child: CircularProgressIndicator(strokeWidth: 2, color: white))
               : Text('업로드', style: mediumWhite14),
         ),
       ],
@@ -359,7 +378,7 @@ class _StudentVerificationDialogState
   }
 }
 
-
+// _PasswordConfirmDialog 클래스 (수정 없음)
 class _PasswordConfirmDialog extends StatefulWidget {
   @override
   __PasswordConfirmDialogState createState() => __PasswordConfirmDialogState();
@@ -395,7 +414,9 @@ class __PasswordConfirmDialogState extends State<_PasswordConfirmDialog> {
       );
 
       await user.reauthenticateWithCredential(credential);
+      // users 컬렉션에서 사용자 정보 삭제
       await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
+      // Firebase Auth에서 사용자 삭제
       await user.delete();
 
       if (mounted) {
