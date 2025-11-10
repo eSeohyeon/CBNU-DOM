@@ -39,6 +39,7 @@ class _RoommatePageState extends State<RoommatePage> {
   bool _isAnswered = false; // 체크리스트 작성
   bool _isNotEnough = false; // 생활관 인원수 부족
   bool _isFilterAdded = false; // 추가조건 설정
+  bool _isRatingNeeded = true; // 별점 필요
   List<model.User> _recommendedUsers = [];
   List<Similarity> _recommendedUsersSimilarity = [];
   List<Map<String, String>> _addedFilters = [];
@@ -654,6 +655,36 @@ void _applyFilters(List<Map<String, String>> filters) {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(height: 24.h),
+                          if(_isRatingNeeded)...[
+                            InkWell(
+                              onTap: () {
+                                showDialog(context: context, builder: (context) => RatingDialog());
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                                decoration: BoxDecoration(
+                                  color: white,
+                                  borderRadius: BorderRadius.circular(10)
+                                ),
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Icon(Icons.star_rounded, size: 24, color: Colors.amber),
+                                          SizedBox(width: 6.w),
+                                          Text('AI 룸메이트 추천 별점주기', style: mediumBlack14),
+                                        ],
+                                      ),
+                                      Icon(Icons.chevron_right_rounded, color: grey, size: 24)
+                                    ]
+                                ),
+                              )
+                            ),
+                            SizedBox(height: 24.h)
+                          ],
                           // AI 추천 룸메이트 목록
                           Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
