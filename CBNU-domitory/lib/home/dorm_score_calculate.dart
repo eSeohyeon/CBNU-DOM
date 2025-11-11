@@ -117,7 +117,7 @@ class _DormScoreCalculateState extends State<DormScoreCalculate> {
           children: [
             SizedBox(height: 16.h),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              padding: EdgeInsets.symmetric(horizontal: 18.w),
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                 decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(10.0)),
@@ -127,6 +127,7 @@ class _DormScoreCalculateState extends State<DormScoreCalculate> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text("${_calculatedDormScore.toStringAsFixed(1)}", style: boldBlack28.copyWith(fontSize: 48.sp)),
+                        SizedBox(width: 4.w),
                         Text('점', style: boldBlack20.copyWith(fontSize: 32.sp))
                       ]
                     ),
@@ -137,28 +138,28 @@ class _DormScoreCalculateState extends State<DormScoreCalculate> {
                         Column(
                             children: [
                               Text('학점', style: mediumGrey14),
-                              Text("${_gpaScore.toStringAsFixed(1)}", style: mediumBlack18)
+                              Text("${_gpaScore.toStringAsFixed(1)}", style: mediumBlack16)
                             ]
                         ),
                         SizedBox(width: 28.w),
                         Column(
                             children: [
                               Text('이수학기', style: mediumGrey14),
-                              Text("${_semesterScore}", style: mediumBlack18)
+                              Text("${_semesterScore}", style: mediumBlack16)
                             ]
                         ),
                         SizedBox(width: 28.w),
                         Column(
                             children: [
                               Text('입주경력', style: mediumGrey14),
-                              Text("${_residenceScore}", style: mediumBlack18)
+                              Text("${_residenceScore}", style: mediumBlack16)
                             ]
                         ),
                         SizedBox(width: 28.w),
                         Column(
                             children: [
                               Text('상벌점', style: mediumGrey14),
-                              Text("${_penaltyScore}", style: mediumBlack18)
+                              Text("${_penaltyScore}", style: mediumBlack16)
                             ]
                         ),
                         SizedBox(width: 28.w),

@@ -126,6 +126,71 @@ class WeatherService {
     );
   }
 
+  static Future<WeatherData?> fetchWeatherAlt() async {
+    String description = 'null';
+    Color gradientStartColor = sunny_start;
+    Color gradientEndColor = sunny_end;
+    String iconPath = 'assets/rainy.png';
+    double temp = 0;
+    double humidity = 0;
+    double speed = 0;
+    double feelsLike = 0;
+
+    final openWeatherUri = Uri.parse(
+        'https://api.openweathermap.org/data/2.5/weather'
+            '?lat=$latitude&lon=$longitude&appid=$apiKey2&units=metric&lang=en'
+    );
+    final openWeatherResponse = await http.get(openWeatherUri);
+    if(openWeatherResponse.statusCode == 200){
+      final data = json.decode(openWeatherResponse.body);
+      description = _skyToString(data['weather'][0]['main']);
+      temp = (data['main']['temp'] as num).toDouble();
+      humidity = (data['main']['humidity'] as num).toDouble();
+      speed = (data['wind']['speed'] as num).toDouble();
+
+      switch(description) {
+        case '맑음':
+          gradientStartColor = sunny_start;
+          gradientEndColor = sunny_end;
+          iconPath = 'assets/sunny.png'; // sunny
+          break;
+        case '흐림':
+          gradientStartColor = cloudy_start;
+          gradientEndColor = cloudy_end;
+          iconPath = 'assets/cloudy.png'; // cloudy
+          break;
+        case '비' :
+          gradientStartColor = rainy_start;
+          gradientEndColor = rainy_end;
+          iconPath = 'assets/rainy.png';
+        default:
+          gradientStartColor = cloudy_start;
+          gradientEndColor = cloudy_end;
+          iconPath = 'assets/cloudy.png'; // cloudy
+      }
+
+      feelsLike = _calculateFeelsLike(temp, speed, humidity);
+      print('feelsLike: $feelsLike');
+      print('description: $description');
+      print('temp: $temp');
+    } else {
+      throw Exception('날씨 데이터 불러오기 실패: ${openWeatherResponse.statusCode}');
+    }
+
+    return WeatherData(
+        temperature: temp,
+        windSpeed: speed,
+        feelsLike: feelsLike,
+        humidity: humidity,
+        description: description,
+        gradientStartColor: gradientStartColor,
+        gradientEndColor: gradientEndColor,
+        iconPath: iconPath
+    );
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////
+
   static String _getNcstBaseTime(DateTime now) {
     if(now.minute < 10) {
       final previousHour = now.subtract(const Duration(hours: 1));

@@ -119,11 +119,12 @@ class _HomePageState extends State<HomePage> {
     });
 
     try {
-      if(_selectedDorm == '본관'){
+      /*if(_selectedDorm == '본관'){
         _currentWeather = await WeatherService.fetchWeather(68, 107);
       } else {
         _currentWeather = await WeatherService.fetchWeather(68, 106);
-      }
+      }*/
+      _currentWeather = await WeatherService.fetchWeatherAlt();
     } catch (e) {
       debugPrint("Failed to get weather data: $e");
 
